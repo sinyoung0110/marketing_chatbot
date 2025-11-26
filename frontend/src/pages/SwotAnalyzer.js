@@ -31,12 +31,17 @@ import {
   Assessment,
   Link as LinkIcon,
   ExpandMore,
-  CheckCircle
+  CheckCircle,
+  AutoAwesome,
+  Description,
+  FilterAlt
 } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 
 const BACKEND_URL = 'http://localhost:8000';
 
 const SwotAnalyzer = () => {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [platforms, setPlatforms] = useState(['coupang', 'naver']);
   const [searchResults, setSearchResults] = useState([]);
@@ -50,6 +55,13 @@ const SwotAnalyzer = () => {
     target: ''
   });
 
+  // 고급 검색 옵션
+  const [searchOptions, setSearchOptions] = useState({
+    search_depth: 'advanced',
+    days: null,
+    include_reviews: true
+  });
+
   // 검색 실행
   const handleSearch = async () => {
     setLoading(true);
@@ -60,7 +72,8 @@ const SwotAnalyzer = () => {
         body: JSON.stringify({
           query: searchQuery,
           platforms: platforms,
-          max_results: 15
+          max_results: 15,
+          ...searchOptions
         })
       });
 
@@ -147,6 +160,43 @@ const SwotAnalyzer = () => {
     setLoading(false);
   };
 
+  // 원클릭: SWOT 결과로 바로 상세페이지 생성
+  const handleGenerateFromSwot = async () => {
+    if (!analysisResult) {
+      alert('먼저 SWOT 분석을 실행하세요');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const selectedResults = searchResults.filter(
+        r => !excludedUrls.has(r.url)
+      );
+
+      const response = await fetch(`${BACKEND_URL}/api/swot/generate-from-swot`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          product_name: productInfo.name,
+          category: productInfo.category,
+          swot_analysis: analysisResult.analysis,
+          search_results: selectedResults,
+          platform: 'coupang'
+        })
+      });
+
+      const data = await response.json();
+      console.log('원클릭 생성 완료:', data);
+
+      alert('상세페이지가 생성되었습니다! 상세페이지 탭으로 이동합니다.');
+      navigate('/', { state: { generatedResult: data.result } });
+    } catch (error) {
+      console.error('생성 오류:', error);
+      alert('생성 실패: ' + error.message);
+    }
+    setLoading(false);
+  };
+
   const platformOptions = [
     { value: 'coupang', label: '쿠팡' },
     { value: 'naver', label: '네이버' },
@@ -201,6 +251,71 @@ const SwotAnalyzer = () => {
                     />
                   ))}
                 </Box>
+
+                {/* 고급 검색 옵션 */}
+                <Accordion sx={{ mb: 2 }}>
+                  <AccordionSummary expandIcon={<ExpandMore />}>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <FilterAlt sx={{ mr: 1 }} />
+                      <Typography>고급 검색 옵션</Typography>
+                    </Box>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <Grid container spacing={2}>
+                      <Grid item xs={12} md={4}>
+                        <TextField
+                          select
+                          fullWidth
+                          size="small"
+                          label="검색 상세도"
+                          value={searchOptions.search_depth}
+                          onChange={(e) =>
+                            setSearchOptions({ ...searchOptions, search_depth: e.target.value })
+                          }
+                          SelectProps={{ native: true }}
+                        >
+                          <option value="basic">기본</option>
+                          <option value="advanced">상세 (권장)</option>
+                        </TextField>
+                      </Grid>
+                      <Grid item xs={12} md={4}>
+                        <TextField
+                          select
+                          fullWidth
+                          size="small"
+                          label="검색 기간"
+                          value={searchOptions.days || ''}
+                          onChange={(e) =>
+                            setSearchOptions({
+                              ...searchOptions,
+                              days: e.target.value ? parseInt(e.target.value) : null
+                            })
+                          }
+                          SelectProps={{ native: true }}
+                        >
+                          <option value="">전체</option>
+                          <option value="7">최근 7일</option>
+                          <option value="30">최근 30일</option>
+                          <option value="90">최근 90일</option>
+                        </TextField>
+                      </Grid>
+                      <Grid item xs={12} md={4}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+                          <Checkbox
+                            checked={searchOptions.include_reviews}
+                            onChange={(e) =>
+                              setSearchOptions({ ...searchOptions, include_reviews: e.target.checked })
+                            }
+                          />
+                          <Typography variant="body2">리뷰 포함</Typography>
+                        </Box>
+                      </Grid>
+                    </Grid>
+                    <Alert severity="info" sx={{ mt: 2 }}>
+                      💡 <strong>리뷰 포함</strong> 옵션을 켜면 경쟁사 상품 리뷰를 분석하여 더 정확한 인사이트를 얻을 수 있습니다.
+                    </Alert>
+                  </AccordionDetails>
+                </Accordion>
 
                 <Button
                   variant="contained"
@@ -366,14 +481,34 @@ const SwotAnalyzer = () => {
                     {analysisResult.search_results_count}개의 경쟁사 상품을 분석했습니다
                   </Alert>
 
-                  <Button
-                    variant="contained"
-                    startIcon={<LinkIcon />}
-                    onClick={() => window.open(`${BACKEND_URL}${analysisResult.html_url}`, '_blank')}
-                    fullWidth
-                  >
-                    분석 보고서 열기
-                  </Button>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} md={6}>
+                      <Button
+                        variant="contained"
+                        startIcon={<LinkIcon />}
+                        onClick={() => window.open(`${BACKEND_URL}${analysisResult.html_url}`, '_blank')}
+                        fullWidth
+                      >
+                        분석 보고서 열기
+                      </Button>
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <Button
+                        variant="contained"
+                        color="secondary"
+                        startIcon={<AutoAwesome />}
+                        onClick={handleGenerateFromSwot}
+                        disabled={loading}
+                        fullWidth
+                      >
+                        🚀 원클릭 상세페이지 생성
+                      </Button>
+                    </Grid>
+                  </Grid>
+
+                  <Alert severity="success" sx={{ mt: 2 }}>
+                    💡 <strong>원클릭 생성</strong>을 누르면 SWOT 분석 결과와 경쟁사 리뷰를 활용하여 자동으로 상세페이지를 생성합니다!
+                  </Alert>
 
                   {/* 인사이트 미리보기 */}
                   {analysisResult.analysis?.insights && (

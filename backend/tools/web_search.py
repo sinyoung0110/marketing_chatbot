@@ -30,7 +30,15 @@ class WebSearchTool:
             self.ddgs = DDGS()
             print("[WebSearch] DuckDuckGo 사용")
 
-    def search(self, query: str, platforms: List[str], max_results: int = 10) -> Dict:
+    def search(
+        self,
+        query: str,
+        platforms: List[str],
+        max_results: int = 10,
+        search_depth: str = "advanced",
+        days: int = None,
+        include_raw_content: bool = False
+    ) -> Dict:
         """
         웹 검색 실행
 
@@ -38,22 +46,38 @@ class WebSearchTool:
             query: 검색 쿼리
             platforms: 검색 대상 플랫폼 리스트
             max_results: 최대 결과 수
+            search_depth: 검색 상세도 ("basic" or "advanced")
+            days: 최근 N일 이내 결과만 (Tavily 전용)
+            include_raw_content: 원본 HTML 콘텐츠 포함 여부
 
         Returns:
             검색 결과 딕셔너리
         """
         if self.use_tavily:
-            return self._search_with_tavily(query, platforms, max_results)
+            return self._search_with_tavily(query, platforms, max_results, search_depth, days, include_raw_content)
         else:
             return self._search_with_duckduckgo(query, platforms, max_results)
 
-    def _search_with_tavily(self, query: str, platforms: List[str], max_results: int) -> Dict:
+    def _search_with_tavily(
+        self,
+        query: str,
+        platforms: List[str],
+        max_results: int,
+        search_depth: str = "advanced",
+        days: int = None,
+        include_raw_content: bool = False
+    ) -> Dict:
         """Tavily API로 검색"""
         results = {
             "query": query,
             "platforms": platforms,
             "results": [],
-            "search_engine": "tavily"
+            "search_engine": "tavily",
+            "search_options": {
+                "depth": search_depth,
+                "days": days,
+                "include_content": include_raw_content
+            }
         }
 
         for platform in platforms:
@@ -61,23 +85,36 @@ class WebSearchTool:
             platform_query = f"{query} site:{domain}"
 
             try:
-                # Tavily 검색 (더 정확한 결과)
-                response = self.tavily.search(
-                    query=platform_query,
-                    max_results=max_results,
-                    search_depth="advanced",
-                    include_domains=[domain]
-                )
+                # Tavily 검색 옵션 설정
+                search_params = {
+                    "query": platform_query,
+                    "max_results": max_results,
+                    "search_depth": search_depth,
+                    "include_domains": [domain],
+                    "include_raw_content": include_raw_content
+                }
+
+                # 검색 기간 설정 (Tavily는 days 파라미터 지원)
+                if days:
+                    search_params["days"] = days
+
+                response = self.tavily.search(**search_params)
 
                 for result in response.get("results", []):
-                    results["results"].append({
+                    result_data = {
                         "platform": platform,
                         "title": result.get("title", ""),
                         "url": result.get("url", ""),
                         "snippet": result.get("content", ""),
                         "score": result.get("score", 0),
                         "timestamp": datetime.now().isoformat()
-                    })
+                    }
+
+                    # 상세 콘텐츠 포함 (리뷰, 상세페이지 분석용)
+                    if include_raw_content and "raw_content" in result:
+                        result_data["raw_content"] = result["raw_content"]
+
+                    results["results"].append(result_data)
 
             except Exception as e:
                 print(f"[WebSearch] Tavily 검색 오류 ({platform}): {e}")
