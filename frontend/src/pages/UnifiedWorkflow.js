@@ -29,7 +29,8 @@ import {
   ExpandMore,
   Lightbulb,
   TrendingUp,
-  UploadFile
+  UploadFile,
+  Download
 } from '@mui/icons-material';
 
 const BACKEND_URL = 'http://localhost:8000';
@@ -66,29 +67,64 @@ const UnifiedWorkflow = () => {
   });
 
   // Step 0: 워크플로우 시작
-  // 파일 업로드 처리
-  const handleFileUpload = (event) => {
+  // 파일 업로드 처리 (JSON + PDF)
+  const handleFileUpload = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
+    // JSON 파일
+    if (file.name.endsWith('.json')) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const data = JSON.parse(e.target.result);
+          setProductInfo({
+            product_name: data.product_name || data.name || '',
+            category: data.category || '',
+            keywords: Array.isArray(data.keywords) ? data.keywords.join(', ') : data.keywords || '',
+            target_customer: data.target_customer || data.target || '',
+            platforms: data.platforms || ['coupang', 'naver']
+          });
+          setUploadedFile(file.name);
+          alert('✅ JSON 파일이 성공적으로 로드되었습니다!');
+        } catch (error) {
+          alert('파일 형식이 올바르지 않습니다. JSON 형식이어야 합니다.');
+        }
+      };
+      reader.readAsText(file);
+    }
+    // PDF 파일
+    else if (file.name.endsWith('.pdf')) {
+      setLoading(true);
+      const formData = new FormData();
+      formData.append('file', file);
+
       try {
-        const data = JSON.parse(e.target.result);
+        const response = await fetch(`${BACKEND_URL}/api/unified/parse-pdf`, {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!response.ok) throw new Error('PDF 파싱 실패');
+
+        const data = await response.json();
         setProductInfo({
-          product_name: data.product_name || data.name || '',
+          product_name: data.product_name || '',
           category: data.category || '',
-          keywords: Array.isArray(data.keywords) ? data.keywords.join(', ') : data.keywords || '',
-          target_customer: data.target_customer || data.target || '',
-          platforms: data.platforms || ['coupang', 'naver']
+          keywords: data.keywords || '',
+          target_customer: data.target_customer || '',
+          platforms: ['coupang', 'naver']
         });
         setUploadedFile(file.name);
-        alert('✅ 파일이 성공적으로 로드되었습니다!');
+        alert('✅ PDF 파일이 성공적으로 분석되었습니다!');
       } catch (error) {
-        alert('파일 형식이 올바르지 않습니다. JSON 형식이어야 합니다.');
+        alert('PDF 파일 분석 실패: ' + error.message);
+      } finally {
+        setLoading(false);
       }
-    };
-    reader.readAsText(file);
+    } else {
+      alert('JSON 또는 PDF 파일만 업로드 가능합니다.');
+    }
   };
 
   const handleStart = async () => {
@@ -115,6 +151,10 @@ const UnifiedWorkflow = () => {
 
       const data = await response.json();
       setSessionId(data.session_id);
+
+      // 세션 ID를 로컬스토리지에 저장 (챗봇에서 사용)
+      localStorage.setItem('current_session_id', data.session_id);
+
       setActiveStep(1);
       console.log('세션 생성:', data);
     } catch (error) {
@@ -284,20 +324,22 @@ const UnifiedWorkflow = () => {
                   </AccordionSummary>
                   <AccordionDetails>
                     <Alert severity="info" sx={{ mb: 2 }}>
-                      JSON 형식의 파일을 업로드하면 자동으로 입력됩니다.<br/>
-                      예시: {`{ "product_name": "에어프라이어 감자칩", "category": "간식", "keywords": ["건강", "바삭"], "target_customer": "20-30대" }`}
+                      <strong>JSON 또는 PDF 파일을 업로드하세요</strong><br/>
+                      • JSON: {`{ "product_name": "...", "category": "...", "keywords": [...] }`}<br/>
+                      • PDF: 상품 설명서나 기획서 (AI가 자동 분석)
                     </Alert>
                     <Button
                       variant="outlined"
                       component="label"
                       startIcon={<UploadFile />}
                       fullWidth
+                      disabled={loading}
                     >
-                      JSON 파일 선택
+                      파일 선택 (JSON/PDF)
                       <input
                         type="file"
                         hidden
-                        accept=".json"
+                        accept=".json,.pdf"
                         onChange={handleFileUpload}
                       />
                     </Button>
@@ -388,14 +430,29 @@ const UnifiedWorkflow = () => {
                       <Typography variant="body2" sx={{ color: 'white' }}>
                         {swotResult.competitor_count}개의 경쟁사 상품을 분석했습니다
                       </Typography>
-                      <Button
-                        variant="contained"
-                        color="inherit"
-                        sx={{ mt: 2 }}
-                        onClick={() => window.open(`${BACKEND_URL}${swotResult.html_url}`, '_blank')}
-                      >
-                        분석 보고서 열기
-                      </Button>
+                      <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
+                        <Button
+                          variant="contained"
+                          color="inherit"
+                          onClick={() => window.open(`${BACKEND_URL}${swotResult.html_url}`, '_blank')}
+                          flex={1}
+                        >
+                          분석 보고서 열기
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          color="inherit"
+                          startIcon={<Download />}
+                          onClick={() => {
+                            const link = document.createElement('a');
+                            link.href = `${BACKEND_URL}${swotResult.html_url}`;
+                            link.download = `SWOT분석_${productInfo.product_name}.html`;
+                            link.click();
+                          }}
+                        >
+                          다운로드
+                        </Button>
+                      </Box>
                     </CardContent>
                   </Card>
                 )}
@@ -509,7 +566,7 @@ const UnifiedWorkflow = () => {
                         ✅ 상세페이지 생성 완료!
                       </Typography>
                       <Grid container spacing={1} sx={{ mt: 1 }}>
-                        <Grid item xs={12} md={6}>
+                        <Grid item xs={12} md={4}>
                           <Button
                             variant="contained"
                             color="inherit"
@@ -519,7 +576,7 @@ const UnifiedWorkflow = () => {
                             HTML 보기
                           </Button>
                         </Grid>
-                        <Grid item xs={12} md={6}>
+                        <Grid item xs={12} md={4}>
                           <Button
                             variant="contained"
                             color="inherit"
@@ -527,6 +584,22 @@ const UnifiedWorkflow = () => {
                             onClick={() => window.open(`${BACKEND_URL}${detailResult.markdown_url}`, '_blank')}
                           >
                             Markdown 보기
+                          </Button>
+                        </Grid>
+                        <Grid item xs={12} md={4}>
+                          <Button
+                            variant="outlined"
+                            color="inherit"
+                            fullWidth
+                            startIcon={<Download />}
+                            onClick={() => {
+                              const link = document.createElement('a');
+                              link.href = `${BACKEND_URL}${detailResult.html_url}`;
+                              link.download = `상세페이지_${productInfo.product_name}.html`;
+                              link.click();
+                            }}
+                          >
+                            HTML 다운로드
                           </Button>
                         </Grid>
                       </Grid>

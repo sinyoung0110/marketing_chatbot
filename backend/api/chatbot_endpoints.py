@@ -21,8 +21,8 @@ class ChatMessage(BaseModel):
 class ChatRequest(BaseModel):
     """채팅 요청"""
     message: str
-    history: List[ChatMessage] = []
-    context: Optional[Dict] = None  # 상품 정보, 분석 결과 등
+    conversation_history: List[Dict] = []  # role, content
+    session_context: Optional[Dict] = None  # 세션 컨텍스트 (SWOT, 상세페이지 등)
 
 class QuickActionRequest(BaseModel):
     """빠른 작업 요청"""
@@ -56,29 +56,55 @@ MARKETING_SYSTEM_PROMPT = """당신은 전문 마케팅 전략가이자 e-커머
 @router.post("/chat")
 async def chat_with_bot(request: ChatRequest):
     """
-    마케팅 챗봇과 대화
+    마케팅 챗봇과 대화 (세션 컨텍스트 활용)
     """
     try:
         llm = ChatOpenAI(
             model="gpt-4o-mini",
-            temperature=0.8,
+            temperature=0.7,
             api_key=os.getenv("OPENAI_API_KEY")
         )
 
         # 메시지 히스토리 구성
         messages = [SystemMessage(content=MARKETING_SYSTEM_PROMPT)]
 
-        # 컨텍스트 추가 (상품 정보나 분석 결과)
-        if request.context:
-            context_text = f"\n\n현재 작업 중인 상품 정보:\n{_format_context(request.context)}"
-            messages.append(SystemMessage(content=context_text))
+        # 세션 컨텍스트 추가 (SWOT 분석, 상세페이지 정보)
+        if request.session_context:
+            context_parts = []
+
+            product_info = request.session_context.get('product_info', {})
+            if product_info:
+                context_parts.append(f"상품명: {product_info.get('product_name', '')}")
+                context_parts.append(f"카테고리: {product_info.get('category', '')}")
+                if product_info.get('keywords'):
+                    keywords = product_info['keywords']
+                    if isinstance(keywords, list):
+                        context_parts.append(f"키워드: {', '.join(keywords)}")
+
+            # RAG에서 SWOT 정보 자동 로드
+            if product_info.get('product_name'):
+                try:
+                    from utils.rag_manager import get_rag_manager
+                    rag_manager = get_rag_manager()
+                    swot_docs = rag_manager.get_context_for_product(
+                        product_name=product_info['product_name'],
+                        category=product_info.get('category')
+                    )
+                    if swot_docs:
+                        context_parts.append(f"\n[SWOT 분석 결과]\n{swot_docs}")
+                except Exception as e:
+                    print(f"[Chatbot] RAG 로드 실패 (무시): {e}")
+
+            if context_parts:
+                context_text = "\n\n=== 현재 프로젝트 정보 ===\n" + "\n".join(context_parts)
+                messages.append(SystemMessage(content=context_text))
 
         # 이전 대화 추가
-        for msg in request.history[-10:]:  # 최근 10개만
-            if msg.role == "user":
-                messages.append(HumanMessage(content=msg.content))
-            else:
-                messages.append(AIMessage(content=msg.content))
+        for msg in request.conversation_history[-10:]:  # 최근 10개만
+            if msg.get('role') == "user":
+                messages.append(HumanMessage(content=msg.get('content', '')))
+            elif msg.get('role') == "assistant":
+                messages.append(AIMessage(content=msg.get('content', '')))
 
         # 현재 메시지
         messages.append(HumanMessage(content=request.message))
@@ -86,17 +112,15 @@ async def chat_with_bot(request: ChatRequest):
         # LLM 호출
         response = llm.invoke(messages)
 
-        # 빠른 작업 감지
-        quick_actions = _detect_quick_actions(response.content)
-
         return {
-            "message": response.content,
-            "quick_actions": quick_actions,
+            "response": response.content,
             "timestamp": datetime.now().isoformat()
         }
 
     except Exception as e:
+        import traceback
         print(f"[Chatbot] 오류: {e}")
+        print(traceback.format_exc())
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/quick-action")

@@ -43,8 +43,37 @@ const MarketingChatbot = () => {
   const [inputMessage, setInputMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(true);
+  const [sessionContext, setSessionContext] = useState(null);
   const messagesEndRef = useRef(null);
   const navigate = useNavigate();
+
+  // 세션 ID를 로컬스토리지에서 가져오기 (통합 워크플로우에서 저장)
+  useEffect(() => {
+    const savedSessionId = localStorage.getItem('current_session_id');
+    if (savedSessionId) {
+      loadSessionContext(savedSessionId);
+    }
+  }, []);
+
+  const loadSessionContext = async (sessionId) => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/unified/session/${sessionId}`);
+      if (response.ok) {
+        const data = await response.json();
+        setSessionContext(data);
+
+        // 환영 메시지 업데이트
+        setMessages([{
+          role: 'assistant',
+          content: `안녕하세요! "${data.product_info?.product_name}" 프로젝트의 마케팅 전략가입니다.\n\n✅ SWOT 분석: ${data.has_swot ? '완료' : '미완료'}\n✅ 상세페이지: ${data.has_detail ? '완료' : '미완료'}\n\n프로젝트 정보를 바탕으로 상담해드리겠습니다. 무엇이 궁금하신가요?`,
+          timestamp: new Date().toISOString(),
+          showQuickActions: true
+        }]);
+      }
+    } catch (error) {
+      console.log('세션 로드 실패 (무시):', error);
+    }
+  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -100,9 +129,14 @@ const MarketingChatbot = () => {
           conversation_history: messages.map((m) => ({
             role: m.role,
             content: m.content
-          }))
+          })),
+          session_context: sessionContext // 세션 컨텍스트 전달
         })
       });
+
+      if (!response.ok) {
+        throw new Error('서버 응답 오류');
+      }
 
       const data = await response.json();
 
@@ -110,8 +144,8 @@ const MarketingChatbot = () => {
         ...prev,
         {
           role: 'assistant',
-          content: data.response,
-          timestamp: data.timestamp
+          content: data.response || data.message || '응답을 생성할 수 없습니다.',
+          timestamp: data.timestamp || new Date().toISOString()
         }
       ]);
     } catch (error) {

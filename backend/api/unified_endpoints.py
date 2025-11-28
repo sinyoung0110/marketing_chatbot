@@ -2,13 +2,16 @@
 통합 워크플로우 엔드포인트
 한 번 입력하면 SWOT → 상세페이지 → 챗봇까지 자동 연계
 """
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, UploadFile, File
 from pydantic import BaseModel
 from typing import List, Dict, Optional, Any
 import uuid
 import os
+import json
+import tempfile
 
 from langchain_openai import ChatOpenAI
+from langchain_core.messages import SystemMessage, HumanMessage
 from utils.project_session import get_session_manager, ProjectSession
 from tools.web_search import WebSearchTool
 from tools.swot_3c_analysis import SWOT3CAnalysisTool
@@ -370,4 +373,131 @@ async def delete_session(session_id: str):
         session_manager.delete_session(session_id)
         return {"message": f"세션 {session_id}가 삭제되었습니다"}
     except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post(
+    "/parse-pdf",
+    summary="📄 PDF 파일 파싱",
+    description="""
+    **PDF 파일에서 상품 정보 추출**
+
+    - PDF 파일을 업로드하면 AI가 자동으로 상품 정보 추출
+    - 추출 항목: 상품명, 카테고리, 키워드, 타겟 고객
+    - 통합 워크플로우에서 바로 사용 가능
+    """
+)
+async def parse_pdf_file(file: UploadFile = File(...)):
+    """PDF 파일에서 상품 정보 추출"""
+    try:
+        # PDF 파일 검증
+        if not file.filename.endswith('.pdf'):
+            raise HTTPException(status_code=400, detail="PDF 파일만 업로드 가능합니다")
+
+        # 임시 파일로 저장
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as tmp_file:
+            content = await file.read()
+            tmp_file.write(content)
+            tmp_path = tmp_file.name
+
+        try:
+            # PDF 텍스트 추출 (PyMuPDF 사용)
+            import fitz  # PyMuPDF
+            pdf_text = ""
+            pdf_doc = fitz.open(tmp_path)
+            for page in pdf_doc:
+                pdf_text += page.get_text() + "\n"
+            pdf_doc.close()
+
+            # 텍스트가 비어있으면 에러
+            if not pdf_text.strip():
+                raise HTTPException(status_code=400, detail="PDF에서 텍스트를 추출할 수 없습니다")
+
+            # LLM으로 구조화된 정보 추출
+            llm = ChatOpenAI(
+                model="gpt-4o-mini",
+                temperature=0.3,
+                api_key=os.getenv("OPENAI_API_KEY")
+            )
+
+            extraction_prompt = f"""
+다음 PDF 텍스트에서 상품 마케팅에 필요한 정보를 추출하세요.
+
+PDF 텍스트:
+{pdf_text[:3000]}
+
+아래 JSON 형식으로 정보를 추출하세요. 정보가 없으면 빈 문자열이나 빈 배열을 사용하세요:
+
+{{
+  "product_name": "상품명",
+  "category": "카테고리",
+  "keywords": ["키워드1", "키워드2", "키워드3"],
+  "target_customer": "타겟 고객층",
+  "platforms": ["coupang", "naver"]
+}}
+
+**중요**:
+- product_name: 가장 중요한 상품명 (브랜드명 포함)
+- category: 상품 카테고리 (예: 식품, 전자제품, 패션 등)
+- keywords: 상품의 특징을 나타내는 키워드 3-5개
+- target_customer: 주요 타겟 고객층 (예: 20-30대 여성, 직장인 등)
+- platforms: 판매 플랫폼 (coupang, naver 등)
+
+JSON만 반환하세요.
+"""
+
+            response = llm.invoke([
+                SystemMessage(content="당신은 상품 정보 추출 전문가입니다. PDF에서 마케팅에 필요한 정보를 정확히 추출합니다."),
+                HumanMessage(content=extraction_prompt)
+            ])
+
+            # JSON 파싱
+            result_text = response.content.strip()
+
+            # JSON 코드 블록 제거
+            if result_text.startswith("```json"):
+                result_text = result_text[7:]
+            if result_text.startswith("```"):
+                result_text = result_text[3:]
+            if result_text.endswith("```"):
+                result_text = result_text[:-3]
+
+            result_text = result_text.strip()
+
+            # JSON 파싱
+            product_info = json.loads(result_text)
+
+            # 기본값 설정
+            if not product_info.get("product_name"):
+                raise HTTPException(status_code=400, detail="PDF에서 상품명을 찾을 수 없습니다")
+
+            if not product_info.get("category"):
+                product_info["category"] = "기타"
+
+            if not product_info.get("keywords"):
+                product_info["keywords"] = []
+
+            if not product_info.get("target_customer"):
+                product_info["target_customer"] = ""
+
+            if not product_info.get("platforms"):
+                product_info["platforms"] = ["coupang", "naver"]
+
+            return {
+                "success": True,
+                "message": "PDF 파싱 완료",
+                **product_info
+            }
+
+        finally:
+            # 임시 파일 삭제
+            if os.path.exists(tmp_path):
+                os.unlink(tmp_path)
+
+    except json.JSONDecodeError as e:
+        raise HTTPException(status_code=500, detail=f"JSON 파싱 실패: {str(e)}")
+    except Exception as e:
+        import traceback
+        print(f"[PDF Parse] 오류: {e}")
+        print(traceback.format_exc())
         raise HTTPException(status_code=500, detail=str(e))
