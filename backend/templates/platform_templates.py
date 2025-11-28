@@ -34,7 +34,17 @@ class PlatformTemplateManager:
             "usage_guide": self._generate_usage_guide(product_input),
             "comparison": self._generate_comparison(product_input, competitor_insights),
             "faq": self._generate_faq(product_input),
-            "cta": self._generate_cta(platforms)
+            "cta": self._generate_cta(platforms),
+
+            # 새로운 9가지 섹션 추가
+            "product_gallery": self._generate_product_gallery(product_input),
+            "detailed_description": self._generate_detailed_description(product_input),
+            "nutrition_info": self._generate_nutrition_info(product_input),
+            "customer_reviews": self._generate_customer_reviews(product_input, competitor_insights),
+            "recipe_suggestions": self._generate_recipe_suggestions(product_input),
+            "comparison_chart": self._generate_comparison_chart(product_input, competitor_insights),
+            "promotion": self._generate_promotion(product_input),
+            "social_media": self._generate_social_media(product_input)
         }
 
         # 플랫폼별 최적화
@@ -229,3 +239,201 @@ class PlatformTemplateManager:
         if match:
             return match.group(1).strip()
         return f"{keyword} 내용"
+
+    def _generate_product_gallery(self, product_input: Dict) -> Dict:
+        """제품 사진 갤러리 섹션"""
+        return {
+            "title": "제품 갤러리",
+            "images": [
+                {"type": "main", "description": "메인 제품 사진"},
+                {"type": "angle1", "description": "측면 사진"},
+                {"type": "angle2", "description": "상단 사진"},
+                {"type": "usage", "description": "사용 예시"},
+                {"type": "packaging", "description": "포장 상태"}
+            ]
+        }
+
+    def _generate_detailed_description(self, product_input: Dict) -> Dict:
+        """상세 설명 생성"""
+        prompt = f"""
+상품명: {product_input['product_name']}
+카테고리: {product_input['category']}
+
+아래 내용을 포함한 상세한 상품 설명을 작성하세요:
+1. 상품의 특성과 품질
+2. 원산지 및 생산 과정
+3. 관리 방법 및 보관 방법
+4. 왜 이 상품이 특별한지
+
+고객이 신뢰할 수 있도록 구체적이고 전문적으로 작성하세요."""
+
+        response = self.llm.invoke([
+            SystemMessage(content="당신은 전문 상품 설명 작가입니다."),
+            HumanMessage(content=prompt)
+        ])
+
+        return {
+            "title": "상품 상세 설명",
+            "content": response.content
+        }
+
+    def _generate_nutrition_info(self, product_input: Dict) -> Dict:
+        """영양 정보 생성"""
+        category = product_input['category'].lower()
+
+        # 식품 카테고리인 경우에만 영양 정보 생성
+        if any(keyword in category for keyword in ['식품', '음식', '간식', '과자', '음료', '고기', '육류', '생선']):
+            prompt = f"""
+상품: {product_input['product_name']}
+
+이 상품의 100g 기준 영양 성분표를 작성하세요:
+- 칼로리 (kcal)
+- 단백질 (g)
+- 지방 (g)
+- 탄수화물 (g)
+- 당류 (g)
+- 나트륨 (mg)
+
+또한 이 상품이 건강에 미치는 긍정적인 영향을 2-3가지 작성하세요."""
+
+            response = self.llm.invoke([
+                SystemMessage(content="당신은 영양사입니다. 일반적인 영양 정보를 제공하세요."),
+                HumanMessage(content=prompt)
+            ])
+
+            return {
+                "title": "영양 정보 (100g 기준)",
+                "content": response.content,
+                "has_nutrition": True
+            }
+        else:
+            return {"has_nutrition": False}
+
+    def _generate_customer_reviews(self, product_input: Dict, competitor_insights: Dict) -> Dict:
+        """고객 후기 생성"""
+        reviews = []
+
+        # 경쟁사 인사이트에서 긍정적인 포인트 추출
+        positive_points = competitor_insights.get("positive_points", [])
+
+        # 샘플 리뷰 생성 (실제로는 리뷰 크롤링 데이터 사용)
+        sample_reviews = [
+            {"rating": 5, "text": "정말 만족스러운 구매였습니다!", "author": "김**"},
+            {"rating": 5, "text": "품질이 훌륭하네요. 재구매 의사 100%", "author": "이**"},
+            {"rating": 4, "text": "가격 대비 좋아요. 추천합니다.", "author": "박**"},
+            {"rating": 5, "text": "가족 모두 만족했어요!", "author": "최**"}
+        ]
+
+        return {
+            "title": "고객 후기",
+            "average_rating": 4.8,
+            "total_reviews": 1247,
+            "reviews": sample_reviews[:4]
+        }
+
+    def _generate_recipe_suggestions(self, product_input: Dict) -> Dict:
+        """레시피 제안 생성"""
+        category = product_input['category'].lower()
+
+        # 식품 카테고리인 경우에만 레시피 생성
+        if any(keyword in category for keyword in ['식품', '음식', '간식', '고기', '육류', '생선', '채소']):
+            prompt = f"""
+상품: {product_input['product_name']}
+
+이 상품을 활용한 추천 레시피를 3가지 작성하세요:
+1. 간단한 조리법 (5분 이내)
+2. 인기 레시피
+3. 특별한 날 레시피
+
+각 레시피마다:
+- 레시피 이름
+- 주요 재료
+- 간단한 조리 순서 (3-4단계)
+- 함께 먹으면 좋은 사이드 메뉴"""
+
+            response = self.llm.invoke([
+                SystemMessage(content="당신은 요리 전문가입니다."),
+                HumanMessage(content=prompt)
+            ])
+
+            return {
+                "title": "추천 레시피",
+                "content": response.content,
+                "has_recipes": True
+            }
+        else:
+            return {"has_recipes": False}
+
+    def _generate_comparison_chart(self, product_input: Dict, competitor_insights: Dict) -> Dict:
+        """비교 차트 생성"""
+        product_name = product_input['product_name']
+
+        # 경쟁사 데이터 추출
+        competitors = []
+        if competitor_insights and "competitor_summary" in competitor_insights:
+            comp_summary = competitor_insights["competitor_summary"]
+            # 샘플 경쟁사 데이터 (실제로는 SWOT 분석에서 가져옴)
+            competitors = [
+                {
+                    "name": "경쟁사 A",
+                    "price": "30,000원",
+                    "quality": "중",
+                    "delivery": "3-5일",
+                    "rating": 4.2
+                },
+                {
+                    "name": "경쟁사 B",
+                    "price": "40,000원",
+                    "quality": "상",
+                    "delivery": "2-3일",
+                    "rating": 4.5
+                }
+            ]
+
+        # 우리 제품 데이터
+        our_product = {
+            "name": product_name,
+            "price": "37,081원",
+            "quality": "최상",
+            "delivery": "1-2일 (무료배송)",
+            "rating": 4.8
+        }
+
+        return {
+            "title": "제품 비교",
+            "our_product": our_product,
+            "competitors": competitors,
+            "chart_type": "table"  # 또는 "bar_chart"
+        }
+
+    def _generate_promotion(self, product_input: Dict) -> Dict:
+        """프로모션 섹션 생성"""
+        promotions = [
+            "✨ 지금 구매하시면 무료 배송",
+            "🎁 추가 10% 할인 쿠폰 제공",
+            "⏰ 한정 수량 특가 진행 중"
+        ]
+
+        return {
+            "title": "특별 혜택",
+            "promotions": promotions,
+            "cta": "지금 바로 구매하고 혜택 받기"
+        }
+
+    def _generate_social_media(self, product_input: Dict) -> Dict:
+        """소셜 미디어 섹션 생성"""
+        product_name = product_input['product_name']
+
+        # 해시태그 생성
+        hashtag = product_name.replace(" ", "")
+
+        return {
+            "title": "소셜 미디어",
+            "hashtag": f"#{hashtag}",
+            "message": f"이 제품을 구매하신 후 #{hashtag} 해시태그와 함께 사진을 공유해주세요!",
+            "links": [
+                {"platform": "Instagram", "url": "https://instagram.com"},
+                {"platform": "Facebook", "url": "https://facebook.com"},
+                {"platform": "카카오톡", "url": "https://kakaotalk.com"}
+            ]
+        }

@@ -37,26 +37,35 @@ class WebSearchTool:
         max_results: int = 10,
         search_depth: str = "advanced",
         days: int = None,
-        include_raw_content: bool = False
+        include_raw_content: bool = False,
+        search_platforms: List[str] = None,
+        sort_by: str = "popular"
     ) -> Dict:
         """
         웹 검색 실행
 
         Args:
             query: 검색 쿼리
-            platforms: 검색 대상 플랫폼 리스트
+            platforms: 검색 대상 플랫폼 리스트 (판매 플랫폼)
             max_results: 최대 결과 수
             search_depth: 검색 상세도 ("basic" or "advanced")
             days: 최근 N일 이내 결과만 (Tavily 전용)
             include_raw_content: 원본 HTML 콘텐츠 포함 여부
+            search_platforms: 검색 소스 (coupang, naver, news, blog)
+            sort_by: 정렬 기준 (popular, recent, review)
 
         Returns:
             검색 결과 딕셔너리
         """
         if self.use_tavily:
-            return self._search_with_tavily(query, platforms, max_results, search_depth, days, include_raw_content)
+            return self._search_with_tavily(
+                query, platforms, max_results, search_depth, days,
+                include_raw_content, search_platforms, sort_by
+            )
         else:
-            return self._search_with_duckduckgo(query, platforms, max_results)
+            return self._search_with_duckduckgo(
+                query, platforms, max_results, search_platforms, sort_by
+            )
 
     def _search_with_tavily(
         self,
@@ -65,9 +74,15 @@ class WebSearchTool:
         max_results: int,
         search_depth: str = "advanced",
         days: int = None,
-        include_raw_content: bool = False
+        include_raw_content: bool = False,
+        search_platforms: List[str] = None,
+        sort_by: str = "popular"
     ) -> Dict:
         """Tavily API로 검색"""
+        # 검색 소스가 지정되지 않으면 기본값 사용
+        if not search_platforms:
+            search_platforms = ['coupang', 'naver']
+
         results = {
             "query": query,
             "platforms": platforms,
@@ -76,13 +91,17 @@ class WebSearchTool:
             "search_options": {
                 "depth": search_depth,
                 "days": days,
-                "include_content": include_raw_content
+                "include_content": include_raw_content,
+                "search_platforms": search_platforms,
+                "sort_by": sort_by
             }
         }
 
-        for platform in platforms:
+        # 플랫폼별로 검색 (search_platforms 사용)
+        for platform in search_platforms:
+            # 플랫폼에 따라 쿼리 조정
+            platform_query = self._build_platform_query(query, platform, sort_by)
             domain = self._get_platform_domain(platform)
-            platform_query = f"{query} site:{domain}"
 
             try:
                 # Tavily 검색 옵션 설정
@@ -90,9 +109,12 @@ class WebSearchTool:
                     "query": platform_query,
                     "max_results": max_results,
                     "search_depth": search_depth,
-                    "include_domains": [domain],
                     "include_raw_content": include_raw_content
                 }
+
+                # 도메인 필터 (쇼핑몰인 경우)
+                if domain:
+                    search_params["include_domains"] = [domain]
 
                 # 검색 기간 설정 (Tavily는 days 파라미터 지원)
                 if days:
@@ -165,10 +187,78 @@ class WebSearchTool:
         """플랫폼별 도메인 반환"""
         domains = {
             "coupang": "coupang.com",
-            "naver": "smartstore.naver.com",
-            "11st": "11st.co.kr"
+            "naver": "shopping.naver.com",  # 네이버 쇼핑
+            "11st": "11st.co.kr",
+            "news": None,  # 뉴스는 도메인 제한 없음
+            "blog": None   # 블로그는 도메인 제한 없음
         }
         return domains.get(platform, platform)
+
+    def _build_platform_query(self, query: str, platform: str, sort_by: str) -> str:
+        """플랫폼과 정렬 기준에 맞는 검색 쿼리 생성"""
+        # 쿠팡의 경우 실제 검색 URL 형식 사용
+        if platform == "coupang":
+            # URL 인코딩
+            import urllib.parse
+            encoded_query = urllib.parse.quote(query)
+
+            # 정렬 파라미터 매핑
+            sorter_map = {
+                "popular": "saleCountDesc",  # 판매량순
+                "recent": "latestAsc",        # 최신순
+                "review": "scoreDesc",        # 쿠팡 랭킹순 (리뷰 포함)
+                "price_low": "salePriceAsc",  # 낮은 가격순
+                "price_high": "salePriceDesc" # 높은 가격순
+            }
+            sorter = sorter_map.get(sort_by, "scoreDesc")  # 기본값: 쿠팡 랭킹순
+
+            # 쿠팡 검색 URL 형식 (component 파라미터 필수)
+            coupang_url = f"https://www.coupang.com/np/search?component=&q={encoded_query}&sorter={sorter}"
+
+            # 상품 상세 페이지 우선 검색
+            platform_query = f"{query} site:coupang.com/vp/products"
+
+            print(f"[WebSearch] 쿠팡 검색 URL 예시: {coupang_url}")
+            print(f"[WebSearch] 쿠팡 검색 쿼리: {platform_query}")
+
+        # 네이버 쇼핑의 경우 실제 검색 URL 형식 사용
+        elif platform == "naver":
+            import urllib.parse
+            encoded_query = urllib.parse.quote(query)
+
+            # 네이버 쇼핑 정렬 파라미터
+            sort_map = {
+                "popular": "popular",  # 인기순
+                "recent": "date",      # 최신순
+                "review": "review",    # 리뷰 많은 순
+                "price_low": "price_asc",   # 낮은 가격순
+                "price_high": "price_desc"  # 높은 가격순
+            }
+            sort_param = sort_map.get(sort_by, "popular")
+
+            # 네이버 쇼핑 검색 URL 형식
+            naver_url = f"https://search.shopping.naver.com/search/all?query={encoded_query}&sort={sort_param}"
+
+            # 상품 상세 페이지 우선 검색 (smartstore 포함)
+            platform_query = f"{query} site:smartstore.naver.com OR site:shopping.naver.com/catalog"
+
+            print(f"[WebSearch] 네이버 쇼핑 검색 URL 예시: {naver_url}")
+            print(f"[WebSearch] 네이버 검색 쿼리: {platform_query}")
+
+        elif platform == "news":
+            platform_query = f"{query} 뉴스"
+            if sort_by == "recent":
+                platform_query += " 최신"
+
+        elif platform == "blog":
+            platform_query = f"{query} 블로그 리뷰"
+        else:
+            platform_query = query
+            domain = self._get_platform_domain(platform)
+            if domain:
+                platform_query = f"{platform_query} site:{domain}"
+
+        return platform_query
 
     def search_recent(self, query: str, days: int = 30) -> List[Dict]:
         """
@@ -199,3 +289,64 @@ class WebSearchTool:
                 filtered_results.append(result)
 
         return filtered_results
+
+    def _is_relevant_result(self, query: str, result: Dict, platform: str) -> bool:
+        """검색 결과의 관련성 검증 (무관한 상품 필터링)"""
+        title = result.get("title", "").lower()
+        snippet = result.get("content", "").lower()
+        url = result.get("url", "")
+
+        # 무효한 URL 패턴 체크
+        invalid_url_patterns = [
+            r'trendshop\.shopping\.naver\.com/\w+/index',  # 네이버 스토어 메인
+            r'shopping\.naver\.com/?$',  # 네이버 쇼핑 메인
+            r'coupang\.com/?$',  # 쿠팡 메인
+        ]
+
+        for pattern in invalid_url_patterns:
+            if re.search(pattern, url):
+                return False
+
+        # 쇼핑몰 플랫폼인 경우에만 상품 관련성 검증
+        if platform not in ['coupang', 'naver', '11st']:
+            return True  # 뉴스, 블로그는 관련성 검증 스킵
+
+        # 쿼리에서 핵심 키워드 추출 (첫 단어)
+        query_words = query.lower().split()
+        if not query_words:
+            return True
+
+        # 핵심 검색어 (첫 1-2 단어)
+        main_keyword = query_words[0]
+
+        # 제목 또는 설명에 핵심 키워드가 있는지 확인
+        combined_text = f"{title} {snippet}"
+
+        if main_keyword in combined_text:
+            return True
+
+        # 유사 키워드 매칭 (예: 가방 -> 백팩, 토트백)
+        # 이 부분은 카테고리별로 확장 가능
+        related_keywords = self._get_related_keywords(main_keyword)
+
+        for keyword in related_keywords:
+            if keyword in combined_text:
+                return True
+
+        # 핵심 키워드가 전혀 없으면 제외
+        print(f"[WebSearch] 키워드 불일치 제외: '{main_keyword}' not in '{title[:50]}'")
+        return False
+
+    def _get_related_keywords(self, keyword: str) -> List[str]:
+        """핵심 키워드의 관련 키워드 반환"""
+        # 카테고리별 유사 키워드 매핑
+        related_map = {
+            "가방": ["백팩", "토트백", "크로스백", "숄더백", "파우치", "지갑", "백"],
+            "신발": ["운동화", "스니커즈", "슬리퍼", "샌들", "부츠", "로퍼"],
+            "의류": ["티셔츠", "셔츠", "바지", "청바지", "원피스", "자켓"],
+            "전자제품": ["스마트폰", "노트북", "태블릿", "이어폰", "헤드폰"],
+            "식품": ["간식", "음료", "과자", "음식", "먹거리"],
+            "화장품": ["스킨케어", "메이크업", "클렌징", "크림", "세럼"],
+        }
+
+        return related_map.get(keyword, [keyword])

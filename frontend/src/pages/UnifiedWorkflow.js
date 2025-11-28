@@ -55,7 +55,9 @@ const UnifiedWorkflow = () => {
   const [swotOptions, setSwotOptions] = useState({
     search_depth: 'advanced',
     days: null,
-    include_reviews: true
+    include_reviews: true,
+    search_platforms: ['coupang', 'naver', 'news', 'blog'],  // 검색 플랫폼
+    sort_by: 'popular'  // 정렬 기준: popular, recent, review
   });
 
   // Step 2: 상세페이지 결과
@@ -95,6 +97,14 @@ const UnifiedWorkflow = () => {
     }
     // PDF 파일
     else if (file.name.endsWith('.pdf')) {
+      const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+      console.log(`PDF 파일 업로드 시작: ${file.name} (${fileSizeMB}MB)`);
+
+      if (file.size > 50 * 1024 * 1024) {
+        alert(`파일 크기가 너무 큽니다 (${fileSizeMB}MB). 최대 50MB까지 업로드 가능합니다.`);
+        return;
+      }
+
       setLoading(true);
       const formData = new FormData();
       formData.append('file', file);
@@ -105,20 +115,24 @@ const UnifiedWorkflow = () => {
           body: formData
         });
 
-        if (!response.ok) throw new Error('PDF 파싱 실패');
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.detail || 'PDF 파싱 실패');
+        }
 
         const data = await response.json();
         setProductInfo({
           product_name: data.product_name || '',
           category: data.category || '',
-          keywords: data.keywords || '',
+          keywords: Array.isArray(data.keywords) ? data.keywords.join(', ') : data.keywords || '',
           target_customer: data.target_customer || '',
-          platforms: ['coupang', 'naver']
+          platforms: data.platforms || ['coupang', 'naver']
         });
         setUploadedFile(file.name);
-        alert('✅ PDF 파일이 성공적으로 분석되었습니다!');
+        alert(`✅ PDF 파일이 성공적으로 분석되었습니다!\n\n상품명: ${data.product_name}\n카테고리: ${data.category}`);
       } catch (error) {
-        alert('PDF 파일 분석 실패: ' + error.message);
+        console.error('PDF 파싱 에러:', error);
+        alert('❌ PDF 파일 분석 실패:\n' + error.message);
       } finally {
         setLoading(false);
       }
@@ -181,7 +195,7 @@ const UnifiedWorkflow = () => {
 
       const data = await response.json();
       setSwotResult(data);
-      setActiveStep(2);
+      // Step 자동 진행 제거 - 사용자가 결과 확인 후 "다음 단계" 버튼 클릭
       console.log('SWOT 완료:', data);
     } catch (error) {
       alert('SWOT 분석 오류: ' + error.message);
@@ -207,7 +221,7 @@ const UnifiedWorkflow = () => {
 
       const data = await response.json();
       setDetailResult(data);
-      setActiveStep(3);
+      // Step 자동 진행 제거 - 사용자가 결과 확인 후 "완료" 버튼 클릭
       console.log('상세페이지 완료:', data);
     } catch (error) {
       alert('상세페이지 생성 오류: ' + error.message);
@@ -377,7 +391,7 @@ const UnifiedWorkflow = () => {
 
                 <Accordion>
                   <AccordionSummary expandIcon={<ExpandMore />}>
-                    <Typography>고급 옵션</Typography>
+                    <Typography>고급 옵션 (검색 플랫폼 및 정렬)</Typography>
                   </AccordionSummary>
                   <AccordionDetails>
                     <Grid container spacing={2}>
@@ -417,6 +431,48 @@ const UnifiedWorkflow = () => {
                           <option value="90">최근 90일</option>
                         </TextField>
                       </Grid>
+                      <Grid item xs={12} md={4}>
+                        <TextField
+                          select
+                          fullWidth
+                          size="small"
+                          label="정렬 기준"
+                          value={swotOptions.sort_by}
+                          onChange={(e) =>
+                            setSwotOptions({ ...swotOptions, sort_by: e.target.value })
+                          }
+                          SelectProps={{ native: true }}
+                        >
+                          <option value="popular">인기순 (판매량)</option>
+                          <option value="recent">최신순</option>
+                          <option value="review">리뷰 많은 순</option>
+                        </TextField>
+                      </Grid>
+                      <Grid item xs={12}>
+                        <Typography variant="body2" gutterBottom sx={{ mb: 1 }}>
+                          🔍 검색 플랫폼 선택:
+                        </Typography>
+                        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                          {['coupang', 'naver', 'news', 'blog'].map((platform) => (
+                            <Button
+                              key={platform}
+                              size="small"
+                              variant={swotOptions.search_platforms.includes(platform) ? 'contained' : 'outlined'}
+                              onClick={() => {
+                                const current = swotOptions.search_platforms;
+                                const updated = current.includes(platform)
+                                  ? current.filter(p => p !== platform)
+                                  : [...current, platform];
+                                setSwotOptions({ ...swotOptions, search_platforms: updated });
+                              }}
+                            >
+                              {platform === 'coupang' ? '쿠팡' :
+                               platform === 'naver' ? '네이버 쇼핑' :
+                               platform === 'news' ? '뉴스' : '블로그'}
+                            </Button>
+                          ))}
+                        </Box>
+                      </Grid>
                     </Grid>
                   </AccordionDetails>
                 </Accordion>
@@ -430,27 +486,32 @@ const UnifiedWorkflow = () => {
                       <Typography variant="body2" sx={{ color: 'white' }}>
                         {swotResult.competitor_count}개의 경쟁사 상품을 분석했습니다
                       </Typography>
-                      <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
+                      <Box sx={{ display: 'flex', gap: 1, mt: 2, flexDirection: 'column' }}>
                         <Button
                           variant="contained"
-                          color="inherit"
+                          color="success"
+                          size="large"
                           onClick={() => window.open(`${BACKEND_URL}${swotResult.html_url}`, '_blank')}
-                          flex={1}
+                          fullWidth
                         >
-                          분석 보고서 열기
+                          📊 분석 결과 다시 보기
                         </Button>
                         <Button
-                          variant="outlined"
-                          color="inherit"
+                          variant="contained"
+                          color="warning"
+                          size="large"
                           startIcon={<Download />}
                           onClick={() => {
                             const link = document.createElement('a');
                             link.href = `${BACKEND_URL}${swotResult.html_url}`;
                             link.download = `SWOT분석_${productInfo.product_name}.html`;
+                            document.body.appendChild(link);
                             link.click();
+                            document.body.removeChild(link);
                           }}
+                          fullWidth
                         >
-                          다운로드
+                          💾 SWOT 분석서 다운로드
                         </Button>
                       </Box>
                     </CardContent>
@@ -588,18 +649,20 @@ const UnifiedWorkflow = () => {
                         </Grid>
                         <Grid item xs={12} md={4}>
                           <Button
-                            variant="outlined"
-                            color="inherit"
+                            variant="contained"
+                            color="warning"
                             fullWidth
                             startIcon={<Download />}
                             onClick={() => {
                               const link = document.createElement('a');
                               link.href = `${BACKEND_URL}${detailResult.html_url}`;
                               link.download = `상세페이지_${productInfo.product_name}.html`;
+                              document.body.appendChild(link);
                               link.click();
+                              document.body.removeChild(link);
                             }}
                           >
-                            HTML 다운로드
+                            💾 HTML 다운로드
                           </Button>
                         </Grid>
                       </Grid>

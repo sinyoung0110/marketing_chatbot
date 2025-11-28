@@ -1,0 +1,174 @@
+{
+  "session_id": "proj_f6a2ed4f",
+  "created_at": "2025-11-29T06:58:06.767732",
+  "updated_at": "2025-11-29T07:03:59.808249",
+  "product_info": {
+    "product_name": "제디터 정육 스테이크용 안심",
+    "category": "식품",
+    "keywords": [
+      "한우",
+      "스테이크",
+      "안심",
+      "냉장",
+      "국내산"
+    ],
+    "target_customer": "고급 식사를 원하는 소비자",
+    "platforms": [
+      "coupang",
+      "naver"
+    ]
+  },
+  "swot_result": {
+    "swot": {
+      "SWOT": {
+        "Strengths": [
+          "국내산 한우 사용으로 품질이 높고 신뢰성이 높음",
+          "스테이크용 안심으로 전문적인 요리에 적합하여 고급 이미지 부여",
+          "냉장 보관으로 신선도 유지, 소비자에게 안전한 선택 제공",
+          "차별화된 패키징 및 브랜드 이미지로 소비자 인식 강화"
+        ],
+        "Weaknesses": [
+          "가격이 경쟁사 제품에 비해 상대적으로 높은 편일 수 있음",
+          "특정 타겟(고급 소비자층)에만 국한되어 시장 확대에 한계",
+          "마케팅 및 홍보 부족으로 인지도 낮음",
+          "유통망이 제한적일 수 있어 소비자 접근성이 떨어짐"
+        ],
+        "Opportunities": [
+          "고급 레스토랑 및 요리학원과의 제휴 가능성",
+          "온라인 판매 채널 확대를 통한 접근성 증대",
+          "건강 및 웰빙 트렌드에 맞춘 마케팅 전략으로 소비자 관심 유도",
+          "해외 시장으로의 수출 기회 모색"
+        ],
+        "Threats": [
+          "경쟁사에서 가격 인하 및 할인 프로모션을 통해 경쟁 압박",
+          "저가 대체제 및 수입육의 증가로 시장 점유율 감소 우려",
+          "소비자 선호 변화에 따른 식품 트렌드 변화",
+          "경제 불황으로 인한 소비자 지출 감소"
+        ]
+      }
+    },
+    "three_c": {
+      "3C_Analysis": {
+        "Company": {
+          "Strengths": [
+            "고급 식품 브랜드 이미지와 신뢰성",
+            "우수한 품질의 고기 공급망 및 관리 시스템",
+            "다양한 조리 방법을 지원하는 레시피 제공"
+          ],
+          "Resources": [
+            "전문적인 육류 가공 시설",
+            "경험이 풍부한 육류 전문가 팀",
+            "온라인 및 오프라인 유통 채널"
+          ],
+          "Capabilities": [
+            "고객 맞춤형 스테이크 준비 및 포장 서비스",
+            "신선도를 유지하는 혁신적인 포장 기술",
+            "소셜 미디어 및 디지털 마케팅 역량"
+          ]
+        },
+        "Customer": {
+          "Needs": [
+            "신선하고 고급스러운 육류 제품",
+            "편리한 조리 및 조리법 제공",
+            "정확한 영양 정보 및 원산지 표시"
+          ],
+          "PainPoints": [
+            "신선하지 않은 육류 구매에 대한 우려",
+            "조리 방법에 대한 정보 부족",
+            "가격 대비 품질 문제"
+          ],
+          "PurchaseMotivation": [
+            "특별한 날을 위한 고급 식사 준비",
+            "건강을 고려한 고품질 고기 선택",
+            "소셜 미디어에서의 긍정적인 리뷰 및 추천"
+          ]
+        },
+        "Competitor": {
+          "Strategies": [
+            "가격 경쟁력을 강조한 저가형 제품 출시",
+            "광범위한 유통망 통한 접근성 증가",
+            "고객 참여를 유도하는 프로모션 및 이벤트"
+          ],
+          "Strengths": [
+            "이미 알려진 브랜드 인지도",
+            "다양한 제품 라인업과 가격대",
+            "강력한 유통 네트워크"
+          ],
+          "Weaknesses": [
+            "품질 일관성 부족",
+            "고급 시장 진입에 대한 어려움",
+            "혁신적인 제품 개발 부족"
+          ]
+        }
+      }
+    },
+    "price_analysis": {
+      "min_price": null,
+      "max_price": null,
+      "avg_price": null,
+      "price_range": "가격 정보 없음",
+      "lowest_product": null,
+      "all_prices": []
+    },
+    "insights": [],
+    "competitor_count": 0
+  },
+  "competitor_data": {
+    "query": "제디터 정육 스테이크용 안심 식품",
+    "platforms": [
+      "coupang",
+      "naver"
+    ],
+    "results": [
+      {
+        "platform": "coupang",
+        "error": "name 're' is not defined"
+      },
+      {
+        "platform": "naver",
+        "error": "name 're' is not defined"
+      },
+      {
+        "platform": "news",
+        "error": "name 're' is not defined"
+      },
+      {
+        "platform": "blog",
+        "error": "name 're' is not defined"
+      }
+    ],
+    "search_engine": "tavily",
+    "search_options": {
+      "depth": "advanced",
+      "days": null,
+      "include_content": true,
+      "search_platforms": [
+        "coupang",
+        "naver",
+        "news",
+        "blog"
+      ],
+      "sort_by": "popular"
+    }
+  },
+  "review_insights": null,
+  "detail_page_result": {
+    "markdown_url": "/projects/proj_f6a2ed4f/detail.md",
+    "html_url": "/projects/proj_f6a2ed4f/detail.html",
+    "analysis_url": "projects/proj_f6a2ed4f/analysis.html",
+    "images": [
+      "/projects/proj_f6a2ed4f/images/main_20251129_070312.png",
+      "/projects/proj_f6a2ed4f/images/usage_20251129_070337.png",
+      "/projects/proj_f6a2ed4f/images/infographic_20251129_070357.png",
+      "/projects/proj_f6a2ed4f/images/main_20251129_070312.png",
+      "/projects/proj_f6a2ed4f/images/usage_20251129_070337.png",
+      "/projects/proj_f6a2ed4f/images/infographic_20251129_070357.png"
+    ]
+  },
+  "chat_history": [],
+  "current_step": "detail",
+  "completed_steps": [
+    "swot",
+    "detail"
+  ]
+}

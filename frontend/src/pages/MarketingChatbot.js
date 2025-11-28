@@ -4,14 +4,17 @@ import {
   Paper,
   Typography,
   TextField,
-  Button,
   Box,
   Avatar,
   IconButton,
   Chip,
   CircularProgress,
   Alert,
-  Collapse
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions
 } from '@mui/material';
 import {
   Send,
@@ -20,12 +23,10 @@ import {
   Lightbulb,
   TrendingUp,
   AttachMoney,
-  Description,
-  Assessment,
   Chat,
   Info,
-  ExpandMore,
-  ExpandLess
+  Visibility,
+  Edit
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 
@@ -44,6 +45,9 @@ const MarketingChatbot = () => {
   const [loading, setLoading] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(true);
   const [sessionContext, setSessionContext] = useState(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [editTarget, setEditTarget] = useState(null); // 'swot' or 'detail'
+  const [editContent, setEditContent] = useState('');
   const messagesEndRef = useRef(null);
   const navigate = useNavigate();
 
@@ -175,6 +179,99 @@ const MarketingChatbot = () => {
     navigate(path);
   };
 
+  const handleViewDocument = (type) => {
+    if (type === 'swot' && sessionContext?.swot_result?.html_url) {
+      window.open(`${BACKEND_URL}${sessionContext.swot_result.html_url}`, '_blank');
+    } else if (type === 'detail' && sessionContext?.detail_result?.html_url) {
+      window.open(`${BACKEND_URL}${sessionContext.detail_result.html_url}`, '_blank');
+    }
+  };
+
+  const handleEditDocument = async (type) => {
+    setEditTarget(type);
+
+    // 기존 내용 로드
+    if (type === 'swot' && sessionContext?.swot_result?.html_url) {
+      try {
+        const response = await fetch(`${BACKEND_URL}${sessionContext.swot_result.html_url}`);
+        const html = await response.text();
+        setEditContent(html);
+        setEditDialogOpen(true);
+      } catch (error) {
+        console.error('문서 로드 실패:', error);
+      }
+    } else if (type === 'detail' && sessionContext?.detail_result?.markdown_url) {
+      try {
+        const response = await fetch(`${BACKEND_URL}${sessionContext.detail_result.markdown_url}`);
+        const markdown = await response.text();
+        setEditContent(markdown);
+        setEditDialogOpen(true);
+      } catch (error) {
+        console.error('문서 로드 실패:', error);
+      }
+    }
+  };
+
+  const handleSaveEdit = async () => {
+    setEditDialogOpen(false);
+    setLoading(true);
+
+    try {
+      if (editTarget === 'swot') {
+        // SWOT 직접 수정 API 호출 (챗봇 대화 없이)
+        // editContent는 JSON 문자열이라고 가정 (또는 파싱 필요)
+        let swotUpdates;
+        try {
+          swotUpdates = JSON.parse(editContent);
+        } catch (e) {
+          // JSON이 아니면 텍스트로 전달 (향후 개선)
+          alert('SWOT 수정은 JSON 형식으로 입력해주세요.\n예: {"strengths": ["강점1", "강점2"], "weaknesses": ["약점1"]}');
+          setLoading(false);
+          return;
+        }
+
+        const response = await fetch(`${BACKEND_URL}/api/unified/update-swot`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            session_id: sessionContext.session_id,
+            swot_updates: swotUpdates
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error('SWOT 수정 실패');
+        }
+
+        const data = await response.json();
+
+        // 세션 컨텍스트 새로고침
+        await loadSessionContext(sessionContext.session_id);
+
+        // 성공 메시지 추가
+        setMessages(prev => [...prev, {
+          role: 'assistant',
+          content: `✅ SWOT 분석이 수정되었습니다!\n\n수정된 내용이 세션에 저장되었습니다. 언제든지 이 정보를 참고하여 상담해드리겠습니다.`,
+          timestamp: new Date().toISOString()
+        }]);
+
+      } else {
+        // 상세페이지는 기존 방식 (챗봇 대화)
+        const editMessage = `상세페이지를 다음과 같이 수정해줘:\n\n${editContent}`;
+        setInputMessage(editMessage);
+      }
+    } catch (error) {
+      console.error('수정 실패:', error);
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        content: `❌ 수정 중 오류가 발생했습니다: ${error.message}`,
+        timestamp: new Date().toISOString()
+      }]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Container maxWidth="lg">
       <Box sx={{ mb: 2 }}>
@@ -272,6 +369,61 @@ const MarketingChatbot = () => {
                         ))}
                       </Box>
 
+                      {/* 생성된 문서가 있으면 보기/수정 버튼 표시 */}
+                      {sessionContext && (sessionContext.swot_result || sessionContext.detail_result) && (
+                        <>
+                          <Typography variant="caption" color="text.secondary" gutterBottom display="block" sx={{ mt: 2 }}>
+                            📄 생성된 문서
+                          </Typography>
+                          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
+                            {sessionContext.swot_result && (
+                              <>
+                                <Button
+                                  size="small"
+                                  startIcon={<Visibility />}
+                                  onClick={() => handleViewDocument('swot')}
+                                  variant="outlined"
+                                  color="success"
+                                >
+                                  SWOT 분석서 보기
+                                </Button>
+                                <Button
+                                  size="small"
+                                  startIcon={<Edit />}
+                                  onClick={() => handleEditDocument('swot')}
+                                  variant="outlined"
+                                  color="warning"
+                                >
+                                  SWOT 수정
+                                </Button>
+                              </>
+                            )}
+                            {sessionContext.detail_result && (
+                              <>
+                                <Button
+                                  size="small"
+                                  startIcon={<Visibility />}
+                                  onClick={() => handleViewDocument('detail')}
+                                  variant="outlined"
+                                  color="success"
+                                >
+                                  상세페이지 보기
+                                </Button>
+                                <Button
+                                  size="small"
+                                  startIcon={<Edit />}
+                                  onClick={() => handleEditDocument('detail')}
+                                  variant="outlined"
+                                  color="warning"
+                                >
+                                  상세페이지 수정
+                                </Button>
+                              </>
+                            )}
+                          </Box>
+                        </>
+                      )}
+
                       <Typography variant="caption" color="text.secondary" gutterBottom display="block">
                         📍 다른 기능으로 이동
                       </Typography>
@@ -344,6 +496,40 @@ const MarketingChatbot = () => {
           </Box>
         </Box>
       </Paper>
+
+      {/* 수정 다이얼로그 */}
+      <Dialog
+        open={editDialogOpen}
+        onClose={() => setEditDialogOpen(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>
+          {editTarget === 'swot' ? 'SWOT 분석서 수정' : '상세페이지 수정'}
+        </DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            💡 아래 내용을 수정한 후 저장하면 챗봇에게 수정 요청이 전달됩니다.
+          </Typography>
+          <TextField
+            fullWidth
+            multiline
+            rows={15}
+            value={editContent}
+            onChange={(e) => setEditContent(e.target.value)}
+            variant="outlined"
+            sx={{ fontFamily: 'monospace', fontSize: '0.9rem' }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setEditDialogOpen(false)}>
+            취소
+          </Button>
+          <Button onClick={handleSaveEdit} variant="contained" color="primary">
+            챗봇에 수정 요청
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 };

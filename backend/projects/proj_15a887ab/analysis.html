@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SWOT + 3C 분석 - 제디터 정육 스테이크용 한우</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .header .date {
+            font-size: 0.9em;
+            opacity: 0.7;
+            margin-top: 10px;
+        }
+
+        .insights {
+            background: #f8f9fa;
+            padding: 30px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .insights h2 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .insight-item {
+            background: white;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            font-size: 1.1em;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 50px;
+        }
+
+        .section-title {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #333;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+        }
+
+        .card-title {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .card-content ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .card-content li {
+            padding: 10px 0;
+            border-bottom: 1px solid #e9ecef;
+            color: #495057;
+            line-height: 1.6;
+        }
+
+        .card-content li:last-child {
+            border-bottom: none;
+        }
+
+        .card-content li:before {
+            content: "✓ ";
+            color: #667eea;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .price-section {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .price-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .price-card {
+            background: rgba(255,255,255,0.2);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .price-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .price-value {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .product-table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .product-table th {
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            text-align: left;
+        }
+
+        .product-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+            color: #495057;
+        }
+
+        .product-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .product-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .product-link:hover {
+            text-decoration: underline;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            background: #667eea;
+            color: white;
+            border-radius: 5px;
+            font-size: 0.85em;
+        }
+
+        @media (max-width: 768px) {
+            .grid, .price-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 SWOT + 3C 분석 보고서</h1>
+            <div class="subtitle">제디터 정육 스테이크용 한우</div>
+            <div class="date">생성일: 2025년 11월 29일 02:23</div>
+        </div>
+
+        
+        <div class="insights">
+            <h2>🎯 핵심 인사이트</h2>
+            <div class="insight-item">💰 경쟁 가격대: 1,000원 ~ 1,609,000원 (평균 34,409.0원)</div>
+<div class="insight-item">🏷️ 최저가: 쿠팡이 추천하는 스테이크용 안심 관련 혜택과 특가 - 1,000원</div>
+        </div>
+        
+
+        <div class="content">
+            
+        <div class="section">
+            <h2 class="section-title">📈 SWOT 분석</h2>
+            <div class="grid">
+                <div class="card">
+                    <div class="card-title">💪 Strengths (강점)</div>
+                    <div class="card-content">
+                        <ul><li>데이터 없음</li></ul>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">⚠️ Weaknesses (약점)</div>
+                    <div class="card-content">
+                        <ul><li>데이터 없음</li></ul>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">🎯 Opportunities (기회)</div>
+                    <div class="card-content">
+                        <ul><li>데이터 없음</li></ul>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">🚨 Threats (위협)</div>
+                    <div class="card-content">
+                        <ul><li>데이터 없음</li></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+
+            
+        <div class="section">
+            <h2 class="section-title">🔍 3C 분석</h2>
+            <div class="grid">
+                <div class="card">
+                    <div class="card-title">🏢 Company (자사)</div>
+                    <div class="card-content">
+                        <ul><li>데이터 없음</li></ul>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">👥 Customer (고객)</div>
+                    <div class="card-content">
+                        <ul><li>데이터 없음</li></ul>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">⚔️ Competitor (경쟁사)</div>
+                <div class="card-content">
+                    <ul><li>데이터 없음</li></ul>
+                </div>
+            </div>
+        </div>
+        
+
+            
+        <div class="section">
+            <h2 class="section-title">💰 가격 분석</h2>
+            <div class="price-section">
+                <div class="price-grid">
+                    <div class="price-card">
+                        <div class="price-label">최저가</div>
+                        <div class="price-value">1,000원</div>
+                    </div>
+                    <div class="price-card">
+                        <div class="price-label">평균가</div>
+                        <div class="price-value">34,409.0원</div>
+                    </div>
+                    <div class="price-card">
+                        <div class="price-label">최고가</div>
+                        <div class="price-value">1,609,000원</div>
+                    </div>
+                </div>
+            </div>
+            
+            <table class="product-table">
+                <thead>
+                    <tr>
+                        <th width="50">순위</th>
+                        <th>상품명</th>
+                        <th width="100">플랫폼</th>
+                        <th width="150">가격</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                <tr>
+                    <td>1</td>
+                    <td><a href="https://www.coupang.com/np/search?q=%EC%8A%A4%ED%85%8C%EC%9D%B4%ED%81%AC%EC%9A%A9%20%EC%95%88%EC%8B%AC" target="_blank" class="product-link">쿠팡이 추천하는 스테이크용 안심 관련 혜택과 특가</a></td>
+                    <td>coupang</td>
+                    <td><strong>1,000원</strong> <span class="badge">최저가</span></td>
+                </tr>
+                
+                <tr>
+                    <td>2</td>
+                    <td><a href="https://www.coupang.com/np/categories/196412" target="_blank" class="product-link">한우혼합세트 - 정육 | 쿠팡</a></td>
+                    <td>coupang</td>
+                    <td><strong>1,045원</strong> </td>
+                </tr>
+                
+                <tr>
+                    <td>3</td>
+                    <td><a href="https://www.coupang.com/np/categories/196412" target="_blank" class="product-link">한우혼합세트 - 정육 | 쿠팡</a></td>
+                    <td>coupang</td>
+                    <td><strong>1,045원</strong> </td>
+                </tr>
+                
+                <tr>
+                    <td>4</td>
+                    <td><a href="https://www.coupang.com/np/categories/196412" target="_blank" class="product-link">한우혼합세트 - 정육 | 쿠팡</a></td>
+                    <td>coupang</td>
+                    <td><strong>1,045원</strong> </td>
+                </tr>
+                
+                <tr>
+                    <td>5</td>
+                    <td><a href="https://www.coupang.com/np/categories/196412" target="_blank" class="product-link">한우혼합세트 - 정육 | 쿠팡</a></td>
+                    <td>coupang</td>
+                    <td><strong>1,045원</strong> </td>
+                </tr>
+                
+                </tbody>
+            </table>
+            
+        </div>
+        
+
+            
+        <div class="section">
+            <h2 class="section-title">🔗 분석한 경쟁사 상품 (60개)</h2>
+            <div class="competitor-links-container">
+                
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">1</span>
+                    <span class="link-platform">news</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.youtube.com/watch?v=rjJwvypyxuA" target="_blank" rel="noopener noreferrer">한우 1++ 등심 스테이크 실패없이 굽는 법 ㅣ 완벽한 ... - YouTube</a>
+                </div>
+                <div class="link-snippet"># 한우 1++ 등심 스테이크 실패없이 굽는 법 ㅣ 완벽한 스테이크 이 영상만 보세요
+## 고기수저 Meat Spoon l 아빠가 키운 소
+448 subscribers
+18 likes
+
+### Description
+1442 views
+Posted: 20 Aug 2025</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">2</span>
+                    <span class="link-platform">news</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://month.foodbank.co.kr/section/pmag.php?PHPSESSID=36071d6d6cdb1ace1b6ff639d9fda54d" target="_blank" rel="noopener noreferrer">월간식당</a>
+                </div>
+                <div class="link-snippet">한우 스테이크 + 샐러드 바의 뉴 콘셉트 · 온 가족 모임에서 직장인 회식까지 ... [한우판매인증점]한우 무한리필 전문점 솔고개정육식당 · 광복상회/옥연가/힘찬장어.</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">3</span>
+                    <span class="link-platform">news</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.youtube.com/watch?v=tDKttt3KSXc" target="_blank" rel="noopener noreferrer">한우 안심스테이크 완벽하게 굽는 방법 - YouTube</a>
+                </div>
+                <div class="link-snippet">되는데요 한번 보시죠 4 지금 불끈 상태인데 완전히 완벽하게 나왔습니다 지금 보시면 굉장히 투명하고 양파가 굉장히 투명하고 모든 레드 와인을 다 흡수 안 그런 카라멜 라이스 저건 이연희 완성이 되었는데요 정말 잘 나왔어요 네 제가 원하는 게 바로 이런 겁니다 어 좀 묽</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">4</span>
+                    <span class="link-platform">news</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.youtube.com/watch?v=N1b8uAaXFOw" target="_blank" rel="noopener noreferrer">오늘은 소고기 - 한우 등심 세트 만들기(선물용) - YouTube</a>
+                </div>
+                <div class="link-snippet"># 오늘은 소고기 - 한우 등심 세트 만들기(선물용)
+## 육고기삼촌 정육TV
+4860 subscribers
+93 likes
+
+### Description
+24369 views
+Posted: 8 Oct 2019
+육고기삼촌 미트 플랜 마스터 전명준의 정육방송.
+거세 한우</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">5</span>
+                    <span class="link-platform">news</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.youtube.com/watch?v=9wnlE9fOQ7Y" target="_blank" rel="noopener noreferrer">200원이면 잇몸으로 고기를 씹을수있습니다 연육제 vs 과일 - YouTube</a>
+                </div>
+                <div class="link-snippet">스테이크 소스 만들기
+1.포도주스 한컵 240ml 넣어주세요 그리고 불을 켜주세요
+2.A1 소스 2TB 넣어주세요(우스타소스대체가능)
+3.설탕 2TB 넣어주세요
+4.미원 1ml 넣어주세요
+5.케찹 2TB 넣어주고
+6.4~5분 끓여주세요
+
+아하부장의 목천해물화짬뽕 가맹문</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">6</span>
+                    <span class="link-platform">news</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.tiktok.com/discover/%ED%95%9C%EC%9A%B0%EB%B6%88%EA%B3%A0%EA%B8%B0-%EB%AC%B4%ED%95%9C%EB%A6%AC%ED%95%84" target="_blank" rel="noopener noreferrer">한우불고기 무한리필</a>
+                </div>
+                <div class="link-snippet">마지막엔 볶음밥까지!! ... 양념한우불고기는 1kg 한 팩 구성인데요. 포장 열어보시면 500g씩 소분이 되어 있습니다. 버섯과 야채만 추가하서서 푸짐하게 드실 수 있어요.</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">7</span>
+                    <span class="link-platform">news</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.tiktok.com/discover/%EC%84%9C%EC%9A%B8-%EC%86%8C%EA%B3%A0%EA%B8%B0-%EC%96%B4%EB%8A%90%EB%B6%80%EC%9C%84%EB%93%A0-9900%EC%9B%90" target="_blank" rel="noopener noreferrer">서울 소고기 어느부위든 9900원</a>
+                </div>
+                <div class="link-snippet">[저장필수] 그냥 소고기 아니고 한우가 9900원‼️ 매일 달라지는 한우세트를 우마카세 처럼 먹을수 있는 가성비 소고기집~</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">8</span>
+                    <span class="link-platform">news</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.tiktok.com/discover/%EA%B5%AC%EC%9D%B4%EC%9A%A9-%EC%86%8C%EA%B3%A0%EA%B8%B0-%EB%B6%80%EC%9C%84-%EC%B6%94%EC%B2%9C" target="_blank" rel="noopener noreferrer">구이용 소고기 부위 추천</a>
+                </div>
+                <div class="link-snippet">1. 부챗살은 한입 크기로 썰고 소금, 후추로 밑간한 뒤 계란 흰자 + 전분 + 식용유를 섞은 반죽에 버무려 10분 숙성 · 2. 팬에 기름 넉넉히 두르고 센불에서 핏기가 사라질</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">9</span>
+                    <span class="link-platform">news</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.tiktok.com/@fooditor/video/7367283358340009234" target="_blank" rel="noopener noreferrer">서울 3대 라면 맛집, 치즈라면과 짬뽕라면</a>
+                </div>
+                <div class="link-snippet">Image 2: 한 그릇에 5000원인 라면이라는데 드디어 서울 3대 라면 중 한 곳 다녀왔습니다 백종원의 3대 천왕에도 나오고 최근에는 풍자또간집에서 소개됐다네요? 뚝배기에 펄펄 끓여주는 짬뽕라면으로 유명한데 이 날은 속이 좀 쓰려서 치즈라면으로 결정,,! 치즈 추가</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">10</span>
+                    <span class="link-platform">news</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.tiktok.com/discover/%EC%84%9C%EB%8C%80%EB%AC%B8-%EB%A3%B8%EC%8B%9D%EB%8B%B9" target="_blank" rel="noopener noreferrer">서대문 룸식당</a>
+                </div>
+                <div class="link-snippet">있는데 인형뽑기,게임기,농구,인생4컷까지 있어서 시간보내기도 좋음! 한식 좋아하면 진짜 여긴 꼭 가보시길 추천드립니다. ---------------------------------------------- #소리소 시골밥상 경기도 남양주시 진건읍 진건우회로 95-1 11</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">11</span>
+                    <span class="link-platform">news</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.tiktok.com/discover/%EA%B2%BD%EA%B8%B0%EB%8F%84-%EC%9A%A9%EC%9D%B8%ED%95%9C%EC%8B%9D%EB%B7%94%ED%8E%98" target="_blank" rel="noopener noreferrer">경기도 용인한식뷔페</a>
+                </div>
+                <div class="link-snippet">소고기/양고기 스테이크, 민물장어, 치킨, 오리 각종 전골요리에 튀김, 치즈 가리비, 망고빙수를 포함한 디저트, 과일, 베이커리 등 진짜 알짜배기들만 모아 놓은 뷔페</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">12</span>
+                    <span class="link-platform">news</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.instagram.com/p/DDyoAc7xDM-/" target="_blank" rel="noopener noreferrer">#협찬 #신혼밥상 오늘은 신랑 생일이에요   점심 저녁 둘다 ... - Instagram</a>
+                </div>
+                <div class="link-snippet">조합은 #풀무원 무설탕 그릭요거트 + 초코맛 그래놀라 + 체리 듬뿍 체리랑 초코는 언제나 옳아용 단백질함량이 있어서 그런가 생각보다 든든했구요,</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">13</span>
+                    <span class="link-platform">news</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.tiktok.com/@fooditor/video/7338734943343873287" target="_blank" rel="noopener noreferrer">싯가의 무서움도 이겨낸다는 금징어통찜. 이 가격이면.. 소고기 ...</a>
+                </div>
+                <div class="link-snippet">놉스(NOP'S)는 미국 3대 스테이크로 손꼽히는 울프강 스테이크하우스를 국내에 들여온 최채환 대표가 만든 세컨브랜드로 스테이크의 대중화를 선언</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">14</span>
+                    <span class="link-platform">news</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.tiktok.com/discover/%EC%88%98%EC%9B%90-%EC%95%A0%EA%B2%AC%EB%8F%99%EB%B0%98-%EA%B3%A0%EA%B8%B0" target="_blank" rel="noopener noreferrer">수원 애견동반 고기</a>
+                </div>
+                <div class="link-snippet">Get the full app experience
+
+Enjoy more videos and great features on the app</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">15</span>
+                    <span class="link-platform">news</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.tiktok.com/@user836814007223/video/7464757941577583879" target="_blank" rel="noopener noreferrer">30년동안 떡만 만드셨다구요?🥹 명절 전이라 청량리시장에 떡국 ...</a>
+                </div>
+                <div class="link-snippet">30년동안 떡만 만드셨다구요? 명절 전이라 청량리시장에 떡국떡 사러 갔는데 새벽부터 웨이팅 실화냐구요! 여긴 청량리 시장에서 제일 유명한 떡집인데</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">16</span>
+                    <span class="link-platform">blog</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://m.blog.naver.com/eunae1358/223972682269" target="_blank" rel="noopener noreferrer">집에서 즐기는 인생 스테이크! 고기오빠 정육점 한우 안심 솔직 ...</a>
+                </div>
+                <div class="link-snippet">​🥩 집에서 즐기는 인생 스테이크! 고기오빠 정육점 한우 안심 솔직 후기 (ft. 200g의 행복) : 네이버 블로그
+
+Image 1Image 2
+
+본문 바로가기
+
+블로그
+
+카테고리 이동슈리와 함께하는 즐거움
+
+검색MY메뉴 열기
+
+Image 3
+
+뷰티 및 상품
+
+​🥩 </div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">17</span>
+                    <span class="link-platform">blog</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://m.blog.naver.com/guebyul/221590758387" target="_blank" rel="noopener noreferrer">최고급 한우스테이크를 집에서~ 쉐프의 정육점 대치점에 다녀 ...</a>
+                </div>
+                <div class="link-snippet">먹음직 스러운 것 같아요~
+
+​
+
+​
+
+​
+
+Image 38
+
+겉면을 돌려가며 노릇노릇하게 익혀주세요.
+
+​
+
+​
+
+​
+
+​
+
+​
+
+Image 39
+
+쿠킹키트에 들어있는 버터를 올려
+
+버터 향을 더해주면
+
+맛있는 한우 등심 스테이크 완성이에요!
+
+​
+
+​
+
+​
+
+​
+
+</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">18</span>
+                    <span class="link-platform">blog</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.instagram.com/p/DDd4kXOyUIu/" target="_blank" rel="noopener noreferrer">요.알.못. 분들께 항상 추천드리는 설로인(채끝등심) 스테이크 ...</a>
+                </div>
+                <div class="link-snippet">Instagram
+
+ 스테이크예요. 
+
+🧐🧐 왜 추천드리냐..!?
+
+설로인은 과하지도 부족하지도 않은
+
+적당한 마블링이 고루고루 퍼져 있어 
+
+오버쿡이 되어도 퍽퍽하지 않아 
+
+맛있게 드실 수 있기 때문이예요. 
+
+(소의 등급마다 설로인의 굽기 정도는 
+
+다르지만 저희</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">19</span>
+                    <span class="link-platform">blog</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.tiktok.com/discover/%EC%84%9C%EC%9A%B8-%EC%86%8C%EA%B3%A0%EA%B8%B0-%EC%96%B4%EB%8A%90%EB%B6%80%EC%9C%84%EB%93%A0-9900%EC%9B%90" target="_blank" rel="noopener noreferrer">서울 소고기 어느부위든 9900원 - TikTok</a>
+                </div>
+                <div class="link-snippet">진짜 대박이라서, 가격대 좋게 한우만 딱 먹고오기 좋음! 지금 리뷰 작성하면 냉면도 서비스로 주시니깐 까먹지말고 꼭 먹고오기~</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">20</span>
+                    <span class="link-platform">blog</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.tiktok.com/@zzungbbang8619/video/7550465031087967496" target="_blank" rel="noopener noreferrer">양주 나리공원 인근 '두가네칼국수' 맛집 소개 - TikTok</a>
+                </div>
+                <div class="link-snippet">... 한우=팔육 공식 탄생) 최상급 한우 전문 정육식당! 팔육모듬 ... 음식 #맛집리뷰 #내돈내산 #솔직후기 · Our Sweet Sunsets - GL. 5좋아요. 0</div>
+            </div>
+            
+            </div>
+            <style>
+                .competitor-links-container {
+                    display: grid;
+                    gap: 15px;
+                }
+                .competitor-link-item {
+                    background: #f8f9fa;
+                    padding: 20px;
+                    border-radius: 10px;
+                    border-left: 4px solid #667eea;
+                    transition: all 0.3s ease;
+                }
+                .competitor-link-item:hover {
+                    transform: translateX(5px);
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                }
+                .link-header {
+                    display: flex;
+                    gap: 10px;
+                    margin-bottom: 10px;
+                    align-items: center;
+                }
+                .link-number {
+                    background: #667eea;
+                    color: white;
+                    width: 30px;
+                    height: 30px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 50%;
+                    font-weight: bold;
+                    font-size: 0.9em;
+                }
+                .link-platform {
+                    background: #e9ecef;
+                    padding: 5px 15px;
+                    border-radius: 20px;
+                    font-size: 0.9em;
+                    font-weight: 600;
+                    color: #495057;
+                }
+                .link-title {
+                    margin-bottom: 10px;
+                }
+                .link-title a {
+                    color: #333;
+                    text-decoration: none;
+                    font-size: 1.1em;
+                    font-weight: 600;
+                }
+                .link-title a:hover {
+                    color: #667eea;
+                    text-decoration: underline;
+                }
+                .link-snippet {
+                    color: #6c757d;
+                    font-size: 0.95em;
+                    line-height: 1.5;
+                }
+            </style>
+        </div>
+        
+
+            
+        </div>
+    </div>
+</body>
+</html>

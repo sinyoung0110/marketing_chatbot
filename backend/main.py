@@ -72,6 +72,10 @@ os.makedirs(projects_dir, exist_ok=True)
 app.mount("/projects", StaticFiles(directory=projects_dir), name="projects")
 print(f"[Static Files] /projects mounted to {projects_dir}")
 
+# /outputs/ 경로를 /projects/로 매핑 (SWOT 분석 결과용)
+app.mount("/outputs", StaticFiles(directory=projects_dir), name="outputs")
+print(f"[Static Files] /outputs mounted to {projects_dir}")
+
 # API 라우터 등록
 app.include_router(unified_router, prefix="/api/unified", tags=["🚀 Unified Workflow"])
 app.include_router(api_router, prefix="/api", tags=["Detail Page"])
@@ -91,4 +95,12 @@ async def health_check():
     return {"status": "healthy", "timestamp": datetime.now().isoformat()}
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(
+        app,
+        host="0.0.0.0",
+        port=8000,
+        limit_max_requests=10000,
+        timeout_keep_alive=120,
+        # 파일 업로드 용량 제한 50MB
+        limit_concurrency=1000
+    )
