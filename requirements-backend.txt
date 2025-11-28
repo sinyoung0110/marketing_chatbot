@@ -23,6 +23,7 @@ pydantic==2.10.6
 pydantic-settings==2.7.1
 
 # Web Scraping & Search
+tavily-python==0.7.13
 duckduckgo_search==7.4.4
 beautifulsoup4==4.13.3
 lxml==5.3.1

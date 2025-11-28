@@ -10,6 +10,7 @@ import Navigation from './components/Navigation';
 import DetailPageGenerator from './pages/DetailPageGenerator';
 import SwotAnalyzer from './pages/SwotAnalyzer';
 import MarketingChatbot from './pages/MarketingChatbot';
+import UnifiedWorkflow from './pages/UnifiedWorkflow';
 
 const theme = createTheme({
   palette: {
@@ -37,7 +38,8 @@ function App() {
           <Navigation />
 
           <Routes>
-            <Route path="/" element={<DetailPageGenerator />} />
+            <Route path="/" element={<UnifiedWorkflow />} />
+            <Route path="/detail" element={<DetailPageGenerator />} />
             <Route path="/swot" element={<SwotAnalyzer />} />
             <Route path="/chatbot" element={<MarketingChatbot />} />
           </Routes>

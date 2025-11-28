@@ -1,7 +1,7 @@
 import React from 'react';
 import { AppBar, Toolbar, Typography, Button, Box, Tabs, Tab } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Description, Assessment, Chat } from '@mui/icons-material';
+import { Description, Assessment, Chat, TrendingUp, AutoAwesome } from '@mui/icons-material';
 
 const Navigation = () => {
   const navigate = useNavigate();
@@ -9,13 +9,14 @@ const Navigation = () => {
 
   const getTabValue = () => {
     if (location.pathname === '/') return 0;
-    if (location.pathname === '/swot') return 1;
-    if (location.pathname === '/chatbot') return 2;
+    if (location.pathname === '/detail') return 1;
+    if (location.pathname === '/swot') return 2;
+    if (location.pathname === '/chatbot') return 3;
     return 0;
   };
 
   const handleChange = (event, newValue) => {
-    const routes = ['/', '/swot', '/chatbot'];
+    const routes = ['/', '/detail', '/swot', '/chatbot'];
     navigate(routes[newValue]);
   };
 
@@ -34,21 +35,31 @@ const Navigation = () => {
           sx={{ flexGrow: 1 }}
         >
           <Tab
+            icon={<TrendingUp />}
+            iconPosition="start"
+            label="🚀 통합 워크플로우"
+            sx={{
+              color: 'white',
+              fontWeight: 'bold',
+              '&.Mui-selected': { color: '#ffeb3b' }
+            }}
+          />
+          <Tab
             icon={<Description />}
             iconPosition="start"
-            label="상세페이지 생성"
+            label="상세페이지"
             sx={{ color: 'white', '&.Mui-selected': { color: 'white' } }}
           />
           <Tab
             icon={<Assessment />}
             iconPosition="start"
-            label="SWOT + 3C 분석"
+            label="SWOT 분석"
             sx={{ color: 'white', '&.Mui-selected': { color: 'white' } }}
           />
           <Tab
             icon={<Chat />}
             iconPosition="start"
-            label="마케팅 챗봇"
+            label="챗봇"
             sx={{ color: 'white', '&.Mui-selected': { color: 'white' } }}
           />
         </Tabs>

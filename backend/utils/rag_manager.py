@@ -30,6 +30,57 @@ class RAGManager:
             collection_name="product_pages"
         )
 
+    def add_swot_analysis(
+        self,
+        product_name: str,
+        swot_analysis: Dict,
+        metadata: Dict = None
+    ):
+        """
+        SWOT 분석 결과 추가 (RAG에 저장)
+
+        Args:
+            product_name: 상품명
+            swot_analysis: SWOT 분석 결과
+            metadata: 메타데이터
+        """
+        if metadata is None:
+            metadata = {}
+
+        metadata["product_name"] = product_name
+        metadata["type"] = "swot_analysis"
+
+        # SWOT 분석 결과를 텍스트로 변환
+        content_parts = [f"상품명: {product_name}\n\n"]
+
+        if "swot" in swot_analysis:
+            swot = swot_analysis["swot"]
+            content_parts.append("=== SWOT 분석 ===\n")
+            content_parts.append(f"강점: {', '.join(swot.get('strengths', []))}\n")
+            content_parts.append(f"약점: {', '.join(swot.get('weaknesses', []))}\n")
+            content_parts.append(f"기회: {', '.join(swot.get('opportunities', []))}\n")
+            content_parts.append(f"위협: {', '.join(swot.get('threats', []))}\n\n")
+
+        if "three_c" in swot_analysis:
+            three_c = swot_analysis["three_c"]
+            content_parts.append("=== 3C 분석 ===\n")
+            if isinstance(three_c.get("company"), list):
+                content_parts.append(f"자사: {', '.join(three_c.get('company', []))}\n")
+            if isinstance(three_c.get("customer"), list):
+                content_parts.append(f"고객: {', '.join(three_c.get('customer', []))}\n")
+            if isinstance(three_c.get("competitor"), list):
+                content_parts.append(f"경쟁사: {', '.join(three_c.get('competitor', []))}\n\n")
+
+        if "insights" in swot_analysis:
+            content_parts.append("=== 핵심 인사이트 ===\n")
+            content_parts.append('\n'.join(swot_analysis["insights"]))
+
+        content = ''.join(content_parts)
+
+        doc = Document(page_content=content, metadata=metadata)
+        self.vectorstore.add_documents([doc])
+        print(f"[RAG] SWOT 분석 저장: {product_name}")
+
     def add_product(
         self,
         product_name: str,

@@ -1,8 +1,6 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel
-from typing import List, Dict, Optional
 from datetime import datetime
 import uvicorn
 import os
@@ -10,6 +8,7 @@ import os
 from api.endpoints import router as api_router
 from api.swot_endpoints import router as swot_router
 from api.chatbot_endpoints import router as chatbot_router
+from api.unified_endpoints import router as unified_router
 
 app = FastAPI(
     title="마케팅 AI 어시스턴트 API",
@@ -74,6 +73,7 @@ app.mount("/projects", StaticFiles(directory=projects_dir), name="projects")
 print(f"[Static Files] /projects mounted to {projects_dir}")
 
 # API 라우터 등록
+app.include_router(unified_router, prefix="/api/unified", tags=["🚀 Unified Workflow"])
 app.include_router(api_router, prefix="/api", tags=["Detail Page"])
 app.include_router(swot_router, prefix="/api/swot", tags=["SWOT Analysis"])
 app.include_router(chatbot_router, prefix="/api/chatbot", tags=["Marketing Chatbot"])

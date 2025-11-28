@@ -5,21 +5,23 @@ from datetime import datetime
 class ProductInput(BaseModel):
     """상품 입력 데이터 모델"""
     product_name: str = Field(..., description="상품명")
-    summary: str = Field(..., max_length=30, description="한 줄 요약 (30자 이내)")
+    summary: str = Field(default="", max_length=30, description="한 줄 요약 (30자 이내)")
     category: str = Field(..., description="카테고리 (푸드/생활/전자 등)")
-    manufacture_country: str = Field(..., description="제조국")
+    manufacture_country: str = Field(default="한국", description="제조국")
     manufacture_date: Optional[str] = Field(None, description="제조일")
-    specs: Dict[str, str] = Field(..., description="제품 주요 스펙 (키:값)")
-    keywords: List[str] = Field(..., description="핵심 키워드")
+    specs: Dict[str, str] = Field(default={}, description="제품 주요 스펙 (키:값)")
+    keywords: List[str] = Field(default=[], description="핵심 키워드")
     target_customer: Optional[str] = Field(None, description="타겟 고객")
     tone: str = Field(default="친근한", description="톤 (전문적/친근한/감성적)")
-    platforms: List[str] = Field(..., description="플랫폼 선택 (coupang/naver)")
+    platforms: List[str] = Field(default=["coupang"], description="플랫폼 선택 (coupang/naver)")
     image_options: Dict[str, Any] = Field(
         default={"style": "real", "shots": ["main", "usage", "infographic"]},
         description="이미지 옵션"
     )
     competitor_links: Optional[List[str]] = Field(None, description="경쟁사 링크")
     allow_web_search: bool = Field(default=True, description="자동 웹 검색 허용")
+    swot_insights: Optional[Dict[str, Any]] = Field(None, description="SWOT 분석 결과")
+    review_insights: Optional[str] = Field(None, description="리뷰 기반 마케팅 인사이트")
 
 class ImagePrompt(BaseModel):
     """이미지 프롬프트 모델"""

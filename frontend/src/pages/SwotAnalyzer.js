@@ -14,26 +14,21 @@ import {
   List,
   ListItem,
   ListItemText,
-  ListItemSecondaryAction,
-  IconButton,
   Checkbox,
   CircularProgress,
   Alert,
-  Divider,
   Accordion,
   AccordionSummary,
   AccordionDetails
 } from '@mui/material';
 import {
   Search,
-  Delete,
   Refresh,
   Assessment,
   Link as LinkIcon,
   ExpandMore,
   CheckCircle,
   AutoAwesome,
-  Description,
   FilterAlt
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
@@ -185,11 +180,23 @@ const SwotAnalyzer = () => {
         })
       });
 
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || '서버 오류');
+      }
+
       const data = await response.json();
       console.log('원클릭 생성 완료:', data);
 
-      alert('상세페이지가 생성되었습니다! 상세페이지 탭으로 이동합니다.');
-      navigate('/', { state: { generatedResult: data.result } });
+      alert(`${data.message}\n\nSWOT 데이터: ${data.used_swot_data ? '✅' : '❌'}\n리뷰 데이터: ${data.used_review_data ? '✅' : '❌'}\n\n상세페이지 탭으로 이동합니다.`);
+
+      // 상세페이지 탭으로 이동하면서 데이터 전달
+      navigate('/', {
+        state: {
+          swotData: data.data,
+          fromSwot: true
+        }
+      });
     } catch (error) {
       console.error('생성 오류:', error);
       alert('생성 실패: ' + error.message);
@@ -206,12 +213,21 @@ const SwotAnalyzer = () => {
   return (
     <Container maxWidth="xl">
       <Paper elevation={3} sx={{ p: 4, mb: 3 }}>
-        <Typography variant="h4" gutterBottom>
-          📊 SWOT + 3C 분석기
-        </Typography>
-        <Typography variant="body2" color="text.secondary" paragraph>
-          경쟁사 상품을 검색하고, 결과를 수정하여 SWOT + 3C 분석을 수행합니다
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+          <Assessment sx={{ fontSize: 40, mr: 2, color: 'success.main' }} />
+          <Box>
+            <Typography variant="h4" gutterBottom>
+              📊 SWOT + 3C 분석기
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              경쟁사 상품을 검색하고, 결과를 수정하여 SWOT + 3C 분석을 수행합니다
+            </Typography>
+          </Box>
+        </Box>
+
+        <Alert severity="info" sx={{ mb: 2 }}>
+          💡 <strong>팁:</strong> "🚀 통합 워크플로우" 탭에서는 이 분석이 자동으로 실행되고 상세페이지에 반영됩니다!
+        </Alert>
 
         <Grid container spacing={3}>
           {/* 검색 섹션 */}
@@ -486,7 +502,12 @@ const SwotAnalyzer = () => {
                       <Button
                         variant="contained"
                         startIcon={<LinkIcon />}
-                        onClick={() => window.open(`${BACKEND_URL}${analysisResult.html_url}`, '_blank')}
+                        onClick={() => {
+                          const url = analysisResult.html_url.startsWith('http')
+                            ? analysisResult.html_url
+                            : `${BACKEND_URL}${analysisResult.html_url}`;
+                          window.open(url, '_blank');
+                        }}
                         fullWidth
                       >
                         분석 보고서 열기

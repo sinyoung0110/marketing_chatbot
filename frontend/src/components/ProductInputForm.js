@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   TextField,
@@ -16,7 +16,7 @@ import {
   Grid
 } from '@mui/material';
 
-const ProductInputForm = ({ onSubmit }) => {
+const ProductInputForm = ({ onSubmit, loading, initialData }) => {
   const [formData, setFormData] = useState({
     product_name: '',
     summary: '',
@@ -35,6 +35,22 @@ const ProductInputForm = ({ onSubmit }) => {
     competitor_links: [],
     allow_web_search: true
   });
+
+  // initialData가 있으면 폼에 자동 입력
+  useEffect(() => {
+    if (initialData) {
+      const keywordsArray = typeof initialData.keywords === 'string'
+        ? initialData.keywords.split(',').map(k => k.trim()).filter(k => k)
+        : initialData.keywords || [];
+
+      setFormData(prev => ({
+        ...prev,
+        product_name: initialData.product_name || prev.product_name,
+        category: initialData.category || prev.category,
+        keywords: keywordsArray
+      }));
+    }
+  }, [initialData]);
 
   const [currentKeyword, setCurrentKeyword] = useState('');
   const [specKey, setSpecKey] = useState('');
