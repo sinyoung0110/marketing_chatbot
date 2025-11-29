@@ -9,7 +9,6 @@ import {
   IconButton,
   Chip,
   CircularProgress,
-  Alert,
   Button
 } from '@mui/material';
 import {
@@ -19,8 +18,6 @@ import {
   Lightbulb,
   TrendingUp,
   AttachMoney,
-  Chat,
-  Info,
   Visibility
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
@@ -94,8 +91,6 @@ const MarketingChatbot = () => {
 
   const navigationActions = [
     { id: 'go_unified', label: '통합 워크플로우', path: '/' },
-    { id: 'go_detail', label: '상세페이지 생성', path: '/detail' },
-    { id: 'go_swot', label: 'SWOT 분석', path: '/swot' }
   ];
 
   const handleSendMessage = async () => {
