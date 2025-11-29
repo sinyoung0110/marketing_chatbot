@@ -23,6 +23,7 @@ class ProjectSession:
         self.competitor_data: Optional[Dict] = None
         self.review_insights: Optional[Dict] = None
         self.detail_page_result: Optional[Dict] = None
+        self.content_sections: Optional[Dict] = None  # 상세페이지 섹션 데이터 저장
         self.chat_history: list = []
 
         # 진행 상태
@@ -48,12 +49,19 @@ class ProjectSession:
         self.review_insights = review_insights
         self.updated_at = datetime.now().isoformat()
 
-    def set_detail_page_result(self, detail_page_result: Dict):
+    def set_detail_page_result(self, detail_page_result: Dict, content_sections: Dict = None):
         """상세페이지 생성 결과 저장"""
         self.detail_page_result = detail_page_result
+        if content_sections:
+            self.content_sections = content_sections
         self.current_step = "detail"
         if "detail" not in self.completed_steps:
             self.completed_steps.append("detail")
+        self.updated_at = datetime.now().isoformat()
+
+    def update_content_sections(self, content_sections: Dict):
+        """콘텐츠 섹션 업데이트"""
+        self.content_sections = content_sections
         self.updated_at = datetime.now().isoformat()
 
     def add_chat_message(self, role: str, content: str):
@@ -100,6 +108,7 @@ class ProjectSession:
             "competitor_data": self.competitor_data,
             "review_insights": self.review_insights,
             "detail_page_result": self.detail_page_result,
+            "content_sections": self.content_sections,
             "chat_history": self.chat_history,
             "current_step": self.current_step,
             "completed_steps": self.completed_steps
@@ -116,6 +125,7 @@ class ProjectSession:
         session.competitor_data = data.get("competitor_data")
         session.review_insights = data.get("review_insights")
         session.detail_page_result = data.get("detail_page_result")
+        session.content_sections = data.get("content_sections")
         session.chat_history = data.get("chat_history", [])
         session.current_step = data.get("current_step", "init")
         session.completed_steps = data.get("completed_steps", [])

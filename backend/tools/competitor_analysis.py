@@ -19,7 +19,7 @@ class CompetitorAnalysisTool:
             competitor_data: 웹 검색 결과
 
         Returns:
-            분석 결과 (공통 포인트, 고객 불만, 가격 포지셔닝, 시각적 패턴)
+            분석 결과 (공통 포인트, 고객 불만, 가격 포지셔닝, 시각적 패턴, 경쟁사 리스트)
         """
         if not competitor_data.get("results"):
             return {
@@ -27,14 +27,24 @@ class CompetitorAnalysisTool:
                 "customer_complaints": [],
                 "price_positioning": None,
                 "visual_patterns": [],
+                "competitors": [],  # 경쟁사 리스트 추가
                 "summary": "경쟁사 데이터 없음"
             }
 
-        # 검색 결과 텍스트 추출
+        # 검색 결과 텍스트 추출 + 경쟁사 정보 수집
         texts = []
-        for result in competitor_data["results"]:
+        competitors = []
+        for idx, result in enumerate(competitor_data["results"][:5]):  # 최대 5개
             if "error" not in result:
-                texts.append(f"제목: {result.get('title', '')}\n내용: {result.get('snippet', '')}")
+                texts.append(f"제품 {idx+1}: {result.get('title', '')}\n설명: {result.get('snippet', '')}")
+
+                # 경쟁사 정보 추출 (웹 검색 결과에서)
+                competitors.append({
+                    "name": result.get("title", "").split("-")[0].strip()[:30],  # 제목에서 상품명 추출
+                    "price": self._extract_price(result.get("snippet", "")),
+                    "delivery": "2-3일",  # 기본값
+                    "rating": self._extract_rating(result.get("snippet", ""))
+                })
 
         combined_text = "\n\n".join(texts[:10])  # 최대 10개만 분석
 
@@ -74,6 +84,9 @@ JSON 형식으로 답변하세요."""
                 # JSON이 아니면 기본 구조 반환
                 insights = self._parse_text_response(content)
 
+            # 경쟁사 리스트 추가
+            insights["competitors"] = competitors
+
             return insights
 
         except Exception as e:
@@ -83,6 +96,7 @@ JSON 형식으로 답변하세요."""
                 "customer_complaints": ["사이즈 불만", "포장 문제"],
                 "price_positioning": "중가",
                 "visual_patterns": ["제품 단독 이미지", "사용 장면"],
+                "competitors": competitors,  # 경쟁사 리스트 포함
                 "summary": f"분석 중 오류 발생: {str(e)}"
             }
 
@@ -114,3 +128,35 @@ JSON 형식으로 답변하세요."""
         if match:
             return match.group(1).strip()[:100]
         return ""
+
+    def _extract_price(self, text: str) -> str:
+        """텍스트에서 가격 추출"""
+        import re
+        # 가격 패턴: 숫자 + 원, 숫자,숫자원 등
+        price_patterns = [
+            r'(\d{1,3}(?:,\d{3})*)\s*원',
+            r'(\d{1,3}(?:\.\d{3})*)\s*원',
+            r'(\d+)\s*원'
+        ]
+        for pattern in price_patterns:
+            match = re.search(pattern, text)
+            if match:
+                price = match.group(1).replace(',', '').replace('.', '')
+                return f"{int(price):,}원"
+        return "N/A"
+
+    def _extract_rating(self, text: str) -> float:
+        """텍스트에서 평점 추출"""
+        import re
+        # 평점 패턴: 4.5점, 별점 4.2, rating 4.3 등
+        rating_patterns = [
+            r'(\d\.\d)\s*점',
+            r'별점\s*(\d\.\d)',
+            r'rating\s*(\d\.\d)',
+            r'평점\s*(\d\.\d)'
+        ]
+        for pattern in rating_patterns:
+            match = re.search(pattern, text, re.IGNORECASE)
+            if match:
+                return float(match.group(1))
+        return 4.0  # 기본값

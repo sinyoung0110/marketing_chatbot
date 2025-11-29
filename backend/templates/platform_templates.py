@@ -365,46 +365,66 @@ class PlatformTemplateManager:
             return {"has_recipes": False}
 
     def _generate_comparison_chart(self, product_input: Dict, competitor_insights: Dict) -> Dict:
-        """비교 차트 생성"""
+        """비교 차트 생성 (실제 경쟁사 데이터 활용)"""
         product_name = product_input['product_name']
 
         # 경쟁사 데이터 추출
         competitors = []
-        if competitor_insights and "competitor_summary" in competitor_insights:
-            comp_summary = competitor_insights["competitor_summary"]
-            # 샘플 경쟁사 데이터 (실제로는 SWOT 분석에서 가져옴)
-            competitors = [
-                {
-                    "name": "경쟁사 A",
-                    "price": "30,000원",
-                    "quality": "중",
-                    "delivery": "3-5일",
-                    "rating": 4.2
-                },
-                {
-                    "name": "경쟁사 B",
-                    "price": "40,000원",
-                    "quality": "상",
-                    "delivery": "2-3일",
-                    "rating": 4.5
-                }
-            ]
 
-        # 우리 제품 데이터
+        # competitor_insights에서 실제 경쟁사 데이터 가져오기
+        if competitor_insights and "competitors" in competitor_insights:
+            comp_list = competitor_insights["competitors"]
+
+            # 최소 2개 경쟁사 확보
+            for idx, comp in enumerate(comp_list[:3]):  # 최대 3개
+                competitors.append({
+                    "name": comp.get("name", f"경쟁사 {chr(65+idx)}"),  # A, B, C
+                    "price": comp.get("price", "N/A"),
+                    "quality": self._rate_quality(comp.get("rating", 0)),
+                    "delivery": comp.get("delivery", "2-3일"),
+                    "rating": comp.get("rating", 0)
+                })
+
+        # 경쟁사 데이터가 충분하지 않으면 기본값으로 채우기 (최소 2개)
+        while len(competitors) < 2:
+            idx = len(competitors)
+            competitors.append({
+                "name": f"경쟁사 {chr(65+idx)}",
+                "price": "N/A",
+                "quality": "중",
+                "delivery": "2-3일",
+                "rating": 4.0
+            })
+
+        # 우리 제품 데이터 (실제 입력값 활용)
+        our_price = product_input.get("price", "N/A")
+        our_rating = product_input.get("rating", 4.8)
+
         our_product = {
             "name": product_name,
-            "price": "37,081원",
-            "quality": "최상",
+            "price": our_price if our_price != "N/A" else "특가 진행중",
+            "quality": "프리미엄",
             "delivery": "1-2일 (무료배송)",
-            "rating": 4.8
+            "rating": our_rating
         }
 
         return {
             "title": "제품 비교",
             "our_product": our_product,
-            "competitors": competitors,
-            "chart_type": "table"  # 또는 "bar_chart"
+            "competitors": competitors[:3],  # 최대 3개 경쟁사
+            "chart_type": "table"
         }
+
+    def _rate_quality(self, rating: float) -> str:
+        """평점을 품질 등급으로 변환"""
+        if rating >= 4.5:
+            return "상"
+        elif rating >= 4.0:
+            return "중상"
+        elif rating >= 3.5:
+            return "중"
+        else:
+            return "하"
 
     def _generate_promotion(self, product_input: Dict) -> Dict:
         """프로모션 섹션 생성"""

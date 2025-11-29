@@ -54,7 +54,6 @@ class ContentExporter:
 
         # 제목
         md.append(f"# {content_sections.get('headline', product_input['product_name'])}")
-        md.append(f"**한줄요약:** {content_sections.get('summary', '')} (제조국: {product_input.get('manufacture_country', '')})")
         md.append("\n---\n")
 
         # 핵심 셀링포인트

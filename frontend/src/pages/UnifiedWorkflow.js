@@ -57,9 +57,17 @@ const UnifiedWorkflow = () => {
     include_reviews: true
   });
 
-  // 마크다운 편집
+  // SWOT 섹션 편집
   const [editingSwot, setEditingSwot] = useState(false);
-  const [swotMarkdown, setSwotMarkdown] = useState('');
+  const [swotSections, setSwotSections] = useState({
+    strengths: [],
+    weaknesses: [],
+    opportunities: [],
+    threats: []
+  });
+
+  // 검색 소스 선택
+  const [searchSources, setSearchSources] = useState(['ecommerce']); // 기본: e-커머스
 
   // Step 2: 상세페이지 결과
   const [detailResult, setDetailResult] = useState(null);
@@ -67,6 +75,15 @@ const UnifiedWorkflow = () => {
     platform: 'coupang',
     tone: '친근한',
     image_style: 'real'
+  });
+
+  // 상세페이지 섹션 편집
+  const [editingDetail, setEditingDetail] = useState(false);
+  const [detailSections, setDetailSections] = useState({
+    headline: '',
+    summary: '',
+    detailed_description: { content: '' },
+    selling_points: []
   });
 
   // Step 0: 워크플로우 시작
@@ -181,6 +198,11 @@ const UnifiedWorkflow = () => {
 
   // Step 1: SWOT 분석 실행
   const handleExecuteSwot = async () => {
+    if (searchSources.length === 0) {
+      alert('검색 소스를 최소 1개 이상 선택해주세요');
+      return;
+    }
+
     setLoading(true);
     try {
       const response = await fetch(`${BACKEND_URL}/api/unified/execute-swot`, {
@@ -188,6 +210,7 @@ const UnifiedWorkflow = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           session_id: sessionId,
+          search_sources: searchSources,
           ...swotOptions
         })
       });
@@ -390,12 +413,58 @@ const UnifiedWorkflow = () => {
                   <strong>{productInfo.product_name}</strong> ({productInfo.category})
                 </Alert>
 
-                <Accordion>
+                <Accordion defaultExpanded>
                   <AccordionSummary expandIcon={<ExpandMore />}>
-                    <Typography>고급 옵션</Typography>
+                    <Typography>검색 옵션</Typography>
                   </AccordionSummary>
                   <AccordionDetails>
                     <Grid container spacing={2}>
+                      <Grid item xs={12}>
+                        <Typography variant="body2" color="text.secondary" gutterBottom>
+                          검색 소스 선택 (중복 선택 가능)
+                        </Typography>
+                        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                          <Button
+                            variant={searchSources.includes('ecommerce') ? 'contained' : 'outlined'}
+                            size="small"
+                            onClick={() => {
+                              if (searchSources.includes('ecommerce')) {
+                                setSearchSources(searchSources.filter(s => s !== 'ecommerce'));
+                              } else {
+                                setSearchSources([...searchSources, 'ecommerce']);
+                              }
+                            }}
+                          >
+                            🛒 E-커머스 (쿠팡, 네이버, SSG)
+                          </Button>
+                          <Button
+                            variant={searchSources.includes('news') ? 'contained' : 'outlined'}
+                            size="small"
+                            onClick={() => {
+                              if (searchSources.includes('news')) {
+                                setSearchSources(searchSources.filter(s => s !== 'news'));
+                              } else {
+                                setSearchSources([...searchSources, 'news']);
+                              }
+                            }}
+                          >
+                            📰 뉴스
+                          </Button>
+                          <Button
+                            variant={searchSources.includes('blog') ? 'contained' : 'outlined'}
+                            size="small"
+                            onClick={() => {
+                              if (searchSources.includes('blog')) {
+                                setSearchSources(searchSources.filter(s => s !== 'blog'));
+                              } else {
+                                setSearchSources([...searchSources, 'blog']);
+                              }
+                            }}
+                          >
+                            ✍️ 블로그
+                          </Button>
+                        </Box>
+                      </Grid>
                       <Grid item xs={12} md={6}>
                         <TextField
                           select
@@ -449,10 +518,13 @@ const UnifiedWorkflow = () => {
                         variant="outlined"
                         size="small"
                         onClick={async () => {
-                          const mdUrl = swotResult.html_url.replace('.html', '.md');
-                          const response = await fetch(`${BACKEND_URL}${mdUrl}`);
-                          const text = await response.text();
-                          setSwotMarkdown(text);
+                          // 세션에서 SWOT 데이터 로드
+                          const sessionResponse = await fetch(`${BACKEND_URL}/api/unified/session/${sessionId}`);
+                          const sessionData = await sessionResponse.json();
+
+                          if (sessionData.swot_info && sessionData.swot_info.swot) {
+                            setSwotSections(sessionData.swot_info.swot);
+                          }
                           setEditingSwot(true);
                         }}
                       >
@@ -480,37 +552,109 @@ const UnifiedWorkflow = () => {
                 {editingSwot && (
                   <Box sx={{ mt: 2 }}>
                     <Typography variant="subtitle2" gutterBottom color="primary.main">
-                      마크다운 편집 (수정 후 저장하면 HTML에 자동 반영됩니다)
+                      SWOT 분석 수정 (각 항목을 리스트로 입력하세요, 줄바꿈으로 구분)
                     </Typography>
-                    <TextField
-                      fullWidth
-                      multiline
-                      rows={20}
-                      value={swotMarkdown}
-                      onChange={(e) => setSwotMarkdown(e.target.value)}
-                      variant="outlined"
-                      sx={{ fontFamily: 'monospace', fontSize: '14px', mb: 2 }}
-                    />
-                    <Box sx={{ display: 'flex', gap: 1 }}>
+
+                    <Accordion>
+                      <AccordionSummary expandIcon={<ExpandMore />}>
+                        <Typography>💪 강점 (Strengths)</Typography>
+                      </AccordionSummary>
+                      <AccordionDetails>
+                        <TextField
+                          fullWidth
+                          multiline
+                          rows={4}
+                          value={swotSections.strengths?.join('\n') || ''}
+                          onChange={(e) => setSwotSections({
+                            ...swotSections,
+                            strengths: e.target.value.split('\n').filter(s => s.trim())
+                          })}
+                          placeholder="예: 고품질 소재 사용&#10;합리적인 가격대&#10;빠른 배송"
+                        />
+                      </AccordionDetails>
+                    </Accordion>
+
+                    <Accordion>
+                      <AccordionSummary expandIcon={<ExpandMore />}>
+                        <Typography>⚠️ 약점 (Weaknesses)</Typography>
+                      </AccordionSummary>
+                      <AccordionDetails>
+                        <TextField
+                          fullWidth
+                          multiline
+                          rows={4}
+                          value={swotSections.weaknesses?.join('\n') || ''}
+                          onChange={(e) => setSwotSections({
+                            ...swotSections,
+                            weaknesses: e.target.value.split('\n').filter(s => s.trim())
+                          })}
+                          placeholder="예: 브랜드 인지도 낮음&#10;마케팅 채널 부족&#10;리뷰 수 적음"
+                        />
+                      </AccordionDetails>
+                    </Accordion>
+
+                    <Accordion>
+                      <AccordionSummary expandIcon={<ExpandMore />}>
+                        <Typography>🎯 기회 (Opportunities)</Typography>
+                      </AccordionSummary>
+                      <AccordionDetails>
+                        <TextField
+                          fullWidth
+                          multiline
+                          rows={4}
+                          value={swotSections.opportunities?.join('\n') || ''}
+                          onChange={(e) => setSwotSections({
+                            ...swotSections,
+                            opportunities: e.target.value.split('\n').filter(s => s.trim())
+                          })}
+                          placeholder="예: 온라인 쇼핑 트렌드 증가&#10;SNS 마케팅 기회&#10;타겟층 구매력 상승"
+                        />
+                      </AccordionDetails>
+                    </Accordion>
+
+                    <Accordion>
+                      <AccordionSummary expandIcon={<ExpandMore />}>
+                        <Typography>⚡ 위협 (Threats)</Typography>
+                      </AccordionSummary>
+                      <AccordionDetails>
+                        <TextField
+                          fullWidth
+                          multiline
+                          rows={4}
+                          value={swotSections.threats?.join('\n') || ''}
+                          onChange={(e) => setSwotSections({
+                            ...swotSections,
+                            threats: e.target.value.split('\n').filter(s => s.trim())
+                          })}
+                          placeholder="예: 경쟁사 브랜드 강세&#10;가격 경쟁 심화&#10;트렌드 빠른 변화"
+                        />
+                      </AccordionDetails>
+                    </Accordion>
+
+                    <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
                       <Button
                         variant="contained"
                         onClick={async () => {
                           setLoading(true);
                           try {
-                            const response = await fetch(`${BACKEND_URL}/api/unified/update-markdown`, {
+                            const response = await fetch(`${BACKEND_URL}/api/unified/update-content-sections`, {
                               method: 'POST',
                               headers: { 'Content-Type': 'application/json' },
                               body: JSON.stringify({
                                 session_id: sessionId,
-                                markdown_content: swotMarkdown,
-                                step: 'swot'
+                                step: 'swot',
+                                updated_sections: {
+                                  swot: swotSections
+                                }
                               })
                             });
                             if (response.ok) {
                               const data = await response.json();
                               setSwotResult({ ...swotResult, html_url: data.html_url });
                               setEditingSwot(false);
-                              alert('수정 내용이 저장되었습니다');
+                              alert('SWOT 분석이 업데이트되었습니다');
+                            } else {
+                              throw new Error('업데이트 실패');
                             }
                           } catch (error) {
                             alert('저장 실패: ' + error.message);
@@ -520,7 +664,7 @@ const UnifiedWorkflow = () => {
                         }}
                         disabled={loading}
                       >
-                        수정 완료
+                        저장하기
                       </Button>
                       <Button
                         variant="outlined"
@@ -620,54 +764,213 @@ const UnifiedWorkflow = () => {
                   </Grid>
                 </Grid>
 
-                {detailResult && (
-                  <Card sx={{ mt: 2, bgcolor: 'success.light' }}>
-                    <CardContent>
-                      <Typography variant="h6" sx={{ color: 'white', mb: 1 }}>
-                        상세페이지 생성 완료!
-                      </Typography>
-                      <Grid container spacing={1} sx={{ mt: 1 }}>
-                        <Grid item xs={12} md={4}>
+                {detailResult && !editingDetail && (
+                  <Alert severity="success" sx={{ mt: 2, '& .MuiAlert-icon': { color: 'primary.main' } }}>
+                    <Typography variant="body1" gutterBottom>
+                      상세페이지 생성 완료! {detailResult.images?.length || 0}개 이미지 생성됨
+                    </Typography>
+                    <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
+                      <Button
+                        variant="contained"
+                        size="small"
+                        onClick={() => window.open(`${BACKEND_URL}${detailResult.html_url}`, '_blank')}
+                      >
+                        HTML 보기
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        onClick={async () => {
+                          // 세션에서 상세페이지 데이터 로드
+                          const sessionResponse = await fetch(`${BACKEND_URL}/api/unified/session/${sessionId}`);
+                          const sessionData = await sessionResponse.json();
+
+                          if (sessionData.content_sections) {
+                            setDetailSections(sessionData.content_sections);
+                          }
+                          setEditingDetail(true);
+                        }}
+                      >
+                        콘텐츠 수정
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        startIcon={<Download />}
+                        onClick={() => {
+                          const link = document.createElement('a');
+                          link.href = `${BACKEND_URL}${detailResult.html_url}`;
+                          link.download = `상세페이지_${productInfo.product_name}.html`;
+                          document.body.appendChild(link);
+                          link.click();
+                          document.body.removeChild(link);
+                        }}
+                      >
+                        다운로드
+                      </Button>
+                    </Box>
+                  </Alert>
+                )}
+
+                {editingDetail && (
+                  <Box sx={{ mt: 2 }}>
+                    <Typography variant="subtitle2" gutterBottom color="primary.main">
+                      상세페이지 콘텐츠 수정
+                    </Typography>
+
+                    <Accordion>
+                      <AccordionSummary expandIcon={<ExpandMore />}>
+                        <Typography>📝 제목 (Headline)</Typography>
+                      </AccordionSummary>
+                      <AccordionDetails>
+                        <TextField
+                          fullWidth
+                          value={detailSections.headline || ''}
+                          onChange={(e) => setDetailSections({
+                            ...detailSections,
+                            headline: e.target.value
+                          })}
+                          placeholder="예: 프리미엄 무선 이어폰 - 최고의 음질과 편안함"
+                        />
+                      </AccordionDetails>
+                    </Accordion>
+
+                    <Accordion>
+                      <AccordionSummary expandIcon={<ExpandMore />}>
+                        <Typography>💡 요약 (Summary)</Typography>
+                      </AccordionSummary>
+                      <AccordionDetails>
+                        <TextField
+                          fullWidth
+                          multiline
+                          rows={3}
+                          value={detailSections.summary || ''}
+                          onChange={(e) => setDetailSections({
+                            ...detailSections,
+                            summary: e.target.value
+                          })}
+                          placeholder="예: 탁월한 음질과 편안한 착용감을 자랑하는 프리미엄 무선 이어폰입니다"
+                        />
+                      </AccordionDetails>
+                    </Accordion>
+
+                    <Accordion>
+                      <AccordionSummary expandIcon={<ExpandMore />}>
+                        <Typography>📄 상세 설명 (Detailed Description)</Typography>
+                      </AccordionSummary>
+                      <AccordionDetails>
+                        <TextField
+                          fullWidth
+                          multiline
+                          rows={6}
+                          value={detailSections.detailed_description?.content || ''}
+                          onChange={(e) => setDetailSections({
+                            ...detailSections,
+                            detailed_description: {
+                              ...detailSections.detailed_description,
+                              content: e.target.value
+                            }
+                          })}
+                          placeholder="예: 이 제품은 최신 기술을 적용하여...&#10;&#10;주요 특징:&#10;- 특징 1&#10;- 특징 2"
+                        />
+                      </AccordionDetails>
+                    </Accordion>
+
+                    <Accordion>
+                      <AccordionSummary expandIcon={<ExpandMore />}>
+                        <Typography>⭐ 셀링 포인트 (Selling Points)</Typography>
+                      </AccordionSummary>
+                      <AccordionDetails>
+                        <Box>
+                          {detailSections.selling_points?.map((sp, index) => (
+                            <Box key={index} sx={{ mb: 2 }}>
+                              <Typography variant="caption" color="text.secondary">
+                                셀링 포인트 {index + 1}
+                              </Typography>
+                              <TextField
+                                fullWidth
+                                size="small"
+                                label="제목"
+                                value={sp.title || ''}
+                                onChange={(e) => {
+                                  const newSPs = [...(detailSections.selling_points || [])];
+                                  newSPs[index] = { ...sp, title: e.target.value };
+                                  setDetailSections({ ...detailSections, selling_points: newSPs });
+                                }}
+                                sx={{ mb: 1 }}
+                              />
+                              <TextField
+                                fullWidth
+                                size="small"
+                                multiline
+                                rows={2}
+                                label="설명"
+                                value={sp.description || ''}
+                                onChange={(e) => {
+                                  const newSPs = [...(detailSections.selling_points || [])];
+                                  newSPs[index] = { ...sp, description: e.target.value };
+                                  setDetailSections({ ...detailSections, selling_points: newSPs });
+                                }}
+                              />
+                            </Box>
+                          ))}
                           <Button
-                            variant="contained"
-                            color="inherit"
-                            fullWidth
-                            onClick={() => window.open(`${BACKEND_URL}${detailResult.html_url}`, '_blank')}
-                          >
-                            HTML 보기
-                          </Button>
-                        </Grid>
-                        <Grid item xs={12} md={4}>
-                          <Button
-                            variant="contained"
-                            color="inherit"
-                            fullWidth
-                            onClick={() => window.open(`${BACKEND_URL}${detailResult.markdown_url}`, '_blank')}
-                          >
-                            Markdown 보기
-                          </Button>
-                        </Grid>
-                        <Grid item xs={12} md={4}>
-                          <Button
-                            variant="contained"
-                            color="warning"
-                            fullWidth
-                            startIcon={<Download />}
+                            size="small"
+                            variant="outlined"
                             onClick={() => {
-                              const link = document.createElement('a');
-                              link.href = `${BACKEND_URL}${detailResult.html_url}`;
-                              link.download = `상세페이지_${productInfo.product_name}.html`;
-                              document.body.appendChild(link);
-                              link.click();
-                              document.body.removeChild(link);
+                              setDetailSections({
+                                ...detailSections,
+                                selling_points: [...(detailSections.selling_points || []), { title: '', description: '' }]
+                              });
                             }}
                           >
-                            HTML 다운로드
+                            셀링 포인트 추가
                           </Button>
-                        </Grid>
-                      </Grid>
-                    </CardContent>
-                  </Card>
+                        </Box>
+                      </AccordionDetails>
+                    </Accordion>
+
+                    <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
+                      <Button
+                        variant="contained"
+                        onClick={async () => {
+                          setLoading(true);
+                          try {
+                            const response = await fetch(`${BACKEND_URL}/api/unified/update-content-sections`, {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({
+                                session_id: sessionId,
+                                step: 'detail',
+                                updated_sections: detailSections
+                              })
+                            });
+                            if (response.ok) {
+                              const data = await response.json();
+                              setDetailResult({ ...detailResult, html_url: data.html_url });
+                              setEditingDetail(false);
+                              alert('상세페이지가 업데이트되었습니다');
+                            } else {
+                              throw new Error('업데이트 실패');
+                            }
+                          } catch (error) {
+                            alert('저장 실패: ' + error.message);
+                          } finally {
+                            setLoading(false);
+                          }
+                        }}
+                        disabled={loading}
+                      >
+                        저장하기
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        onClick={() => setEditingDetail(false)}
+                      >
+                        취소
+                      </Button>
+                    </Box>
+                  </Box>
                 )}
               </Box>
 
@@ -691,13 +994,6 @@ const UnifiedWorkflow = () => {
                       size="large"
                     >
                       HTML 다시 보기
-                    </Button>
-                    <Button
-                      variant="outlined"
-                      onClick={() => window.open(`${BACKEND_URL}${detailResult.markdown_url}`, '_blank')}
-                      size="large"
-                    >
-                      Markdown 다시 보기
                     </Button>
                     <Button
                       variant="contained"

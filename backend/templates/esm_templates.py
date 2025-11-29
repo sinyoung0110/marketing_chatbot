@@ -4,7 +4,7 @@ ESM+ / 스마트스토어 / 쿠팡 호환 상세페이지 템플릿 생성기
 import re
 
 def _markdown_to_html(text: str) -> str:
-    """마크다운을 HTML로 변환"""
+    """마크다운을 HTML로 변환 (가독성 개선)"""
     if not text:
         return ""
 
@@ -16,17 +16,39 @@ def _markdown_to_html(text: str) -> str:
     # 볼드 변환
     text = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', text)
 
-    # 리스트 변환
-    text = re.sub(r'^\- (.+)$', r'<li>\1</li>', text, flags=re.MULTILINE)
-    text = re.sub(r'(<li>.*</li>)', r'<ul>\1</ul>', text, flags=re.DOTALL)
+    # 리스트 변환 (개선)
+    lines = text.split('\n')
+    result_lines = []
+    in_list = False
 
-    # 단락 변환 (연속된 텍스트를 <p> 태그로)
+    for line in lines:
+        if line.strip().startswith('- '):
+            if not in_list:
+                result_lines.append('<ul style="margin:15px 0;padding-left:25px;line-height:1.9">')
+                in_list = True
+            item = line.strip()[2:]  # "- " 제거
+            result_lines.append(f'  <li style="margin:8px 0">{item}</li>')
+        else:
+            if in_list:
+                result_lines.append('</ul>')
+                in_list = False
+            result_lines.append(line)
+
+    if in_list:
+        result_lines.append('</ul>')
+
+    text = '\n'.join(result_lines)
+
+    # 단락 변환 (연속된 텍스트를 <p> 태그로, 가독성 개선)
     paragraphs = text.split('\n\n')
     html_paragraphs = []
     for para in paragraphs:
         para = para.strip()
         if para and not para.startswith('<'):
-            para = f'<p>{para}</p>'
+            para = f'<p style="margin:18px 0;line-height:1.8">{para}</p>'
+        elif para.startswith('<p>'):
+            # 이미 <p> 태그가 있으면 스타일 추가
+            para = para.replace('<p>', '<p style="margin:18px 0;line-height:1.8">')
         html_paragraphs.append(para)
 
     return '\n'.join(html_paragraphs)
@@ -180,8 +202,48 @@ p{{font-size:16px}}
 
     html += """  </table>
 </section>
+"""
 
-<!-- 6. 구매 안내 -->
+    # 상품 비교 섹션
+    comparison_chart = content_sections.get("comparison_chart", {})
+    if comparison_chart.get("our_product") and comparison_chart.get("competitors"):
+        html += """
+<!-- 6. 제품 비교 -->
+<section class="section">
+  <h2>제품 비교</h2>
+  <table>
+    <thead>
+      <tr><th>제품명</th><th>가격</th><th>품질</th><th>배송</th><th>평점</th></tr>
+    </thead>
+    <tbody>
+"""
+        our = comparison_chart["our_product"]
+        html += f"""
+      <tr style="background:#f8f9fa;border-left:3px solid #495057">
+        <td><strong>{our['name']}</strong></td>
+        <td><strong>{our['price']}</strong></td>
+        <td><strong>{our['quality']}</strong></td>
+        <td><strong>{our['delivery']}</strong></td>
+        <td><strong>{our['rating']} ⭐</strong></td>
+      </tr>
+"""
+        for comp in comparison_chart.get("competitors", []):
+            html += f"""
+      <tr>
+        <td>{comp['name']}</td>
+        <td>{comp['price']}</td>
+        <td>{comp['quality']}</td>
+        <td>{comp['delivery']}</td>
+        <td>{comp['rating']} ⭐</td>
+      </tr>
+"""
+        html += """    </tbody>
+  </table>
+</section>
+"""
+
+    html += """
+<!-- 7. 구매 안내 -->
 <section class="section">
   <h2>구매 전 확인사항</h2>
   <ul style="font-size:16px;color:#666;padding-left:20px;line-height:1.8">
@@ -364,8 +426,23 @@ h2{{font-size:22px}}
 
     html += """  </table>
 </section>
+"""
 
-<!-- 7. 구매 안내 -->
+    # 레시피 제안 섹션 (식품인 경우)
+    recipes = content_sections.get("recipe_suggestions", {})
+    if recipes.get("has_recipes"):
+        html += f"""
+<!-- 7. 레시피 제안 -->
+<section class="section">
+  <h2>추천 레시피</h2>
+  <div style="background:#fff7f0;padding:20px;border-radius:12px;border:1px solid #f7c59f">
+    {_markdown_to_html(recipes.get("content", ""))}
+  </div>
+</section>
+"""
+
+    html += """
+<!-- 8. 구매 안내 -->
 <section class="section">
   <h2>구매 전 확인사항</h2>
   <ul style="font-size:16px;color:#666;padding-left:20px;line-height:1.8">
@@ -429,6 +506,44 @@ th{{background:var(--sub)}}
         html += f"    <tr><th>{key}</th><td>{value}</td></tr>\n"
 
     html += """  </table>
+"""
+
+    # 상품 비교 섹션
+    comparison_chart = content_sections.get("comparison_chart", {})
+    if comparison_chart.get("our_product") and comparison_chart.get("competitors"):
+        html += """
+  <h2>제품 비교</h2>
+  <table>
+    <thead>
+      <tr><th>제품명</th><th>가격</th><th>품질</th><th>배송</th><th>평점</th></tr>
+    </thead>
+    <tbody>
+"""
+        our = comparison_chart["our_product"]
+        html += f"""
+      <tr style="background:#f8f9fa;border-left:3px solid #495057">
+        <td><strong>{our['name']}</strong></td>
+        <td><strong>{our['price']}</strong></td>
+        <td><strong>{our['quality']}</strong></td>
+        <td><strong>{our['delivery']}</strong></td>
+        <td><strong>{our['rating']} ⭐</strong></td>
+      </tr>
+"""
+        for comp in comparison_chart.get("competitors", []):
+            html += f"""
+      <tr>
+        <td>{comp['name']}</td>
+        <td>{comp['price']}</td>
+        <td>{comp['quality']}</td>
+        <td>{comp['delivery']}</td>
+        <td>{comp['rating']} ⭐</td>
+      </tr>
+"""
+        html += """    </tbody>
+  </table>
+"""
+
+    html += """
 </div>
 </body>
 </html>"""

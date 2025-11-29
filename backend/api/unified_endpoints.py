@@ -302,7 +302,7 @@ async def execute_detail_page(request: DetailPageExecuteRequest):
         product_info["tone"] = request.tone
         product_info["image_options"] = {
             "style": request.image_style,
-            "shots": ["main", "usage", "infographic"]
+            "shots": ["main", "detail1", "detail2", "detail3", "detail4", "detail5"]
         }
 
         # ProductInput 형식으로 변환
@@ -313,8 +313,8 @@ async def execute_detail_page(request: DetailPageExecuteRequest):
         generator = DetailPageGenerator(session.session_id)
         result = generator.generate(product_input)
 
-        # 세션에 저장
-        session.set_detail_page_result(result)
+        # 세션에 저장 (content_sections 포함)
+        session.set_detail_page_result(result, result.get("content_sections"))
         session_manager.update_session(session)
 
         return {
@@ -324,6 +324,112 @@ async def execute_detail_page(request: DetailPageExecuteRequest):
             "images": result["images"],
             "next_step": "chat"
         }
+
+    except Exception as e:
+        import traceback
+        print(traceback.format_exc())
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+class UpdateContentSectionsRequest(BaseModel):
+    """콘텐츠 섹션 업데이트 요청"""
+    session_id: str
+    step: str  # "swot" 또는 "detail"
+    updated_sections: Dict[str, Any]
+
+
+@router.post(
+    "/update-content-sections",
+    summary="📝 콘텐츠 섹션 업데이트",
+    description="""
+    **섹션별로 수정된 내용을 반영하여 HTML 재생성**
+
+    - SWOT: strengths, weaknesses, opportunities, threats 수정 가능
+    - 상세페이지: headline, summary, detailed_description 등 수정 가능
+    - 수정된 내용으로 새 HTML 파일 생성
+    """
+)
+async def update_content_sections(request: UpdateContentSectionsRequest):
+    """콘텐츠 섹션 업데이트 및 HTML 재생성"""
+    try:
+        session_manager = get_session_manager()
+        session = session_manager.get_session(request.session_id)
+
+        if not session:
+            raise HTTPException(status_code=404, detail="세션을 찾을 수 없습니다")
+
+        if request.step == "swot":
+            # SWOT 분석 업데이트
+            if not session.swot_result:
+                raise HTTPException(status_code=400, detail="SWOT 분석 결과가 없습니다")
+
+            # 기존 SWOT 결과 복사
+            updated_swot = session.swot_result.copy()
+
+            # 업데이트된 섹션 반영
+            if "swot" in request.updated_sections:
+                for key, value in request.updated_sections["swot"].items():
+                    if key in updated_swot.get("swot", {}):
+                        updated_swot["swot"][key] = value
+
+            # HTML 재생성
+            visualizer = AnalysisVisualizer(session.session_id)
+            html_path = visualizer.generate_html(
+                analysis_result=updated_swot,
+                product_input=session.product_info,
+                competitor_data=session.competitor_data or {},
+                review_insights=session.review_insights
+            )
+
+            html_url = html_path.replace("projects/", "/outputs/")
+
+            # 세션 업데이트
+            session.set_swot_result(updated_swot, session.competitor_data)
+            session_manager.update_session(session)
+
+            return {
+                "session_id": session.session_id,
+                "html_url": html_url,
+                "message": "SWOT 분석이 업데이트되었습니다"
+            }
+
+        elif request.step == "detail":
+            # 상세페이지 업데이트
+            if not session.detail_page_result or not session.content_sections:
+                raise HTTPException(status_code=400, detail="상세페이지 결과가 없습니다")
+
+            # 기존 content_sections 복사
+            content_sections = session.content_sections.copy()
+
+            # 업데이트된 섹션 병합
+            content_sections.update(request.updated_sections)
+
+            # HTML 재생성
+            from tools.exporter import ContentExporter
+            exporter = ContentExporter(session.session_id)
+
+            markdown_path, html_path = exporter.export(
+                content_sections=content_sections,
+                images=session.detail_page_result.get("images", []),
+                product_input=session.product_info
+            )
+
+            # 세션 업데이트
+            session.update_content_sections(content_sections)
+            updated_result = session.detail_page_result.copy()
+            updated_result["html_url"] = html_path
+            updated_result["markdown_url"] = markdown_path
+            session.set_detail_page_result(updated_result, content_sections)
+            session_manager.update_session(session)
+
+            return {
+                "session_id": session.session_id,
+                "html_url": html_path,
+                "markdown_url": markdown_path,
+                "message": "상세페이지가 업데이트되었습니다"
+            }
+        else:
+            raise HTTPException(status_code=400, detail="step은 'swot' 또는 'detail'이어야 합니다")
 
     except Exception as e:
         import traceback

@@ -44,7 +44,7 @@ const Navigation = () => {
               '&.Mui-selected': { color: 'primary.main' }
             }}
           />
-          <Tab
+          {/* <Tab
             icon={<Description />}
             iconPosition="start"
             label="상세페이지"
@@ -55,7 +55,7 @@ const Navigation = () => {
             iconPosition="start"
             label="SWOT 분석"
             sx={{ color: 'text.primary', '&.Mui-selected': { color: 'primary.main' } }}
-          />
+          /> */}
           <Tab
             icon={<Chat />}
             iconPosition="start"

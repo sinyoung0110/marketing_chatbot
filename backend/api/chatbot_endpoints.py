@@ -23,6 +23,7 @@ class ChatRequest(BaseModel):
     message: str
     conversation_history: List[Dict] = []  # role, content
     session_context: Optional[Dict] = None  # 세션 컨텍스트 (SWOT, 상세페이지 등)
+    session_id: Optional[str] = None  # 세션 ID 추가
 
 class QuickActionRequest(BaseModel):
     """빠른 작업 요청"""
@@ -56,9 +57,18 @@ MARKETING_SYSTEM_PROMPT = """당신은 전문 마케팅 전략가이자 e-커머
 @router.post("/chat")
 async def chat_with_bot(request: ChatRequest):
     """
-    마케팅 챗봇과 대화 (세션 컨텍스트 활용)
+    마케팅 챗봇과 대화 (세션 컨텍스트 활용 + 상세페이지 수정 기능)
     """
     try:
+        # 상세페이지 수정 요청 감지
+        is_detail_edit_request = any(keyword in request.message.lower() for keyword in [
+            "상세페이지", "수정", "바꿔", "변경", "고쳐"
+        ])
+
+        # 상세페이지 수정 요청이고 세션 ID가 있으면 수정 로직 실행
+        if is_detail_edit_request and request.session_id and request.session_context:
+            return await handle_detail_page_edit(request)
+
         llm = ChatOpenAI(
             model="gpt-4o-mini",
             temperature=0.7,
@@ -122,6 +132,110 @@ async def chat_with_bot(request: ChatRequest):
         print(f"[Chatbot] 오류: {e}")
         print(traceback.format_exc())
         raise HTTPException(status_code=500, detail=str(e))
+
+
+async def handle_detail_page_edit(request: ChatRequest):
+    """
+    상세페이지 수정 요청 처리
+    LLM으로 수정사항 분석 → content_sections 업데이트 → HTML 재생성
+    """
+    try:
+        from utils.project_session import get_session_manager
+        from tools.exporter import ContentExporter
+
+        session_manager = get_session_manager()
+        session = session_manager.get_session(request.session_id)
+
+        if not session or not session.content_sections:
+            return {
+                "response": "상세페이지 정보를 찾을 수 없습니다. 먼저 상세페이지를 생성해주세요.",
+                "timestamp": datetime.now().isoformat()
+            }
+
+        # LLM을 사용하여 수정사항을 구조화된 데이터로 변환
+        llm = ChatOpenAI(
+            model="gpt-4o-mini",
+            temperature=0.3,
+            api_key=os.getenv("OPENAI_API_KEY")
+        )
+
+        analysis_prompt = f"""
+사용자가 상세페이지 수정을 요청했습니다.
+
+현재 상세페이지 내용:
+{session.content_sections}
+
+사용자 요청:
+{request.message}
+
+사용자의 요청을 분석하여 수정할 내용을 JSON 형식으로 반환하세요.
+수정이 필요한 필드만 포함하세요.
+
+가능한 필드:
+- headline: 제목
+- summary: 요약
+- detailed_description.content: 상세 설명
+- selling_points: 셀링 포인트 배열 [{{"title": "...", "description": "..."}}, ...]
+
+JSON만 반환하세요 (설명 불필요):
+"""
+
+        response = llm.invoke([HumanMessage(content=analysis_prompt)])
+
+        # JSON 파싱
+        import json
+        import re
+
+        # JSON 블록 추출
+        json_match = re.search(r'\{.*\}', response.content, re.DOTALL)
+        if not json_match:
+            return {
+                "response": "수정 내용을 파악하지 못했습니다. 더 구체적으로 말씀해주세요.\n예: '제목을 ABC로 바꿔줘' 또는 '셀링 포인트에 XYZ 추가해줘'",
+                "timestamp": datetime.now().isoformat()
+            }
+
+        updates = json.loads(json_match.group(0))
+
+        # content_sections 업데이트
+        updated_sections = session.content_sections.copy()
+        for key, value in updates.items():
+            if '.' in key:  # nested field
+                parts = key.split('.')
+                if parts[0] in updated_sections:
+                    updated_sections[parts[0]][parts[1]] = value
+            else:
+                updated_sections[key] = value
+
+        # HTML 재생성
+        exporter = ContentExporter(request.session_id)
+        markdown_path, html_path = exporter.export(
+            content_sections=updated_sections,
+            images=session.detail_page_result.get('images', []) if session.detail_page_result else [],
+            product_input=session.product_info
+        )
+
+        # 세션 업데이트
+        session.update_content_sections(updated_sections)
+        if session.detail_page_result:
+            session.detail_page_result['html_url'] = html_path
+            session.detail_page_result['markdown_url'] = markdown_path
+        session_manager.update_session(session)
+
+        return {
+            "response": f"✅ 상세페이지가 수정되었습니다!\n\n수정된 내용:\n{json.dumps(updates, ensure_ascii=False, indent=2)}",
+            "timestamp": datetime.now().isoformat(),
+            "html_url": html_path,  # HTML URL 반환
+            "action_type": "detail_page_updated"
+        }
+
+    except Exception as e:
+        import traceback
+        print(f"[Detail Edit] 오류: {e}")
+        print(traceback.format_exc())
+        return {
+            "response": f"수정 중 오류가 발생했습니다: {str(e)}",
+            "timestamp": datetime.now().isoformat()
+        }
 
 @router.post("/quick-action")
 async def execute_quick_action(request: QuickActionRequest):

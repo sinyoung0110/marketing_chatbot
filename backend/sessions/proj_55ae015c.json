@@ -1,7 +1,7 @@
 {
   "session_id": "proj_55ae015c",
   "created_at": "2025-11-29T17:30:55.948550",
-  "updated_at": "2025-11-29T17:32:18.625455",
+  "updated_at": "2025-11-29T17:36:23.154862",
   "product_info": {
     "product_name": " 에어프라이어 전용 바삭감자칩",
     "category": "간식",
@@ -500,10 +500,23 @@
     }
   },
   "review_insights": null,
-  "detail_page_result": null,
+  "detail_page_result": {
+    "markdown_url": "/projects/proj_55ae015c/detail.md",
+    "html_url": "/projects/proj_55ae015c/detail.html",
+    "analysis_url": "projects/proj_55ae015c/analysis.html",
+    "images": [
+      "/projects/proj_55ae015c/images/main_20251129_173549.png",
+      "/projects/proj_55ae015c/images/usage_20251129_173607.png",
+      "/projects/proj_55ae015c/images/infographic_20251129_173621.png",
+      "/projects/proj_55ae015c/images/main_20251129_173549.png",
+      "/projects/proj_55ae015c/images/usage_20251129_173607.png",
+      "/projects/proj_55ae015c/images/infographic_20251129_173621.png"
+    ]
+  },
   "chat_history": [],
-  "current_step": "swot",
+  "current_step": "detail",
   "completed_steps": [
-    "swot"
+    "swot",
+    "detail"
   ]
 }

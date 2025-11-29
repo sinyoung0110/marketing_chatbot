@@ -120,7 +120,8 @@ class DetailPageGenerator:
             "markdown_url": result["markdown_path"],
             "html_url": result["html_path"],
             "analysis_url": result["analysis_html_path"],
-            "images": result["images"]
+            "images": result["images"],
+            "content_sections": result["content_sections"]
         }
 
     def collect_input(self, state: AgentState) -> AgentState:
