@@ -1,22 +1,21 @@
 import React from 'react';
-import { AppBar, Toolbar, Typography, Button, Box, Tabs, Tab } from '@mui/material';
+import { AppBar, Toolbar, Typography, Box, Tabs, Tab } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Description, Assessment, Chat, TrendingUp, AutoAwesome } from '@mui/icons-material';
+import { Chat, TrendingUp } from '@mui/icons-material';
 
 const Navigation = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // 통합 플랫폼('/')와 챗봇('/chatbot')만 남김
   const getTabValue = () => {
     if (location.pathname === '/') return 0;
-    if (location.pathname === '/detail') return 1;
-    if (location.pathname === '/swot') return 2;
-    if (location.pathname === '/chatbot') return 3;
+    if (location.pathname === '/chatbot') return 1;
     return 0;
   };
 
   const handleChange = (event, newValue) => {
-    const routes = ['/', '/detail', '/swot', '/chatbot'];
+    const routes = ['/', '/chatbot'];
     navigate(routes[newValue]);
   };
 
@@ -38,24 +37,8 @@ const Navigation = () => {
             icon={<TrendingUp />}
             iconPosition="start"
             label="통합 워크플로우"
-            sx={{
-              color: 'text.primary',
-              fontWeight: 'bold',
-              '&.Mui-selected': { color: 'primary.main' }
-            }}
+            sx={{ color: 'text.primary', fontWeight: 'bold', '&.Mui-selected': { color: 'primary.main' } }}
           />
-          {/* <Tab
-            icon={<Description />}
-            iconPosition="start"
-            label="상세페이지"
-            sx={{ color: 'text.primary', '&.Mui-selected': { color: 'primary.main' } }}
-          />
-          <Tab
-            icon={<Assessment />}
-            iconPosition="start"
-            label="SWOT 분석"
-            sx={{ color: 'text.primary', '&.Mui-selected': { color: 'primary.main' } }}
-          /> */}
           <Tab
             icon={<Chat />}
             iconPosition="start"
