@@ -23,49 +23,49 @@ const Navigation = () => {
   return (
     <AppBar position="sticky" sx={{ mb: 3 }}>
       <Toolbar>
-        <Typography variant="h6" component="div" sx={{ flexGrow: 0, mr: 4, fontWeight: 'bold' }}>
-          🎯 마케팅 AI 어시스턴트
+        <Typography variant="h6" component="div" sx={{ flexGrow: 0, mr: 4, fontWeight: 'bold', color: 'primary.main' }}>
+          SellFlow AI
         </Typography>
 
         <Tabs
           value={getTabValue()}
           onChange={handleChange}
-          textColor="inherit"
-          indicatorColor="secondary"
+          textColor="primary"
+          indicatorColor="primary"
           sx={{ flexGrow: 1 }}
         >
           <Tab
             icon={<TrendingUp />}
             iconPosition="start"
-            label="🚀 통합 워크플로우"
+            label="통합 워크플로우"
             sx={{
-              color: 'white',
+              color: 'text.primary',
               fontWeight: 'bold',
-              '&.Mui-selected': { color: '#ffeb3b' }
+              '&.Mui-selected': { color: 'primary.main' }
             }}
           />
           <Tab
             icon={<Description />}
             iconPosition="start"
             label="상세페이지"
-            sx={{ color: 'white', '&.Mui-selected': { color: 'white' } }}
+            sx={{ color: 'text.primary', '&.Mui-selected': { color: 'primary.main' } }}
           />
           <Tab
             icon={<Assessment />}
             iconPosition="start"
             label="SWOT 분석"
-            sx={{ color: 'white', '&.Mui-selected': { color: 'white' } }}
+            sx={{ color: 'text.primary', '&.Mui-selected': { color: 'primary.main' } }}
           />
           <Tab
             icon={<Chat />}
             iconPosition="start"
             label="챗봇"
-            sx={{ color: 'white', '&.Mui-selected': { color: 'white' } }}
+            sx={{ color: 'text.primary', '&.Mui-selected': { color: 'primary.main' } }}
           />
         </Tabs>
 
         <Box>
-          <Typography variant="caption" sx={{ opacity: 0.8 }}>
+          <Typography variant="caption" sx={{ opacity: 0.8, color: 'text.secondary' }}>
             v2.0
           </Typography>
         </Box>

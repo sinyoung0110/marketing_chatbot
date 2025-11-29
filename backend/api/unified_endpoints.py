@@ -678,3 +678,134 @@ JSON만 반환하세요.
             error_msg = error_msg[:200] + "..."
 
         raise HTTPException(status_code=500, detail=f"PDF 분석 실패: {error_msg}")
+
+
+class UpdateMarkdownRequest(BaseModel):
+    """마크다운 업데이트 요청"""
+    session_id: str
+    markdown_content: str
+    step: str  # 'swot' or 'detail'
+
+
+@router.post(
+    "/update-markdown",
+    summary="✏️ 마크다운 콘텐츠 수정",
+    description="""
+    **마크다운 편집 후 저장 API**
+
+    - 사용자가 편집한 마크다운을 저장
+    - HTML을 자동으로 재생성
+    - 다음 단계에서도 수정된 내용 반영
+    """
+)
+async def update_markdown(request: UpdateMarkdownRequest):
+    """마크다운 콘텐츠 업데이트 및 HTML 재생성"""
+    session_manager = get_session_manager()
+    session = session_manager.get_session(request.session_id)
+
+    if not session:
+        raise HTTPException(status_code=404, detail="세션을 찾을 수 없습니다")
+
+    try:
+        # 세션에서 프로젝트 경로 가져오기
+        project_id = f"proj_{request.session_id[:8]}"
+        project_dir = os.path.join("backend", "projects", project_id)
+        os.makedirs(project_dir, exist_ok=True)
+
+        # 마크다운 파일 저장
+        if request.step == 'swot':
+            md_filename = "analysis.md"
+            html_filename = "analysis.html"
+        else:
+            md_filename = "detail.md"
+            html_filename = "detail.html"
+
+        md_path = os.path.join(project_dir, md_filename)
+        html_path = os.path.join(project_dir, html_filename)
+
+        # 마크다운 저장
+        with open(md_path, 'w', encoding='utf-8') as f:
+            f.write(request.markdown_content)
+
+        # HTML 재생성 (간단한 마크다운 -> HTML 변환)
+        import markdown
+        html_content = markdown.markdown(request.markdown_content, extensions=['tables', 'fenced_code'])
+
+        # HTML 템플릿으로 래핑
+        full_html = f"""<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{'SWOT+3C 분석' if request.step == 'swot' else '상세페이지'}</title>
+    <style>
+        body {{
+            font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+            line-height: 1.6;
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fafdfb;
+            color: #0f1720;
+        }}
+        h1, h2, h3 {{
+            color: #0f766e;
+            border-bottom: 2px solid #e6eef0;
+            padding-bottom: 10px;
+        }}
+        table {{
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }}
+        th, td {{
+            border: 1px solid #e6eef0;
+            padding: 12px;
+            text-align: left;
+        }}
+        th {{
+            background: #0f766e;
+            color: white;
+        }}
+        code {{
+            background: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }}
+    </style>
+</head>
+<body>
+{html_content}
+</body>
+</html>"""
+
+        # HTML 저장
+        with open(html_path, 'w', encoding='utf-8') as f:
+            f.write(full_html)
+
+        # 세션 데이터 업데이트
+        if request.step == 'swot':
+            session.data['swot_analysis'] = {
+                'markdown_updated': True,
+                'html_url': f"/outputs/{project_id}/{html_filename}"
+            }
+        else:
+            session.data['detail_page'] = {
+                'markdown_updated': True,
+                'html_url': f"/outputs/{project_id}/{html_filename}",
+                'markdown_url': f"/outputs/{project_id}/{md_filename}"
+            }
+
+        session_manager.save_session(session)
+
+        return {
+            "success": True,
+            "message": "마크다운이 성공적으로 업데이트되었습니다",
+            "html_url": f"/outputs/{project_id}/{html_filename}",
+            "markdown_url": f"/outputs/{project_id}/{md_filename}"
+        }
+
+    except Exception as e:
+        import traceback
+        print(f"[Markdown Update] 오류: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=f"마크다운 업데이트 실패: {str(e)}")

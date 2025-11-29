@@ -53,12 +53,13 @@ const UnifiedWorkflow = () => {
   // Step 1: SWOT 결과
   const [swotResult, setSwotResult] = useState(null);
   const [swotOptions, setSwotOptions] = useState({
-    search_depth: 'advanced',
-    days: null,
-    include_reviews: true,
-    search_platforms: ['coupang', 'naver', 'news', 'blog'],  // 검색 플랫폼
-    sort_by: 'popular'  // 정렬 기준: popular, recent, review
+    days: 30,
+    include_reviews: true
   });
+
+  // 마크다운 편집
+  const [editingSwot, setEditingSwot] = useState(false);
+  const [swotMarkdown, setSwotMarkdown] = useState('');
 
   // Step 2: 상세페이지 결과
   const [detailResult, setDetailResult] = useState(null);
@@ -88,7 +89,7 @@ const UnifiedWorkflow = () => {
             platforms: data.platforms || ['coupang', 'naver']
           });
           setUploadedFile(file.name);
-          alert('✅ JSON 파일이 성공적으로 로드되었습니다!');
+          alert('JSON 파일이 성공적으로 로드되었습니다!');
         } catch (error) {
           alert('파일 형식이 올바르지 않습니다. JSON 형식이어야 합니다.');
         }
@@ -129,10 +130,10 @@ const UnifiedWorkflow = () => {
           platforms: data.platforms || ['coupang', 'naver']
         });
         setUploadedFile(file.name);
-        alert(`✅ PDF 파일이 성공적으로 분석되었습니다!\n\n상품명: ${data.product_name}\n카테고리: ${data.category}`);
+        alert(`PDF 파일이 성공적으로 분석되었습니다!\n\n상품명: ${data.product_name}\n카테고리: ${data.category}`);
       } catch (error) {
         console.error('PDF 파싱 에러:', error);
-        alert('❌ PDF 파일 분석 실패:\n' + error.message);
+        alert('PDF 파일 분석 실패:\n' + error.message);
       } finally {
         setLoading(false);
       }
@@ -245,13 +246,13 @@ const UnifiedWorkflow = () => {
   };
 
   return (
-    <Container maxWidth="lg">
-      <Paper elevation={3} sx={{ p: 4, mb: 3 }}>
+    <Container maxWidth="lg" sx={{ bgcolor: 'background.default', minHeight: 'calc(100vh - 200px)', py: 3 }}>
+      <Paper elevation={3} sx={{ p: 4, mb: 3, bgcolor: 'background.paper' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
           <TrendingUp sx={{ fontSize: 40, mr: 2, color: 'primary.main' }} />
           <Box>
             <Typography variant="h4" gutterBottom>
-              🚀 통합 워크플로우
+              통합 워크플로우
             </Typography>
             <Typography variant="body2" color="text.secondary">
               한 번 입력하면 SWOT 분석 → 상세페이지 생성 → 챗봇 상담까지 자동!
@@ -260,7 +261,7 @@ const UnifiedWorkflow = () => {
         </Box>
 
         {sessionId && (
-          <Alert severity="success" sx={{ mb: 2 }}>
+          <Alert severity="success" sx={{ mb: 2, '& .MuiAlert-icon': { color: 'primary.main' } }}>
             <strong>세션 ID:</strong> {sessionId}
           </Alert>
         )}
@@ -324,8 +325,8 @@ const UnifiedWorkflow = () => {
                   </Grid>
                 </Grid>
 
-                <Alert severity="info" sx={{ mt: 2 }}>
-                  💡 이 정보는 모든 단계에서 자동으로 사용됩니다. 다시 입력할 필요 없습니다!
+                <Alert severity="info" sx={{ mt: 2, '& .MuiAlert-icon': { color: 'primary.main' } }}>
+                  이 정보는 모든 단계에서 자동으로 사용됩니다. 다시 입력할 필요 없습니다!
                 </Alert>
 
                 {/* 파일 업로드 옵션 */}
@@ -337,7 +338,7 @@ const UnifiedWorkflow = () => {
                     </Box>
                   </AccordionSummary>
                   <AccordionDetails>
-                    <Alert severity="info" sx={{ mb: 2 }}>
+                    <Alert severity="info" sx={{ mb: 2, '& .MuiAlert-icon': { color: 'primary.main' } }}>
                       <strong>JSON 또는 PDF 파일을 업로드하세요</strong><br/>
                       • JSON: {`{ "product_name": "...", "category": "...", "keywords": [...] }`}<br/>
                       • PDF: 상품 설명서나 기획서 (AI가 자동 분석)
@@ -358,8 +359,8 @@ const UnifiedWorkflow = () => {
                       />
                     </Button>
                     {uploadedFile && (
-                      <Alert severity="success" sx={{ mt: 1 }}>
-                        ✅ {uploadedFile} 로드 완료
+                      <Alert severity="success" sx={{ mt: 1, '& .MuiAlert-icon': { color: 'primary.main' } }}>
+                        {uploadedFile} 로드 완료
                       </Alert>
                     )}
                   </AccordionDetails>
@@ -383,179 +384,178 @@ const UnifiedWorkflow = () => {
             <StepLabel icon={<Assessment />}>SWOT + 3C 분석</StepLabel>
             <StepContent>
               <Box sx={{ mb: 2 }}>
-                <Alert severity="success" sx={{ mb: 2 }}>
-                  ✅ 상품 정보가 자동으로 로드되었습니다!
+                <Alert severity="success" sx={{ mb: 2, '& .MuiAlert-icon': { color: 'primary.main' } }}>
+                  상품 정보가 자동으로 로드되었습니다!
                   <br />
                   <strong>{productInfo.product_name}</strong> ({productInfo.category})
                 </Alert>
 
                 <Accordion>
                   <AccordionSummary expandIcon={<ExpandMore />}>
-                    <Typography>고급 옵션 (검색 플랫폼 및 정렬)</Typography>
+                    <Typography>고급 옵션</Typography>
                   </AccordionSummary>
                   <AccordionDetails>
                     <Grid container spacing={2}>
-                      <Grid item xs={12} md={4}>
+                      <Grid item xs={12} md={6}>
                         <TextField
                           select
                           fullWidth
                           size="small"
-                          label="검색 상세도"
-                          value={swotOptions.search_depth}
+                          label="조사 기간"
+                          value={swotOptions.days}
                           onChange={(e) =>
-                            setSwotOptions({ ...swotOptions, search_depth: e.target.value })
+                            setSwotOptions({ ...swotOptions, days: parseInt(e.target.value) })
                           }
                           SelectProps={{ native: true }}
                         >
-                          <option value="basic">기본</option>
-                          <option value="advanced">상세 (권장)</option>
-                        </TextField>
-                      </Grid>
-                      <Grid item xs={12} md={4}>
-                        <TextField
-                          select
-                          fullWidth
-                          size="small"
-                          label="검색 기간"
-                          value={swotOptions.days || ''}
-                          onChange={(e) =>
-                            setSwotOptions({
-                              ...swotOptions,
-                              days: e.target.value ? parseInt(e.target.value) : null
-                            })
-                          }
-                          SelectProps={{ native: true }}
-                        >
-                          <option value="">전체</option>
+                          <option value="7">최근 7일</option>
                           <option value="30">최근 30일</option>
                           <option value="90">최근 90일</option>
                         </TextField>
                       </Grid>
-                      <Grid item xs={12} md={4}>
-                        <TextField
-                          select
-                          fullWidth
-                          size="small"
-                          label="정렬 기준"
-                          value={swotOptions.sort_by}
-                          onChange={(e) =>
-                            setSwotOptions({ ...swotOptions, sort_by: e.target.value })
-                          }
-                          SelectProps={{ native: true }}
-                        >
-                          <option value="popular">인기순 (판매량)</option>
-                          <option value="recent">최신순</option>
-                          <option value="review">리뷰 많은 순</option>
-                        </TextField>
-                      </Grid>
-                      <Grid item xs={12}>
-                        <Typography variant="body2" gutterBottom sx={{ mb: 1 }}>
-                          🔍 검색 플랫폼 선택:
-                        </Typography>
-                        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                          {['coupang', 'naver', 'news', 'blog'].map((platform) => (
-                            <Button
-                              key={platform}
-                              size="small"
-                              variant={swotOptions.search_platforms.includes(platform) ? 'contained' : 'outlined'}
-                              onClick={() => {
-                                const current = swotOptions.search_platforms;
-                                const updated = current.includes(platform)
-                                  ? current.filter(p => p !== platform)
-                                  : [...current, platform];
-                                setSwotOptions({ ...swotOptions, search_platforms: updated });
-                              }}
-                            >
-                              {platform === 'coupang' ? '쿠팡' :
-                               platform === 'naver' ? '네이버 쇼핑' :
-                               platform === 'news' ? '뉴스' : '블로그'}
-                            </Button>
-                          ))}
+                      <Grid item xs={12} md={6}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+                          <label>
+                            <input
+                              type="checkbox"
+                              checked={swotOptions.include_reviews}
+                              onChange={(e) =>
+                                setSwotOptions({ ...swotOptions, include_reviews: e.target.checked })
+                              }
+                              style={{ marginRight: '8px' }}
+                            />
+                            리뷰 데이터 포함
+                          </label>
                         </Box>
                       </Grid>
                     </Grid>
                   </AccordionDetails>
                 </Accordion>
 
-                {swotResult && (
-                  <Card sx={{ mt: 2, bgcolor: 'success.light' }}>
-                    <CardContent>
-                      <Typography variant="h6" sx={{ color: 'white', mb: 1 }}>
-                        ✅ SWOT 분석 완료!
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: 'white' }}>
-                        {swotResult.competitor_count}개의 경쟁사 상품을 분석했습니다
-                      </Typography>
-                      <Box sx={{ display: 'flex', gap: 1, mt: 2, flexDirection: 'column' }}>
-                        <Button
-                          variant="contained"
-                          color="success"
-                          size="large"
-                          onClick={() => window.open(`${BACKEND_URL}${swotResult.html_url}`, '_blank')}
-                          fullWidth
-                        >
-                          📊 분석 결과 다시 보기
-                        </Button>
-                        <Button
-                          variant="contained"
-                          color="warning"
-                          size="large"
-                          startIcon={<Download />}
-                          onClick={() => {
-                            const link = document.createElement('a');
-                            link.href = `${BACKEND_URL}${swotResult.html_url}`;
-                            link.download = `SWOT분석_${productInfo.product_name}.html`;
-                            document.body.appendChild(link);
-                            link.click();
-                            document.body.removeChild(link);
-                          }}
-                          fullWidth
-                        >
-                          💾 SWOT 분석서 다운로드
-                        </Button>
-                      </Box>
-                    </CardContent>
-                  </Card>
+                {swotResult && !editingSwot && (
+                  <Alert severity="success" sx={{ mt: 2, '& .MuiAlert-icon': { color: 'primary.main' } }}>
+                    <Typography variant="body1" gutterBottom>
+                      SWOT + 3C 분석 완료! {swotResult.competitor_count}개 경쟁사 상품 분석됨
+                    </Typography>
+                    <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
+                      <Button
+                        variant="contained"
+                        size="small"
+                        onClick={() => window.open(`${BACKEND_URL}${swotResult.html_url}`, '_blank')}
+                      >
+                        분석 결과 보기
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        onClick={async () => {
+                          const mdUrl = swotResult.html_url.replace('.html', '.md');
+                          const response = await fetch(`${BACKEND_URL}${mdUrl}`);
+                          const text = await response.text();
+                          setSwotMarkdown(text);
+                          setEditingSwot(true);
+                        }}
+                      >
+                        분석 결과 수정
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        startIcon={<Download />}
+                        onClick={() => {
+                          const link = document.createElement('a');
+                          link.href = `${BACKEND_URL}${swotResult.html_url}`;
+                          link.download = `SWOT분석_${productInfo.product_name}.html`;
+                          document.body.appendChild(link);
+                          link.click();
+                          document.body.removeChild(link);
+                        }}
+                      >
+                        다운로드
+                      </Button>
+                    </Box>
+                  </Alert>
+                )}
+
+                {editingSwot && (
+                  <Box sx={{ mt: 2 }}>
+                    <Typography variant="subtitle2" gutterBottom color="primary.main">
+                      마크다운 편집 (수정 후 저장하면 HTML에 자동 반영됩니다)
+                    </Typography>
+                    <TextField
+                      fullWidth
+                      multiline
+                      rows={20}
+                      value={swotMarkdown}
+                      onChange={(e) => setSwotMarkdown(e.target.value)}
+                      variant="outlined"
+                      sx={{ fontFamily: 'monospace', fontSize: '14px', mb: 2 }}
+                    />
+                    <Box sx={{ display: 'flex', gap: 1 }}>
+                      <Button
+                        variant="contained"
+                        onClick={async () => {
+                          setLoading(true);
+                          try {
+                            const response = await fetch(`${BACKEND_URL}/api/unified/update-markdown`, {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({
+                                session_id: sessionId,
+                                markdown_content: swotMarkdown,
+                                step: 'swot'
+                              })
+                            });
+                            if (response.ok) {
+                              const data = await response.json();
+                              setSwotResult({ ...swotResult, html_url: data.html_url });
+                              setEditingSwot(false);
+                              alert('수정 내용이 저장되었습니다');
+                            }
+                          } catch (error) {
+                            alert('저장 실패: ' + error.message);
+                          } finally {
+                            setLoading(false);
+                          }
+                        }}
+                        disabled={loading}
+                      >
+                        수정 완료
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        onClick={() => setEditingSwot(false)}
+                      >
+                        취소
+                      </Button>
+                    </Box>
+                  </Box>
                 )}
               </Box>
 
-              <Box sx={{ display: 'flex', gap: 2 }}>
-                {!swotResult ? (
-                  <Button
-                    variant="contained"
-                    color="success"
-                    onClick={handleExecuteSwot}
-                    disabled={loading}
-                    startIcon={<Assessment />}
-                    size="large"
-                  >
-                    SWOT 분석 실행
-                  </Button>
-                ) : (
-                  <>
-                    <Button
-                      variant="outlined"
-                      onClick={() => {
-                        const url = swotResult.html_url.startsWith('http')
-                          ? swotResult.html_url
-                          : `${BACKEND_URL}${swotResult.html_url}`;
-                        window.open(url, '_blank');
-                      }}
-                      size="large"
-                    >
-                      분석 결과 다시 보기
-                    </Button>
-                    <Button
-                      variant="contained"
-                      onClick={() => setActiveStep(2)}
-                      startIcon={<Description />}
-                      size="large"
-                    >
-                      다음 단계
-                    </Button>
-                  </>
-                )}
-              </Box>
+              {!swotResult && !editingSwot && (
+                <Button
+                  variant="contained"
+                  onClick={handleExecuteSwot}
+                  disabled={loading}
+                  startIcon={<Assessment />}
+                  size="large"
+                >
+                  {loading ? 'SWOT + 3C 분석 중...' : 'SWOT + 3C 분석 실행'}
+                </Button>
+              )}
+
+              {swotResult && !editingSwot && (
+                <Button
+                  variant="contained"
+                  onClick={() => setActiveStep(2)}
+                  startIcon={<Description />}
+                  size="large"
+                  sx={{ mt: 2 }}
+                >
+                  다음 단계: 상세페이지 생성
+                </Button>
+              )}
             </StepContent>
           </Step>
 
@@ -564,8 +564,8 @@ const UnifiedWorkflow = () => {
             <StepLabel icon={<Description />}>상세페이지 생성</StepLabel>
             <StepContent>
               <Box sx={{ mb: 2 }}>
-                <Alert severity="success" sx={{ mb: 2 }}>
-                  ✅ SWOT 분석 결과가 자동으로 반영됩니다!
+                <Alert severity="success" sx={{ mb: 2, '& .MuiAlert-icon': { color: 'primary.main' } }}>
+                  SWOT 분석 결과가 자동으로 반영됩니다!
                   <br />
                   경쟁사 리뷰 인사이트, 강점 키워드 등이 자동으로 활용됩니다.
                 </Alert>
@@ -624,7 +624,7 @@ const UnifiedWorkflow = () => {
                   <Card sx={{ mt: 2, bgcolor: 'success.light' }}>
                     <CardContent>
                       <Typography variant="h6" sx={{ color: 'white', mb: 1 }}>
-                        ✅ 상세페이지 생성 완료!
+                        상세페이지 생성 완료!
                       </Typography>
                       <Grid container spacing={1} sx={{ mt: 1 }}>
                         <Grid item xs={12} md={4}>
@@ -717,9 +717,9 @@ const UnifiedWorkflow = () => {
           <Step>
             <StepLabel icon={<CheckCircle />}>완료!</StepLabel>
             <StepContent>
-              <Alert severity="success" sx={{ mb: 2 }}>
+              <Alert severity="success" sx={{ mb: 2, '& .MuiAlert-icon': { color: 'primary.main' } }}>
                 <Typography variant="h6" gutterBottom>
-                  🎉 모든 단계가 완료되었습니다!
+                  모든 단계가 완료되었습니다!
                 </Typography>
                 <Typography variant="body2">
                   • SWOT + 3C 분석 완료<br />

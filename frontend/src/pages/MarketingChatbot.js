@@ -36,7 +36,7 @@ const MarketingChatbot = () => {
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
-      content: '안녕하세요! 저는 AI 마케팅 전략가입니다. 어떤 도움이 필요하신가요?',
+      content: '안녕하세요. SellFlow AI 마케팅 전략 어시스턴트입니다.\n\n상품 마케팅 전략, 키워드 분석, 가격 전략 등 마케팅 관련 모든 질문에 답변드리겠습니다. 무엇을 도와드릴까요?',
       timestamp: new Date().toISOString(),
       showQuickActions: true
     }
@@ -69,7 +69,7 @@ const MarketingChatbot = () => {
         // 환영 메시지 업데이트
         setMessages([{
           role: 'assistant',
-          content: `안녕하세요! "${data.product_info?.product_name}" 프로젝트의 마케팅 전략가입니다.\n\n✅ SWOT 분석: ${data.has_swot ? '완료' : '미완료'}\n✅ 상세페이지: ${data.has_detail ? '완료' : '미완료'}\n\n프로젝트 정보를 바탕으로 상담해드리겠습니다. 무엇이 궁금하신가요?`,
+          content: `"${data.product_info?.product_name}" 프로젝트 컨텍스트를 불러왔습니다.\n\nSWOT 분석: ${data.has_swot ? '완료' : '미완료'}\n상세페이지: ${data.has_detail ? '완료' : '미완료'}\n\n프로젝트 정보를 바탕으로 마케팅 전략을 제안해드리겠습니다. 무엇을 도와드릴까요?`,
           timestamp: new Date().toISOString(),
           showQuickActions: true
         }]);
@@ -95,15 +95,15 @@ const MarketingChatbot = () => {
   ];
 
   const quickActions = [
-    { id: 'suggest_keywords', label: '💡 키워드 추천', icon: <Lightbulb /> },
-    { id: 'price_strategy', label: '💰 가격 전략', icon: <AttachMoney /> },
-    { id: 'analyze_target', label: '📊 타겟 분석', icon: <TrendingUp /> }
+    { id: 'suggest_keywords', label: '키워드 추천', icon: <Lightbulb /> },
+    { id: 'price_strategy', label: '가격 전략', icon: <AttachMoney /> },
+    { id: 'analyze_target', label: '타겟 분석', icon: <TrendingUp /> }
   ];
 
   const navigationActions = [
-    { id: 'go_unified', label: '🚀 통합 워크플로우', path: '/' },
-    { id: 'go_detail', label: '📝 상세페이지 생성', path: '/detail' },
-    { id: 'go_swot', label: '📊 SWOT 분석', path: '/swot' }
+    { id: 'go_unified', label: '통합 워크플로우', path: '/' },
+    { id: 'go_detail', label: '상세페이지 생성', path: '/detail' },
+    { id: 'go_swot', label: 'SWOT 분석', path: '/swot' }
   ];
 
   const handleSendMessage = async () => {
@@ -273,20 +273,14 @@ const MarketingChatbot = () => {
   };
 
   return (
-    <Container maxWidth="lg">
-      <Box sx={{ mb: 2 }}>
-        <Alert severity="info" icon={<Info />}>
-          💡 <strong>팁:</strong> "🚀 통합 워크플로우"에서 프로젝트를 완료하면 해당 컨텍스트를 자동으로 불러와 상담할 수 있습니다!
-        </Alert>
-      </Box>
-
-      <Paper elevation={3} sx={{ height: 'calc(100vh - 200px)', display: 'flex', flexDirection: 'column' }}>
+    <Container maxWidth="lg" sx={{ bgcolor: 'background.default', minHeight: 'calc(100vh - 200px)', py: 3 }}>
+      <Paper elevation={3} sx={{ height: 'calc(100vh - 200px)', display: 'flex', flexDirection: 'column', bgcolor: 'background.paper' }}>
         {/* 헤더 */}
         <Box sx={{ p: 2, bgcolor: 'primary.main', color: 'white', display: 'flex', alignItems: 'center' }}>
-          <Chat sx={{ mr: 1 }} />
+          <SmartToy sx={{ mr: 1 }} />
           <Box>
-            <Typography variant="h6">💬 AI 마케팅 전략가</Typography>
-            <Typography variant="caption">실시간 마케팅 조언 및 전략 제안</Typography>
+            <Typography variant="h6">SellFlow AI 마케팅 전략 어시스턴트</Typography>
+            <Typography variant="caption">실시간 마케팅 전략 분석 및 최적화 솔루션</Typography>
           </Box>
         </Box>
 
@@ -302,9 +296,9 @@ const MarketingChatbot = () => {
           {/* 추천 질문 (처음에만 표시) */}
           {messages.length === 1 && showSuggestions && (
             <Box sx={{ mb: 3 }}>
-              <Paper sx={{ p: 2, bgcolor: 'white' }}>
-                <Typography variant="subtitle2" gutterBottom color="text.secondary">
-                  💡 추천 질문
+              <Paper sx={{ p: 2, bgcolor: 'white', '& .MuiAlert-icon': { color: 'primary.main' } }}>
+                <Typography variant="subtitle2" gutterBottom color="primary.main" fontWeight={600}>
+                  추천 질문
                 </Typography>
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
                   {suggestedQuestions.map((q, idx) => (
@@ -353,8 +347,8 @@ const MarketingChatbot = () => {
                   {/* 첫 메시지에 빠른 작업 버튼 */}
                   {index === 0 && msg.showQuickActions && (
                     <Box sx={{ mt: 2, borderTop: 1, borderColor: 'divider', pt: 2 }}>
-                      <Typography variant="caption" color="text.secondary" gutterBottom display="block">
-                        🚀 빠른 작업
+                      <Typography variant="caption" color="primary.main" gutterBottom display="block" fontWeight={600}>
+                        빠른 작업
                       </Typography>
                       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
                         {quickActions.map((action) => (
@@ -424,8 +418,8 @@ const MarketingChatbot = () => {
                         </>
                       )}
 
-                      <Typography variant="caption" color="text.secondary" gutterBottom display="block">
-                        📍 다른 기능으로 이동
+                      <Typography variant="caption" color="primary.main" gutterBottom display="block" fontWeight={600}>
+                        다른 기능으로 이동
                       </Typography>
                       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
                         {navigationActions.map((action) => (
@@ -508,8 +502,8 @@ const MarketingChatbot = () => {
           {editTarget === 'swot' ? 'SWOT 분석서 수정' : '상세페이지 수정'}
         </DialogTitle>
         <DialogContent>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            💡 아래 내용을 수정한 후 저장하면 챗봇에게 수정 요청이 전달됩니다.
+          <Typography variant="body2" color="primary.main" sx={{ mb: 2 }}>
+            아래 내용을 수정한 후 저장하면 챗봇에게 수정 요청이 전달됩니다.
           </Typography>
           <TextField
             fullWidth
