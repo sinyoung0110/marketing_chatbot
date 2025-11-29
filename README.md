@@ -123,6 +123,7 @@ source venv/bin/activate  # Windows: venv\Scripts\activate
 
 # 패키지 설치
 pip install -r requirements.txt
+pip install -r requirements-backend.txt
 
 # 추가 패키지 (Tavily)
 pip install tavily-python
