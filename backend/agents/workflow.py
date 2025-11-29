@@ -224,8 +224,12 @@ class DetailPageGenerator:
         product_input = state["product_input"]
         image_options = product_input.get("image_options", {})
 
+        # 기본 shot_types: 메인 + 디테일 5개 (ESM 템플릿에 필요한 6개)
+        default_shots = ["main", "detail1", "detail2", "detail3", "detail4", "detail5"]
+        shot_types = image_options.get("shots", default_shots)
+
         prompts = []
-        for shot_type in image_options.get("shots", ["main"]):
+        for shot_type in shot_types:
             prompt = self.image_gen.create_prompt(
                 product_name=product_input["product_name"],
                 shot_type=shot_type,
@@ -234,9 +238,10 @@ class DetailPageGenerator:
             prompts.append({
                 "type": shot_type,
                 "prompt": prompt,
-                "size": "1000x1000" if shot_type == "main" else "1200x800"
+                "size": "1000x1000" if shot_type == "main" else "800x800"
             })
 
+        print(f"[Image Prompts] {len(prompts)}개 이미지 프롬프트 생성 완료")
         state["image_prompts"] = prompts
         return state
 

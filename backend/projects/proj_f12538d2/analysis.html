@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SWOT + 3C 분석 - 남성 스킨케어 세트</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border: 1px solid #e0e0e0;
+        }
+
+        .header {
+            background: #000;
+            color: white;
+            padding: 30px 40px;
+            border-bottom: 1px solid #333;
+        }
+
+        .header h1 {
+            font-size: 1.8em;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .header .subtitle {
+            font-size: 1em;
+            opacity: 0.8;
+        }
+
+        .header .date {
+            font-size: 0.85em;
+            opacity: 0.6;
+            margin-top: 8px;
+        }
+
+        .insights {
+            background: #fafafa;
+            padding: 25px 40px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .insights h2 {
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            color: #000;
+            font-weight: 600;
+        }
+
+        .insight-item {
+            background: white;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border: 1px solid #e0e0e0;
+            border-left: 3px solid #000;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        .content {
+            padding: 30px 40px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            font-weight: 600;
+            color: #000;
+            border-bottom: 2px solid #000;
+            padding-bottom: 10px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .card-title {
+            font-size: 1.2em;
+            margin-bottom: 12px;
+            color: #000;
+            font-weight: 600;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .card-content ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .card-content li {
+            padding: 8px 0;
+            border-bottom: 1px solid #f5f5f5;
+            color: #333;
+            line-height: 1.5;
+            font-size: 0.95em;
+        }
+
+        .card-content li:last-child {
+            border-bottom: none;
+        }
+
+        .card-content li:before {
+            content: "• ";
+            color: #000;
+            font-weight: bold;
+            margin-right: 6px;
+        }
+
+        .price-section {
+            background: #fafafa;
+            color: #000;
+            padding: 25px;
+            border: 1px solid #e0e0e0;
+            margin-bottom: 25px;
+        }
+
+        .price-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .price-card {
+            background: white;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+        }
+
+        .price-label {
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .price-value {
+            font-size: 1.5em;
+            font-weight: 600;
+            color: #000;
+        }
+
+        .product-table {
+            width: 100%;
+            margin-top: 15px;
+            border-collapse: collapse;
+            background: white;
+            border: 1px solid #e0e0e0;
+        }
+
+        .product-table th {
+            background: #000;
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .product-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+            color: #333;
+            font-size: 0.9em;
+        }
+
+        .product-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .product-link {
+            color: #000;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .product-link:hover {
+            text-decoration: underline;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background: #000;
+            color: white;
+            font-size: 0.8em;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .grid, .price-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 SWOT + 3C 분석 보고서</h1>
+            <div class="subtitle">남성 스킨케어 세트</div>
+            <div class="date">생성일: 2025년 11월 29일 17:24</div>
+        </div>
+
+        
+        <div class="insights">
+            <h2>🎯 핵심 인사이트</h2>
+            <div class="insight-item">💪 핵심 강점: 저자극성 제품으로 민감한 피부를 가진 남성들에게 적합</div>
+<div class="insight-item">🎯 시장 기회: 남성 스킨케어 시장의 성장으로 새로운 고객층 확보 가능</div>
+<div class="insight-item">💰 경쟁 가격대: 1,148원 ~ 170,000원 (평균 28,593.0원)</div>
+<div class="insight-item">🏷️ 최저가: 쿠팡이 추천하는 남성 화장품 세트 관련 혜택과 특가 - 1,148원</div>
+<div class="insight-item">👥 고객 니즈: customer 분석 항목 보완 필요</div>
+        </div>
+        
+
+        <div class="content">
+            
+        <div class="section">
+            <h2 class="section-title">📈 SWOT 분석</h2>
+            <div class="grid">
+                <div class="card">
+                    <div class="card-title">💪 Strengths (강점)</div>
+                    <div class="card-content">
+                        <ul><li>저자극성 제품으로 민감한 피부를 가진 남성들에게 적합</li>
+<li>미백과 피부 개선을 동시에 지원하는 효과적인 성분 포함</li>
+<li>수분과 영양을 제공하여 건강한 피부 유지 가능</li>
+<li>남성 전용으로 타겟팅된 마케팅 전략으로 고객의 관심 끌기 용이</li></ul>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">⚠️ Weaknesses (약점)</div>
+                    <div class="card-content">
+                        <ul><li>브랜드 인지도가 경쟁사 대비 낮아 신규 고객 유치에 어려움</li>
+<li>다양한 제품 라인업 부족으로 소비자 선택의 폭이 좁음</li>
+<li>경쟁사에 비해 가격 경쟁력이 떨어질 수 있음</li>
+<li>소셜 미디어 및 디지털 마케팅을 통한 홍보 부족</li></ul>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">🎯 Opportunities (기회)</div>
+                    <div class="card-content">
+                        <ul><li>남성 스킨케어 시장의 성장으로 새로운 고객층 확보 가능</li>
+<li>온라인 쇼핑 및 홈케어 트렌드에 맞춘 마케팅 강화 기회</li>
+<li>지속 가능한 제품 및 성분에 대한 소비자 관심 증가로 친환경 제품 개발 기회</li>
+<li>SNS 및 인플루언서를 통한 브랜드 인지도 확대 가능성</li></ul>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">🚨 Threats (위협)</div>
+                    <div class="card-content">
+                        <ul><li>대형 브랜드의 시장 지배력으로 인한 경쟁 심화</li>
+<li>유사 제품의 가격 경쟁으로 인한 판매 가격 압박</li>
+<li>소비자 선호도 변화에 민감하게 반응해야 하는 필요성</li>
+<li>경쟁사의 강력한 마케팅 및 프로모션으로 인한 시장점유율 저하</li></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+
+            
+        <div class="section">
+            <h2 class="section-title">🔍 3C 분석</h2>
+            <div class="grid">
+                <div class="card">
+                    <div class="card-title">🏢 Company (자사)</div>
+                    <div class="card-content">
+                        <ul><li>company 분석 항목 보완 필요</li></ul>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">👥 Customer (고객)</div>
+                    <div class="card-content">
+                        <ul><li>customer 분석 항목 보완 필요</li></ul>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">⚔️ Competitor (경쟁사)</div>
+                <div class="card-content">
+                    <ul><li>competitor 분석 항목 보완 필요</li></ul>
+                </div>
+            </div>
+        </div>
+        
+
+            
+        <div class="section">
+            <h2 class="section-title">💰 가격 분석</h2>
+            <div class="price-section">
+                <div class="price-grid">
+                    <div class="price-card">
+                        <div class="price-label">최저가</div>
+                        <div class="price-value">1,148원</div>
+                    </div>
+                    <div class="price-card">
+                        <div class="price-label">평균가</div>
+                        <div class="price-value">28,593.0원</div>
+                    </div>
+                    <div class="price-card">
+                        <div class="price-label">최고가</div>
+                        <div class="price-value">170,000원</div>
+                    </div>
+                </div>
+            </div>
+            
+            <table class="product-table">
+                <thead>
+                    <tr>
+                        <th width="50">순위</th>
+                        <th>상품명</th>
+                        <th width="100">플랫폼</th>
+                        <th width="150">가격</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                <tr>
+                    <td>1</td>
+                    <td><a href="https://www.coupang.com/np/search?q=%EB%82%A8%EC%84%B1%20%ED%99%94%EC%9E%A5%ED%92%88%20%EC%84%B8%ED%8A%B8" target="_blank" class="product-link">쿠팡이 추천하는 남성 화장품 세트 관련 혜택과 특가</a></td>
+                    <td>naver</td>
+                    <td><strong>1,148원</strong> <span class="badge">최저가</span></td>
+                </tr>
+                
+                <tr>
+                    <td>2</td>
+                    <td><a href="https://www.coupang.com/np/search?q=%EB%82%A8%EC%84%B1%20%ED%99%94%EC%9E%A5%ED%92%88%20%EC%84%B8%ED%8A%B8" target="_blank" class="product-link">쿠팡이 추천하는 남성 화장품 세트 관련 혜택과 특가</a></td>
+                    <td>naver</td>
+                    <td><strong>1,716원</strong> </td>
+                </tr>
+                
+                <tr>
+                    <td>3</td>
+                    <td><a href="https://trendshop.shopping.naver.com/" target="_blank" class="product-link">트렌드Shop : 네이버+ 스토어</a></td>
+                    <td>naver</td>
+                    <td><strong>3,000원</strong> </td>
+                </tr>
+                
+                <tr>
+                    <td>4</td>
+                    <td><a href="https://trendshop.shopping.naver.com/" target="_blank" class="product-link">트렌드Shop : 네이버+ 스토어</a></td>
+                    <td>naver</td>
+                    <td><strong>3,000원</strong> </td>
+                </tr>
+                
+                <tr>
+                    <td>5</td>
+                    <td><a href="https://trendshop.shopping.naver.com/" target="_blank" class="product-link">트렌드Shop : 네이버+ 스토어</a></td>
+                    <td>naver</td>
+                    <td><strong>3,000원</strong> </td>
+                </tr>
+                
+                </tbody>
+            </table>
+            
+        </div>
+        
+
+            
+        <div class="section">
+            <h2 class="section-title">🔗 분석한 경쟁사 상품 (60개)</h2>
+            <div class="competitor-links-container">
+                
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">1</span>
+                    <span class="link-platform">coupang</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://m.coupang.com/vm/products/5115308460/recommendations/search/also-viewed/show-more?vendorItemId=3631974705&itemId=6986223577&title=%EB%8B%A4%EB%A5%B8%20%EA%B3%A0%EA%B0%9D%EC%9D%B4%20%ED%95%A8%EA%BB%98%20%EB%B3%B8%20%EC%83%81%ED%92%88&auth=true&pushEvent=true&tab=Y&event=recommendation_app_sdp_seemore_001&sdpVisitKey=au2fchh6l65d4pgxqd" target="_blank" rel="noopener noreferrer">전체보기</a>
+                </div>
+                <div class="link-snippet">전체보기
+
+Image 1 위네이지 남성화장품 스킨케어 옴므 스킨 케어세트 des26693oi, 1개 _40,700_ 원
+
+Image 2 옴므 상쾌한 향취 남성 스킨케어 2종 선물세트WFHCN4F _47,510_ 원
+
+Image 3 코리아나 라비다 옴므 멀티 솔루션100</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">2</span>
+                    <span class="link-platform">coupang</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.coupang.com/np/search?q=%ED%97%A4%EB%9D%BC%20%EB%82%A8%EC%84%B1%ED%99%94%EC%9E%A5%ED%92%88%EC%84%B8%ED%8A%B8" target="_blank" rel="noopener noreferrer">쿠팡이 추천하는 헤라 남성화장품세트 관련 혜택과 특가</a>
+                </div>
+                <div class="link-snippet">이아소 포맨 시카 EX 스킨케어 세트 / 남성 피부를 위한 최적의 시카 솔루션 / 스킨 로션 2종 세트 / 본사몰 정품, 1개.</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">3</span>
+                    <span class="link-platform">coupang</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.coupang.com/np/categories/176846" target="_blank" rel="noopener noreferrer">남성화장품세트</a>
+                </div>
+                <div class="link-snippet">남성화장품세트 · 홀츠포맨 4배 더 강력한 미백 남자 스킨 로션 300ml 화이트닝 2종 세트 20 · 닥터지 옴므 다크 컨트롤 토너 150ml + 로션 150ml + 클렌징폼 70ml 세트,.</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">4</span>
+                    <span class="link-platform">coupang</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.tw.coupang.com/products/VONIN-%E9%A2%A8%E6%A0%BC%E7%B2%BE%E8%8F%AF-2-%E5%A5%97%E7%B5%84-21007598140008?srsltid=AfmBOop3B8-6RFQFdrsB2eVUulgimfQNIcbeFa3EthFWBKZPfyuVTIUK" target="_blank" rel="noopener noreferrer">VONIN 風格精華 2 套組, 爽膚水 135ml + 80ml + 35ml + 乳液 ...</a>
+                </div>
+                <div class="link-snippet">보닌 더스타일 에센즈 2종 남자 화장품 기획 세트에는 토너와 로션 두 가지 제품만 포함되어 있습니다. 토너는 피부를 산뜻하게 정돈하고 수분을 공급하여 피부 톤을 개선</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">5</span>
+                    <span class="link-platform">coupang</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.coupang.com/np/campaigns/4999/components/176746" target="_blank" rel="noopener noreferrer">쿠팡이 추천하는 남성화장품세트 관련 혜택과 특가</a>
+                </div>
+                <div class="link-snippet">미샤; 이니스프리; 토니모리; 스킨푸드; 잇츠스킨; 마몽드; 어퓨; 에뛰드. + 더보기. 개당 용량. 대용량 (500ml 이상); 중간용량 (250~500ml); 작은용량 (50~250ml)</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">6</span>
+                    <span class="link-platform">coupang</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.coupang.com/np/search?q=%EB%82%A8%EC%84%B1%20%ED%99%94%EC%9E%A5%ED%92%88%20%EC%84%B8%ED%8A%B8" target="_blank" rel="noopener noreferrer">쿠팡이 추천하는 남성 화장품 세트 관련 혜택과 특가</a>
+                </div>
+                <div class="link-snippet">보닌; 오휘; 꽃을든남자; 헤라; 더페이스샵; 오딧세이; AHC; 이자녹스; 아이오페; 비버리힐스폴로클럽; 라끄베르; 라네즈; 수려한; 나드; 미샤; 다나한; 엔프라니</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">7</span>
+                    <span class="link-platform">coupang</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.coupang.com/vp/products/8207955757" target="_blank" rel="noopener noreferrer">산토리 VARON 바론 올인원 세럼 멘즈 스킨케어/ 일본직구</a>
+                </div>
+                <div class="link-snippet">남성화장품 · 남성 스킨케어 · 올인원. Product image. 산토리 VARON 바론 올인원 세럼 멘즈 스킨케어/ 일본직구. 향 × 개당 용량 × 수량:Fresh × 20ml × 1개. 현재 판매</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">8</span>
+                    <span class="link-platform">coupang</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.tw.coupang.com/products/Bonin-Majestar-%E7%89%B9%E5%88%A5%E7%94%B7%E5%A3%AB%E5%9F%BA%E6%9C%AC%E5%A5%97%E8%A3%9D-21007830380074?srsltid=AfmBOorwc2mpbgPz7kjtd0OBqCgIQcX73vA4ITMqy-HDov_qlNUi8x90" target="_blank" rel="noopener noreferrer">VONIN Majesta 特別男性基礎保養套組, 恢復液 150ml + ... - 酷澎</a>
+                </div>
+                <div class="link-snippet">商品特色. 蘊含檀香油，散發成熟穩重的男性魅力，提升個人品味與自信。 雙重機能化妝品，改善肌膚紋路，同時提亮膚色，展現健康光澤。 強化肌膚屏障，為肌膚打好基礎，展現</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">9</span>
+                    <span class="link-platform">coupang</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.coupang.com/np/categories/176840" target="_blank" rel="noopener noreferrer">남성스킨케어 - 올인원, 스킨/로션/크림, 아이/립케어, 선케어</a>
+                </div>
+                <div class="link-snippet">아이오페; 퓨어덤; 우르오스; 히이즈; 닥터지; 이니스프리; 라운드랩; 그라펜; AHC; 다슈; OBge; 맥퀸뉴욕; 꽃을든남자; 피지오겔; 미프; 메노킨; 클럽맨; 헤라</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">10</span>
+                    <span class="link-platform">coupang</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.tw.coupang.com/products/SENITE-Homme-%E9%BB%91%E7%9B%BE%E5%A4%9A%E6%95%88%E5%90%88%E4%B8%802%E4%BB%B6%E7%B5%84-21008312861636?srsltid=AfmBOoqR6AIZfPDGhARry8TVu9p3cecdSfdJzv5MnKL4LcQZxCVmYJk7" target="_blank" rel="noopener noreferrer">SENITE Homme 黑盾多效合一2件組, 1套 - 男性保養組合 - 酷澎</a>
+                </div>
+                <div class="link-snippet">商品特色. 賽尼特男士黑盾多效合一，一步到位，簡化您的日常護膚程序，節省寶貴時間。 蘊含黑蔘、黑珍珠與黑莓精華，為肌膚注入活力，展現健康光澤，煥發自信。</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">11</span>
+                    <span class="link-platform">coupang</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.tw.coupang.com/products/21007640629548?srsltid=AfmBOordnJXzYxfN7DKQ4_ue-hSn5HsTlR9NF9vYcZKNSw4e9BDBVLHj" target="_blank" rel="noopener noreferrer">Kula M 男士 Magic Cure 白色多效合一, 120ml, 1個 - 酷澎 - 쿠팡</a>
+                </div>
+                <div class="link-snippet">피부 예민한 편인데 진정효과도 좋은 것 같고 촉촉한데 마무리는 깔끔한 편이에요. 다른 기초화장품 없이 이 제품 하나만 써도 기초케어는 다 될 것 같네요. 같이 온</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">12</span>
+                    <span class="link-platform">coupang</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.coupang.com/np/categories/176839" target="_blank" rel="noopener noreferrer">남성화장품</a>
+                </div>
+                <div class="link-snippet">다슈; 쉬크; OBge; 보닌; 닥터지; 우르오스; 질레트; 쿤달; 히이즈; 퓨어덤; 맥퀸뉴욕; 바버501; 미프; 클럽맨; 오딧세이; 수려한; 비레디; 올드스파이스</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">13</span>
+                    <span class="link-platform">coupang</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.tw.coupang.com/products/EasyMind-%E7%94%B7%E5%A3%AB%E6%92%AB%E7%B4%8B%E4%BA%AE%E7%99%BD%E5%A4%9A%E6%95%88%E8%AD%B7%E8%86%9A%E9%9C%9C-21007121409050?srsltid=AfmBOorblSdIW0jmeiA2wawjuAZQkglk0T-FlcvpnEWiMpKdxb7nB4Go" target="_blank" rel="noopener noreferrer">EasyMind 男士撫紋亮白多效護膚霜, 100ml, 2個 - 酷澎 - 쿠팡</a>
+                </div>
+                <div class="link-snippet">투브형이고 젤 타입이라 오염될 일 없어서 안심이에요. 향우 시트러스향으로 상쾌하면서 은은하게 퍼지는 향기여서 깔끔한 남자향입니다. 막 씻고 나왔을때 나는 향기에요.</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">14</span>
+                    <span class="link-platform">coupang</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.coupang.com/np/search?q=%EB%82%A8%EC%84%B1%20%EC%8A%A4%ED%82%A8%EB%A1%9C%EC%85%98%20%EC%95%A0%ED%84%B0%EB%AF%B8" target="_blank" rel="noopener noreferrer">쿠팡이 추천하는 남성 스킨로션 애터미 관련 혜택과 특가</a>
+                </div>
+                <div class="link-snippet">애터미; 아이오페; 꽃을든남자; 닥터지; AHC; 헤라; 비버리힐스폴로클럽; 이니스프리; 이자녹스; 비바스; 아페리레; 보닌; 프리메라; 수려한; MD638; 폴메디슨</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">15</span>
+                    <span class="link-platform">coupang</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.coupang.com/np/search?q=%EB%82%A8%EC%84%B1%EC%8A%A4%ED%82%A8%EB%A1%9C%EC%85%98" target="_blank" rel="noopener noreferrer">쿠팡이 추천하는 남성스킨로션 관련 혜택과 특가</a>
+                </div>
+                <div class="link-snippet">꽃을든남자; 보닌; 오휘; 토니모리; 헤라; 더페이스샵; 닥터지; 오딧세이; 비버리힐스폴로클럽; 오릭스; 시투와이; AHC; 메르헨트; 라네즈; 라끄베르; 이니스프리</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">16</span>
+                    <span class="link-platform">naver</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.coupang.com/np/search?q=%EB%82%A8%EC%84%B1%20%ED%99%94%EC%9E%A5%ED%92%88%20%EC%84%B8%ED%8A%B8" target="_blank" rel="noopener noreferrer">쿠팡이 추천하는 남성 화장품 세트 관련 혜택과 특가</a>
+                </div>
+                <div class="link-snippet">건성 
+   중성 
+   지성 
+   복합성 
+   민감성 
+   모든피부 
+
+##### 구성
+
+   단품 
+   혼합세트 
+   단품세트 
+
+##### 대상
+
+   유아용 
+   남성용 
+   여성용 
+   남녀공용 
+
+##### 세트박스 포함여부
+
+   세트박스 포</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">17</span>
+                    <span class="link-platform">naver</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://shinsegaemall.ssg.com/search.ssg?query=%EB%82%A8%EC%84%B1%ED%99%94%EC%9E%A5%ED%92%88%EC%84%B8%ED%8A%B8" target="_blank" rel="noopener noreferrer">남성화장품세트 - 추천•인기 상품, 신세계몰 - SSG</a>
+                </div>
+                <div class="link-snippet">올인원 애프터쉐이브 남성스킨 애프터스킨 면도스킨 에프터쉐이브 면도로션 남성화장품 남자스킨 ... 에띠끄 옴므 아쿠아 에너지 스킨케어 세트 /남성기초화장품/스킨/에멀젼.</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">18</span>
+                    <span class="link-platform">naver</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.youtube.com/watch?v=boB6BMoPzxw" target="_blank" rel="noopener noreferrer">6년동안 300만명 넘게본, 남자 스킨로션 총정리 (2025 최신)</a>
+                </div>
+                <div class="link-snippet">✅ 3번 세트 ✅
+1. 라운드랩 약콩 판테놀 토너
+👉 
+2. DMCK 액토인 2% 더마 부스터 앰플
+👉 
+3. 토리든 솔리드인 세라마이드 크림
+👉 
+
+ 본 채널 판매 링크는 비그룸 & 쿠팡파트너스 링크를 공유합니다. 판매 발생 시 일정 수수료를 지급받습니다. 
+ 비그룸</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">19</span>
+                    <span class="link-platform">naver</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.coupang.com/np/categories/176846" target="_blank" rel="noopener noreferrer">남성화장품세트</a>
+                </div>
+                <div class="link-snippet">보닌; 오딧세이; 헤라; AHC; 아이오페; 라네즈; 수려한; 더페이스샵; 오휘; 설화수; 꽃을든남자; 프리메라; 닥터지; 라끄베르; 미샤; 이니스프리; 비욘드; 닥터푸쿠</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">20</span>
+                    <span class="link-platform">naver</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.coupang.com/np/categories/176840" target="_blank" rel="noopener noreferrer">남성스킨케어 - 올인원, 스킨/로션/크림, 아이/립케어, 선케어</a>
+                </div>
+                <div class="link-snippet">아이오페; 퓨어덤; 우르오스; 히이즈; 닥터지; 이니스프리; 라운드랩; 그라펜; AHC; 다슈; OBge; 맥퀸뉴욕; 꽃을든남자; 피지오겔; 미프; 메노킨; 클럽맨; 헤라</div>
+            </div>
+            
+            </div>
+            <style>
+                .competitor-links-container {
+                    display: grid;
+                    gap: 15px;
+                }
+                .competitor-link-item {
+                    background: #f8f9fa;
+                    padding: 20px;
+                    border-radius: 10px;
+                    border-left: 4px solid #667eea;
+                    transition: all 0.3s ease;
+                }
+                .competitor-link-item:hover {
+                    transform: translateX(5px);
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                }
+                .link-header {
+                    display: flex;
+                    gap: 10px;
+                    margin-bottom: 10px;
+                    align-items: center;
+                }
+                .link-number {
+                    background: #667eea;
+                    color: white;
+                    width: 30px;
+                    height: 30px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 50%;
+                    font-weight: bold;
+                    font-size: 0.9em;
+                }
+                .link-platform {
+                    background: #e9ecef;
+                    padding: 5px 15px;
+                    border-radius: 20px;
+                    font-size: 0.9em;
+                    font-weight: 600;
+                    color: #495057;
+                }
+                .link-title {
+                    margin-bottom: 10px;
+                }
+                .link-title a {
+                    color: #333;
+                    text-decoration: none;
+                    font-size: 1.1em;
+                    font-weight: 600;
+                }
+                .link-title a:hover {
+                    color: #667eea;
+                    text-decoration: underline;
+                }
+                .link-snippet {
+                    color: #6c757d;
+                    font-size: 0.95em;
+                    line-height: 1.5;
+                }
+            </style>
+        </div>
+        
+
+            
+        </div>
+    </div>
+</body>
+</html>

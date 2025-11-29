@@ -294,7 +294,7 @@ SWOT 분석 항목:
             }
 
     def _analyze_prices(self, competitor_data: Dict) -> Dict:
-        """가격 분석"""
+        """가격 분석 (이상치 필터링 포함)"""
         prices = []
         price_info = []
 
@@ -325,12 +325,21 @@ SWOT 분석 항목:
                 "all_prices": []
             }
 
-        min_price = min(prices)
-        max_price = max(prices)
-        avg_price = sum(prices) / len(prices)
+        # 이상치 필터링 적용
+        filtered_prices = self._filter_outlier_prices(prices)
+
+        # 필터링된 가격 정보만 유지
+        filtered_price_info = [p for p in price_info if p["price"] in filtered_prices]
+
+        min_price = min(filtered_prices)
+        max_price = max(filtered_prices)
+        avg_price = sum(filtered_prices) / len(filtered_prices)
 
         # 최저가 상품 찾기
-        lowest_product = next((p for p in price_info if p["price"] == min_price), None)
+        lowest_product = next((p for p in filtered_price_info if p["price"] == min_price), None)
+
+        print(f"[가격 분석] 원본: {len(prices)}개, 필터링 후: {len(filtered_prices)}개")
+        print(f"[가격 분석] 범위: {min_price:,}원 ~ {max_price:,}원 (평균: {avg_price:,.0f}원)")
 
         return {
             "min_price": min_price,
@@ -338,11 +347,11 @@ SWOT 분석 항목:
             "avg_price": round(avg_price, 0),
             "price_range": f"{min_price:,}원 ~ {max_price:,}원",
             "lowest_product": lowest_product,
-            "all_prices": sorted(price_info, key=lambda x: x["price"])[:10]
+            "all_prices": sorted(filtered_price_info, key=lambda x: x["price"])[:10]
         }
 
     def _extract_prices(self, text: str) -> List[int]:
-        """텍스트에서 가격 추출"""
+        """텍스트에서 가격 추출 (이상치 필터링 포함)"""
         # 가격 패턴: 10,000원, 10000원 등
         patterns = [
             r'(\d{1,3}(?:,\d{3})+)원',  # 10,000원
@@ -356,13 +365,37 @@ SWOT 분석 항목:
             for match in matches:
                 try:
                     price = int(match.replace(',', ''))
-                    # 합리적인 가격 범위만 (100원 ~ 10,000,000원)
-                    if 100 <= price <= 10000000:
+                    # 합리적인 가격 범위 (5,000원 ~ 10,000,000원)
+                    # 1000원, 2500원 같은 비정상적으로 낮은 가격 제외
+                    if 5000 <= price <= 10000000:
                         prices.append(price)
                 except:
                     pass
 
         return prices
+
+    def _filter_outlier_prices(self, prices: List[int]) -> List[int]:
+        """이상치 가격 필터링 (통계적 방법)"""
+        if len(prices) < 3:
+            return prices
+
+        import statistics
+
+        # 평균과 표준편차 계산
+        mean_price = statistics.mean(prices)
+        stdev_price = statistics.stdev(prices) if len(prices) > 1 else 0
+
+        # 평균 ± 2 표준편차 범위 내의 가격만 유지 (95% 신뢰구간)
+        filtered = []
+        for price in prices:
+            if abs(price - mean_price) <= 2 * stdev_price:
+                filtered.append(price)
+
+        # 필터링 결과가 너무 적으면 원본 반환
+        if len(filtered) < len(prices) * 0.5:
+            return prices
+
+        return filtered
 
     def _generate_insights(self, swot: Dict, three_c: Dict, price_analysis: Dict) -> List[str]:
         """핵심 인사이트 생성"""

@@ -662,7 +662,7 @@ const UnifiedWorkflow = () => {
                               document.body.removeChild(link);
                             }}
                           >
-                            💾 HTML 다운로드
+                            HTML 다운로드
                           </Button>
                         </Grid>
                       </Grid>

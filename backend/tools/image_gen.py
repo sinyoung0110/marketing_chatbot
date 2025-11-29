@@ -20,12 +20,17 @@ class ImageGenerationTool:
 
         Args:
             product_name: 상품명
-            shot_type: 촬영 타입 (main/usage/infographic/detail)
+            shot_type: 촬영 타입 (main/usage/infographic/detail/detail1-5)
             style: 스타일 (real/lifestyle/illustration)
 
         Returns:
             이미지 생성 프롬프트
         """
+        # detail1-5를 detail로 정규화
+        base_shot_type = shot_type
+        if shot_type.startswith("detail"):
+            base_shot_type = "detail"
+
         prompts = {
             "main": {
                 "real": f"Professional product photography of {product_name}, clean white studio background, soft diffused lighting from 45-degree angle, minimal shadows, photorealistic, sharp focus, shot with Canon EOS R5, 85mm lens, f/2.8, commercial catalog style, no artificial effects",
@@ -49,7 +54,20 @@ class ImageGenerationTool:
             }
         }
 
-        return prompts.get(shot_type, {}).get(style, prompts["main"]["real"])
+        # detail 타입에 대해 다양한 각도/디테일 추가
+        if base_shot_type == "detail" and shot_type != "detail":
+            detail_variations = {
+                "detail1": " focusing on material texture and quality",
+                "detail2": " showing craftsmanship and construction details",
+                "detail3": " highlighting functional features and mechanisms",
+                "detail4": " emphasizing design elements and aesthetics",
+                "detail5": " revealing finishing touches and quality control"
+            }
+            base_prompt = prompts["detail"].get(style, prompts["detail"]["real"])
+            variation = detail_variations.get(shot_type, "")
+            return base_prompt + variation
+
+        return prompts.get(base_shot_type, {}).get(style, prompts["main"]["real"])
 
     def generate(self, prompt: str, project_id: str, image_type: str = "main") -> str:
         """

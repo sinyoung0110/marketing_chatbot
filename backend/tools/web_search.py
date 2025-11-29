@@ -4,6 +4,7 @@
 from typing import Dict, List
 from datetime import datetime, timedelta
 import os
+import re
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -132,6 +133,10 @@ class WebSearchTool:
                         "timestamp": datetime.now().isoformat()
                     }
 
+                    # 관련성 검증 (저품질 링크 필터링)
+                    if not self._is_relevant_result(query, {"title": result_data["title"], "content": result_data["snippet"], "url": result_data["url"]}, platform):
+                        continue
+
                     # 상세 콘텐츠 포함 (리뷰, 상세페이지 분석용)
                     if include_raw_content and "raw_content" in result:
                         result_data["raw_content"] = result["raw_content"]
@@ -147,7 +152,7 @@ class WebSearchTool:
 
         return results
 
-    def _search_with_duckduckgo(self, query: str, platforms: List[str], max_results: int) -> Dict:
+    def _search_with_duckduckgo(self, query: str, platforms: List[str], max_results: int, search_platforms: List[str] = None, sort_by: str = "popular") -> Dict:
         """DuckDuckGo로 검색 (fallback)"""
         results = {
             "query": query,
@@ -156,8 +161,12 @@ class WebSearchTool:
             "search_engine": "duckduckgo"
         }
 
-        for platform in platforms:
-            platform_query = f"{query} site:{self._get_platform_domain(platform)}"
+        # search_platforms가 없으면 platforms 사용
+        if not search_platforms:
+            search_platforms = platforms
+
+        for platform in search_platforms:
+            platform_query = self._build_platform_query(query, platform, sort_by)
 
             try:
                 search_results = list(self.ddgs.text(
@@ -166,13 +175,19 @@ class WebSearchTool:
                 ))
 
                 for result in search_results:
-                    results["results"].append({
+                    result_data = {
                         "platform": platform,
                         "title": result.get("title", ""),
                         "url": result.get("href", ""),
                         "snippet": result.get("body", ""),
                         "timestamp": datetime.now().isoformat()
-                    })
+                    }
+
+                    # 관련성 검증 (저품질 링크 필터링)
+                    if not self._is_relevant_result(query, {"title": result_data["title"], "content": result_data["snippet"], "url": result_data["url"]}, platform):
+                        continue
+
+                    results["results"].append(result_data)
 
             except Exception as e:
                 print(f"[WebSearch] DuckDuckGo 검색 오류 ({platform}): {e}")
@@ -291,25 +306,72 @@ class WebSearchTool:
         return filtered_results
 
     def _is_relevant_result(self, query: str, result: Dict, platform: str) -> bool:
-        """검색 결과의 관련성 검증 (무관한 상품 필터링)"""
+        """검색 결과의 관련성 검증 (무관한 상품 및 저품질 링크 필터링)"""
         title = result.get("title", "").lower()
         snippet = result.get("content", "").lower()
         url = result.get("url", "")
 
-        # 무효한 URL 패턴 체크
+        # 무효한 URL 패턴 체크 (확장)
         invalid_url_patterns = [
             r'trendshop\.shopping\.naver\.com/\w+/index',  # 네이버 스토어 메인
             r'shopping\.naver\.com/?$',  # 네이버 쇼핑 메인
             r'coupang\.com/?$',  # 쿠팡 메인
+            r'coupang\.com/np/search',  # 쿠팡 검색 결과 페이지
+            r'shopping\.naver\.com/search',  # 네이버 쇼핑 검색 결과 페이지
+            r'/category/',  # 카테고리 페이지
+            r'/event/',  # 이벤트 페이지
+            r'/promotion/',  # 프로모션 페이지
+            r'/best/',  # 베스트 상품 페이지
+            r'/special/',  # 기획전 페이지
         ]
 
         for pattern in invalid_url_patterns:
             if re.search(pattern, url):
+                print(f"[WebSearch] 저품질 URL 제외: {url[:80]}")
                 return False
 
-        # 쇼핑몰 플랫폼인 경우에만 상품 관련성 검증
+        # 저품질 제목 패턴 체크
+        low_quality_title_patterns = [
+            r'^\d+원$',  # "1000원" 같은 가격만 있는 제목
+            r'^배송',  # "배송" 같은 키워드만
+            r'^\s*$',  # 빈 제목
+            r'쿠팡!',  # 쿠팡 광고
+            r'^\d+개 상품',  # "100개 상품" 같은 검색 결과 집계
+        ]
+
+        for pattern in low_quality_title_patterns:
+            if re.search(pattern, title):
+                print(f"[WebSearch] 저품질 제목 제외: {title[:50]}")
+                return False
+
+        # 비정상 가격 패턴 체크 (1000원, 2500원 등)
+        # 제목에 가격이 있으면 검증
+        price_in_title = re.search(r'(\d{1,3}(?:,\d{3})*|\d+)원', title)
+        if price_in_title:
+            try:
+                price = int(price_in_title.group(1).replace(',', ''))
+                # 5000원 미만이면 의심스러운 상품
+                if price < 5000:
+                    print(f"[WebSearch] 비정상 가격({price}원) 제외: {title[:50]}")
+                    return False
+            except:
+                pass
+
+        # 쇼핑몰 플랫폼인 경우 상품 상세 페이지만 허용
+        if platform == 'coupang':
+            # 쿠팡은 /vp/products/ 경로만 허용
+            if '/vp/products/' not in url:
+                print(f"[WebSearch] 쿠팡 상품 페이지 아님: {url[:80]}")
+                return False
+        elif platform == 'naver':
+            # 네이버는 smartstore나 catalog 경로만 허용
+            if not ('smartstore.naver.com' in url or '/catalog/' in url):
+                print(f"[WebSearch] 네이버 상품 페이지 아님: {url[:80]}")
+                return False
+
+        # 뉴스, 블로그는 관련성 검증 스킵
         if platform not in ['coupang', 'naver', '11st']:
-            return True  # 뉴스, 블로그는 관련성 검증 스킵
+            return True
 
         # 쿼리에서 핵심 키워드 추출 (첫 단어)
         query_words = query.lower().split()

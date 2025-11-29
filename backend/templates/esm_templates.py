@@ -1,6 +1,35 @@
 """
 ESM+ / 스마트스토어 / 쿠팡 호환 상세페이지 템플릿 생성기
 """
+import re
+
+def _markdown_to_html(text: str) -> str:
+    """마크다운을 HTML로 변환"""
+    if not text:
+        return ""
+
+    # 헤더 변환
+    text = re.sub(r'^### (.+)$', r'<h3>\1</h3>', text, flags=re.MULTILINE)
+    text = re.sub(r'^## (.+)$', r'<h2>\1</h2>', text, flags=re.MULTILINE)
+    text = re.sub(r'^# (.+)$', r'<h1>\1</h1>', text, flags=re.MULTILINE)
+
+    # 볼드 변환
+    text = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', text)
+
+    # 리스트 변환
+    text = re.sub(r'^\- (.+)$', r'<li>\1</li>', text, flags=re.MULTILINE)
+    text = re.sub(r'(<li>.*</li>)', r'<ul>\1</ul>', text, flags=re.DOTALL)
+
+    # 단락 변환 (연속된 텍스트를 <p> 태그로)
+    paragraphs = text.split('\n\n')
+    html_paragraphs = []
+    for para in paragraphs:
+        para = para.strip()
+        if para and not para.startswith('<'):
+            para = f'<p>{para}</p>'
+        html_paragraphs.append(para)
+
+    return '\n'.join(html_paragraphs)
 
 def generate_esm_html(content_sections: dict, images: list, product_input: dict) -> str:
     """
@@ -24,7 +53,8 @@ def _clothing_template(content_sections: dict, images: list, product_input: dict
     selling_points = content_sections.get('selling_points', [])[:3]
     specs = content_sections.get('specs', {})
     summary = content_sections.get('summary', '한 줄 USP 문구')
-    detailed_desc = content_sections.get('detailed_description', {}).get('content', '제품 상세 소개')
+    detailed_desc_raw = content_sections.get('detailed_description', {}).get('content', '제품 상세 소개')
+    detailed_desc = _markdown_to_html(detailed_desc_raw)
 
     # 이미지 할당
     main_img = images[0] if images else 'https://via.placeholder.com/860x1000'
@@ -176,7 +206,8 @@ def _food_template(content_sections: dict, images: list, product_input: dict) ->
     selling_points = content_sections.get('selling_points', [])[:3]
     specs = content_sections.get('specs', {})
     summary = content_sections.get('summary', '한 줄 USP 문구')
-    detailed_desc = content_sections.get('detailed_description', {}).get('content', '제품 상세 소개')
+    detailed_desc_raw = content_sections.get('detailed_description', {}).get('content', '제품 상세 소개')
+    detailed_desc = _markdown_to_html(detailed_desc_raw)
     nutrition = content_sections.get('nutrition_info', {})
 
     main_img = images[0] if images else 'https://via.placeholder.com/860x1000'
@@ -359,7 +390,8 @@ def _general_template(content_sections: dict, images: list, product_input: dict)
     selling_points = content_sections.get('selling_points', [])[:3]
     specs = content_sections.get('specs', {})
     summary = content_sections.get('summary', 'USP 문구')
-    detailed_desc = content_sections.get('detailed_description', {}).get('content', '상세 소개')
+    detailed_desc_raw = content_sections.get('detailed_description', {}).get('content', '상세 소개')
+    detailed_desc = _markdown_to_html(detailed_desc_raw)
 
     main_img = images[0] if images else 'https://via.placeholder.com/860x1000'
 
