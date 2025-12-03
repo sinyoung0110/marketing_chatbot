@@ -143,7 +143,7 @@ JSON 형식으로 답변하세요."""
             if match:
                 price = match.group(1).replace(',', '').replace('.', '')
                 return f"{int(price):,}원"
-        return "N/A"
+        return None  # N/A 대신 None 반환
 
     def _extract_rating(self, text: str) -> float:
         """텍스트에서 평점 추출"""

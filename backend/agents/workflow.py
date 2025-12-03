@@ -220,31 +220,90 @@ class DetailPageGenerator:
         return state
 
     def build_image_prompts(self, state: AgentState) -> AgentState:
-        """9. 이미지 프롬프트 생성"""
+        """9. 이미지 프롬프트 생성 (셀링 포인트 기반)"""
         print(f"[Image Prompts] 이미지 프롬프트 생성 중...")
         product_input = state["product_input"]
+        content_sections = state.get("content_sections", {})
+        selling_points = content_sections.get("selling_points", [])
         image_options = product_input.get("image_options", {})
 
-        # 기본 shot_types: 메인 + 디테일 5개 (ESM 템플릿에 필요한 6개)
-        default_shots = ["main", "detail1", "detail2", "detail3", "detail4", "detail5"]
-        shot_types = image_options.get("shots", default_shots)
-
         prompts = []
-        for shot_type in shot_types:
-            prompt = self.image_gen.create_prompt(
-                product_name=product_input["product_name"],
-                shot_type=shot_type,
-                style=image_options.get("style", "real")
-            )
-            prompts.append({
-                "type": shot_type,
-                "prompt": prompt,
-                "size": "1000x1000" if shot_type == "main" else "800x800"
-            })
 
-        print(f"[Image Prompts] {len(prompts)}개 이미지 프롬프트 생성 완료")
+        # 1. 메인 이미지 (필수)
+        main_prompt = self.image_gen.create_prompt(
+            product_name=product_input["product_name"],
+            shot_type="main",
+            style=image_options.get("style", "real")
+        )
+        prompts.append({
+            "type": "main",
+            "prompt": main_prompt,
+            "size": "1000x1000"
+        })
+
+        # 2. 셀링 포인트 기반 이미지 생성 (최대 5개)
+        for idx, sp in enumerate(selling_points[:5]):
+            sp_title = sp.get("title", "")
+            sp_desc = sp.get("description", "")
+
+            # 셀링 포인트 내용이 있으면 맞춤형 프롬프트 생성
+            if sp_title and sp_desc:
+                custom_prompt = self._create_selling_point_image_prompt(
+                    product_name=product_input["product_name"],
+                    selling_point_title=sp_title,
+                    selling_point_desc=sp_desc,
+                    style=image_options.get("style", "real")
+                )
+                prompts.append({
+                    "type": f"detail{idx+1}",
+                    "prompt": custom_prompt,
+                    "size": "800x800"
+                })
+            else:
+                # 기본 디테일 이미지
+                default_prompt = self.image_gen.create_prompt(
+                    product_name=product_input["product_name"],
+                    shot_type=f"detail{idx+1}",
+                    style=image_options.get("style", "real")
+                )
+                prompts.append({
+                    "type": f"detail{idx+1}",
+                    "prompt": default_prompt,
+                    "size": "800x800"
+                })
+
+        # 셀링 포인트가 5개 미만이면 기본 디테일 이미지로 채우기
+        current_count = len(selling_points)
+        if current_count < 5:
+            for idx in range(current_count, 5):
+                default_prompt = self.image_gen.create_prompt(
+                    product_name=product_input["product_name"],
+                    shot_type=f"detail{idx+1}",
+                    style=image_options.get("style", "real")
+                )
+                prompts.append({
+                    "type": f"detail{idx+1}",
+                    "prompt": default_prompt,
+                    "size": "800x800"
+                })
+
+        print(f"[Image Prompts] {len(prompts)}개 이미지 프롬프트 생성 완료 ({len(selling_points)}개 셀링 포인트 기반)")
         state["image_prompts"] = prompts
         return state
+
+    def _create_selling_point_image_prompt(self, product_name: str, selling_point_title: str, selling_point_desc: str, style: str) -> str:
+        """셀링 포인트에 맞는 이미지 프롬프트 생성"""
+        style_settings = {
+            "real": "Professional product photography, clean background, soft lighting, photorealistic, sharp focus",
+            "lifestyle": "Authentic lifestyle photograph, natural environment, candid style, warm atmosphere",
+            "illustration": "Simple illustration, hand-drawn style, minimal colors, clean design"
+        }
+
+        base_style = style_settings.get(style, style_settings["real"])
+
+        prompt = f"""{base_style}. Show {product_name} demonstrating '{selling_point_title}': {selling_point_desc}. Visual composition that clearly illustrates this specific feature."""
+
+        return prompt
 
     def generate_images(self, state: AgentState) -> AgentState:
         """10. 이미지 생성"""

@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SWOT + 3C 분석 - 내셔널지오그래픽 여성 라이트 구스 다운 베스트</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border: 1px solid #e0e0e0;
+        }
+
+        .header {
+            background: #000;
+            color: white;
+            padding: 30px 40px;
+            border-bottom: 1px solid #333;
+        }
+
+        .header h1 {
+            font-size: 1.8em;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .header .subtitle {
+            font-size: 1em;
+            opacity: 0.8;
+        }
+
+        .header .date {
+            font-size: 0.85em;
+            opacity: 0.6;
+            margin-top: 8px;
+        }
+
+        .insights {
+            background: #fafafa;
+            padding: 25px 40px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .insights h2 {
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            color: #000;
+            font-weight: 600;
+        }
+
+        .insight-item {
+            background: white;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border: 1px solid #e0e0e0;
+            border-left: 3px solid #000;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        .content {
+            padding: 30px 40px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            font-weight: 600;
+            color: #000;
+            border-bottom: 2px solid #000;
+            padding-bottom: 10px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .card-title {
+            font-size: 1.2em;
+            margin-bottom: 12px;
+            color: #000;
+            font-weight: 600;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .card-content ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .card-content li {
+            padding: 8px 0;
+            border-bottom: 1px solid #f5f5f5;
+            color: #333;
+            line-height: 1.5;
+            font-size: 0.95em;
+        }
+
+        .card-content li:last-child {
+            border-bottom: none;
+        }
+
+        .card-content li:before {
+            content: "• ";
+            color: #000;
+            font-weight: bold;
+            margin-right: 6px;
+        }
+
+        .price-section {
+            background: #fafafa;
+            color: #000;
+            padding: 25px;
+            border: 1px solid #e0e0e0;
+            margin-bottom: 25px;
+        }
+
+        .price-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .price-card {
+            background: white;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+        }
+
+        .price-label {
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .price-value {
+            font-size: 1.5em;
+            font-weight: 600;
+            color: #000;
+        }
+
+        .product-table {
+            width: 100%;
+            margin-top: 15px;
+            border-collapse: collapse;
+            background: white;
+            border: 1px solid #e0e0e0;
+        }
+
+        .product-table th {
+            background: #000;
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .product-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+            color: #333;
+            font-size: 0.9em;
+        }
+
+        .product-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .product-link {
+            color: #000;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .product-link:hover {
+            text-decoration: underline;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background: #000;
+            color: white;
+            font-size: 0.8em;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .grid, .price-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 SWOT + 3C 분석 보고서</h1>
+            <div class="subtitle">내셔널지오그래픽 여성 라이트 구스 다운 베스트</div>
+            <div class="date">생성일: 2025년 12월 03일 11:28</div>
+        </div>
+
+        
+        <div class="insights">
+            <h2>🎯 핵심 인사이트</h2>
+            <div class="insight-item">💪 핵심 강점: 구스 다운 소재를 사용하여 뛰어난 보온성과 가벼운 착용감 제공</div>
+<div class="insight-item">🎯 시장 기회: 온라인 쇼핑의 증가로 인해 전자상거래 플랫폼에서의 판매 확대 가능성</div>
+<div class="insight-item">💰 경쟁 가격대: 6,950원 ~ 439,000원 (평균 174,517.0원)</div>
+<div class="insight-item">🏷️ 최저가: 내셔널지오그래픽 경량 패딩 다운 점퍼 헤론 남녀공용 남자 ... - 6,950원</div>
+<div class="insight-item">👥 고객 니즈: customer 분석 항목 보완 필요</div>
+        </div>
+        
+
+        <div class="content">
+            
+        <div class="section">
+            <h2 class="section-title">📈 SWOT 분석</h2>
+            <div class="grid">
+                <div class="card">
+                    <div class="card-title">💪 Strengths (강점)</div>
+                    <div class="card-content">
+                        <ul><li>구스 다운 소재를 사용하여 뛰어난 보온성과 가벼운 착용감 제공</li>
+<li>다양한 스타일링이 가능한 경량 패딩 조끼로 데일리룩에 적합</li>
+<li>국내외에서 인지도가 높은 내셔널지오그래픽 브랜드로 신뢰성 확보</li>
+<li>20~40대 여성 타겟에 맞춘 디자인 및 기능성, 특히 출퇴근 및 여행용으로 최적화</li>
+<li>경량 패딩의 특성으로 계절 변화에 유연하게 대응 가능</li></ul>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">⚠️ Weaknesses (약점)</div>
+                    <div class="card-content">
+                        <ul><li>가격대가 경쟁사의 유사 제품에 비해 상대적으로 높아 가격 민감한 소비자에게 접근성 부족</li>
+<li>경쟁사 제품에 비해 다양한 색상 옵션이 부족하여 선택의 폭이 제한적일 수 있음</li>
+<li>소셜 미디어 및 온라인 광고에서의 홍보 부족으로 인지도 확산이 느림</li>
+<li>타겟 고객층에 대한 맞춤형 마케팅 전략이 부족하여 효과적인 고객 유치 어려움</li>
+<li>리뷰 및 피드백 수가 적어 소비자 신뢰 형성에 어려움이 있을 수 있음</li></ul>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">🎯 Opportunities (기회)</div>
+                    <div class="card-content">
+                        <ul><li>온라인 쇼핑의 증가로 인해 전자상거래 플랫폼에서의 판매 확대 가능성</li>
+<li>패션 산업에서 지속 가능한 소재 및 친환경 제품에 대한 수요 증가</li>
+<li>가을 및 겨울 시즌에 맞춘 프로모션 및 할인 이벤트를 통해 판매 촉진 가능</li>
+<li>SNS 및 인플루언서를 통한 마케팅을 통해 젊은 층의 관심을 끌 수 있는 기회</li>
+<li>아우터 카테고리의 트렌드 변화에 맞춘 새로운 디자인 및 기능 추가를 통한 시장 확대 가능</li></ul>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">🚨 Threats (위협)</div>
+                    <div class="card-content">
+                        <ul><li>대형 브랜드와의 치열한 가격 경쟁으로 인한 시장 점유율 감소 위험</li>
+<li>소비자들의 선호도 변화에 따른 유사 제품의 증가로 경쟁 심화</li>
+<li>계절에 따라 급격한 수요 변화가 발생할 수 있어 재고 관리의 어려움</li>
+<li>소비자들의 가격 비교 및 리뷰 확인이 용이해져 가격 경쟁력이 중요한 요소로 부각</li>
+<li>팬데믹 이후 변화된 소비 패턴으로 인해 전통적인 오프라인 매장 방문 감소</li></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+
+            
+        <div class="section">
+            <h2 class="section-title">🔍 3C 분석</h2>
+            <div class="grid">
+                <div class="card">
+                    <div class="card-title">🏢 Company (자사)</div>
+                    <div class="card-content">
+                        <ul><li>company 분석 항목 보완 필요</li></ul>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">👥 Customer (고객)</div>
+                    <div class="card-content">
+                        <ul><li>customer 분석 항목 보완 필요</li></ul>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">⚔️ Competitor (경쟁사)</div>
+                <div class="card-content">
+                    <ul><li>competitor 분석 항목 보완 필요</li></ul>
+                </div>
+            </div>
+        </div>
+        
+
+            
+        <div class="section">
+            <h2 class="section-title">💰 가격 분석</h2>
+            <div class="price-section">
+                <div class="price-grid">
+                    <div class="price-card">
+                        <div class="price-label">최저가</div>
+                        <div class="price-value">6,950원</div>
+                    </div>
+                    <div class="price-card">
+                        <div class="price-label">평균가</div>
+                        <div class="price-value">174,517.0원</div>
+                    </div>
+                    <div class="price-card">
+                        <div class="price-label">최고가</div>
+                        <div class="price-value">439,000원</div>
+                    </div>
+                </div>
+            </div>
+            
+            <table class="product-table">
+                <thead>
+                    <tr>
+                        <th width="50">순위</th>
+                        <th>상품명</th>
+                        <th width="100">플랫폼</th>
+                        <th width="150">가격</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                <tr>
+                    <td>1</td>
+                    <td><a href="https://www.coupang.com/vp/products/8403675650" target="_blank" class="product-link">내셔널지오그래픽 경량 패딩 다운 점퍼 헤론 남녀공용 남자 ...</a></td>
+                    <td>blog</td>
+                    <td><strong>6,950원</strong> <span class="badge">최저가</span></td>
+                </tr>
+                
+                <tr>
+                    <td>2</td>
+                    <td><a href="https://m-shinsegaemall.ssg.com/search.ssg?query=%EC%97%AC%EC%84%B1%EA%B5%AC%EC%8A%A4%EB%8B%A4%EC%9A%B4%EB%B2%A0%EC%8A%A4%ED%8A%B8" target="_blank" class="product-link">여성구스다운베스트 - 추천•인기 상품, 신세계몰 - SSG</a></td>
+                    <td>news</td>
+                    <td><strong>13,410원</strong> </td>
+                </tr>
+                
+                <tr>
+                    <td>3</td>
+                    <td><a href="https://m-shinsegaemall.ssg.com/search.ssg?query=%EC%97%AC%EC%84%B1%EA%B5%AC%EC%8A%A4%EB%8B%A4%EC%9A%B4%EB%B2%A0%EC%8A%A4%ED%8A%B8" target="_blank" class="product-link">여성구스다운베스트 - 추천•인기 상품, 신세계몰 - SSG</a></td>
+                    <td>news</td>
+                    <td><strong>18,810원</strong> </td>
+                </tr>
+                
+                <tr>
+                    <td>4</td>
+                    <td><a href="https://m-shinsegaemall.ssg.com/search.ssg?query=%EC%97%AC%EC%84%B1%EA%B5%AC%EC%8A%A4%EB%8B%A4%EC%9A%B4%EB%B2%A0%EC%8A%A4%ED%8A%B8" target="_blank" class="product-link">여성구스다운베스트 - 추천•인기 상품, 신세계몰 - SSG</a></td>
+                    <td>news</td>
+                    <td><strong>25,110원</strong> </td>
+                </tr>
+                
+                <tr>
+                    <td>5</td>
+                    <td><a href="https://f3t4f.tistory.com/32" target="_blank" class="product-link">후기로 입증된 내셔널지오그래픽 여자패딩! - 여성 패션 인기순 추천!</a></td>
+                    <td>blog</td>
+                    <td><strong>51,800원</strong> </td>
+                </tr>
+                
+                </tbody>
+            </table>
+            
+        </div>
+        
+
+            
+        <div class="section">
+            <h2 class="section-title">🔗 분석한 경쟁사 상품 (41개)</h2>
+            <div class="competitor-links-container">
+                
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">1</span>
+                    <span class="link-platform">coupang</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.coupang.com/vp/products/9170104004" target="_blank" rel="noopener noreferrer">내셔널지오그래픽 N244WDW920 여성 헤론 U넥 경량 다운 ...</a>
+                </div>
+                <div class="link-snippet">내셔널지오그래픽 여성 경량 패딩조끼 헤론 U넥 구스다운 덕다운 베스트 겨울 아우터. 138,000원. 100%(1) · 스노우피크 카라 부클넥 헤비 다운 자켓 겨울 아우터 점퍼</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">2</span>
+                    <span class="link-platform">coupang</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.coupang.com/vp/products/9177137528" target="_blank" rel="noopener noreferrer">내셔널지오그래픽 여성 프로 롱기장 구스 다운 점퍼 ...</a>
+                </div>
+                <div class="link-snippet">내셔널지오그래픽 여성 경량 패딩조끼 헤론 U넥 구스다운 덕다운 베스트 겨울 아우터. 138,000원. (1). 무료배송. [국내 정품] LEE 우먼 릿지 크롭 다운 패딩 자켓 아우터</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">3</span>
+                    <span class="link-platform">coupang</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.coupang.com/vp/products/8427999708" target="_blank" rel="noopener noreferrer">국내매장판 내셔널지오그래픽 롱 패딩 남여공용 구스 다운 ...</a>
+                </div>
+                <div class="link-snippet">쿠팡에서 국내매장판 내셔널지오그래픽 롱 패딩 남여공용 구스 다운 후드 점퍼 방한 아우터 일상 데일리 구매하고 더 많은 혜택을 받으세요! 지금 할인중인 다른 패딩/</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">4</span>
+                    <span class="link-platform">coupang</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.coupang.com/vp/products/8517070754" target="_blank" rel="noopener noreferrer">내셔널지오그래픽 패딩 점퍼 아르카스 블루종 구스 다운 블랙 경량 ...</a>
+                </div>
+                <div class="link-snippet">쿠팡에서 내셔널지오그래픽 패딩 점퍼 아르카스 블루종 구스 다운 블랙 경량 잠바 아우터 구매하고 더 많은 혜택을 받으세요! 지금 할인중인 다른 패딩/다운 제품도</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">5</span>
+                    <span class="link-platform">coupang</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.coupang.com/vp/products/9148171084" target="_blank" rel="noopener noreferrer">백화점정품 내셔널지오그래픽 여성 구스 다운 패딩 조끼 등산 일상 ...</a>
+                </div>
+                <div class="link-snippet">백화점정품 내셔널지오그래픽 여성 구스 다운 패딩 조끼 등산 일상 러닝 베스트. 42%. 129,000원. 74,820원. 무료배송. 11/14 도착 예정. 판매자:네오루트.</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">6</span>
+                    <span class="link-platform">coupang</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.coupang.com/vp/products/8421399506" target="_blank" rel="noopener noreferrer">[백화점 정품] 내셔널지오그래픽 24년 신형 타루가 숏패딩 ...</a>
+                </div>
+                <div class="link-snippet">쿠팡에서 [백화점 정품] 내셔널지오그래픽 24년 신형 타루가 숏패딩 우먼 퍼 후디 구스다운 패딩 점퍼 구매하고 더 많은 혜택을 받으세요!</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">7</span>
+                    <span class="link-platform">coupang</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.coupang.com/vp/products/7549039939" target="_blank" rel="noopener noreferrer">[10월 BEST]내셔널지오그래픽 여성 경량패딩 U넥 덕 ... - 쿠팡</a>
+                </div>
+                <div class="link-snippet">[10월 BEST]내셔널지오그래픽 여성 경량패딩 U넥 덕 다운 헤론 점퍼 · 사용대상 구분: 여성용 · 성별: 여성용 · 의류 핏: 기본 · 패딩 중량: 경량패딩(충전량300g미만) · 아우터</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">8</span>
+                    <span class="link-platform">coupang</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.coupang.com/vp/products/9153135223" target="_blank" rel="noopener noreferrer">백화점정품 내셔널지오그래픽 카이만 프로 롱기장 구스 다운 ...</a>
+                </div>
+                <div class="link-snippet">[국내매장판] 내셔널지오그래픽 키즈 카이만 구스 헤비 다운 롱패딩 아우터. 238,900원</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">9</span>
+                    <span class="link-platform">coupang</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.coupang.com/vp/products/8403675650" target="_blank" rel="noopener noreferrer">내셔널지오그래픽 경량 패딩 다운 점퍼 헤론 남녀공용 남자 ...</a>
+                </div>
+                <div class="link-snippet">내셔널지오그래픽 경량 패딩 다운 점퍼 헤론 남녀공용 남자 여자 겨울 아우터 (르베로 다용도가방 지급) ; 사이즈. 85(XS) ; 색상: (여성)라벤더 ; 색상계열 · 바이올렛/보라</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">10</span>
+                    <span class="link-platform">coupang</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.coupang.com/vp/products/9031311692" target="_blank" rel="noopener noreferrer">25년신상 내셔널지오그래픽 남녀공용 하이넥 구스다운 패딩 ...</a>
+                </div>
+                <div class="link-snippet">25년신상 내셔널지오그래픽 남녀공용 하이넥 구스다운 패딩 베스트 겨울 패딩조끼 · 사용대상 구분: 남녀공용 · 의류 핏: 기본 · 사용계절: 겨울용 · 색상계열: 카키계열 · 쿠팡</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">11</span>
+                    <span class="link-platform">coupang</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.coupang.com/vp/products/9098732539" target="_blank" rel="noopener noreferrer">내셔널지오그래픽 25년 F/W 신형 헤론 경량패딩 구스 ... - 쿠팡</a>
+                </div>
+                <div class="link-snippet">제품 소재, 겉감 : 폴리에스터100%안감1 : 나일론100%안감2 : 폴리에스터 100%충전재1 : 우모(거위) 솜털80%, 깃털20%충전재2 : 폴리에스터100%충전백 : 폴리에스터100</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">12</span>
+                    <span class="link-platform">news</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.lotteon.com/search/search/search.ecn?render=search&platform=m&q=%EC%97%AC%EC%84%B1%EA%B2%BD%EB%9F%89%EA%B5%AC%EC%8A%A4%ED%8C%A8%EB%94%A9%EB%B2%A0%EC%8A%A4%ED%8A%B8&mallId=1" target="_blank" rel="noopener noreferrer">여성경량구스패딩베스트 : 롯데ON</a>
+                </div>
+                <div class="link-snippet">내셔널지오그래픽 내셔널지오그래픽 N244WDV920 여성 헤론 U넥 경량 구스 다운 베스트 LIGHT JADE. 정상가 104,300 원할인율 24%판매가 78,230원. 무료배송 · 스펙 정보.</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">13</span>
+                    <span class="link-platform">news</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://m.lotteimall.com/goods/viewGoodsDetail.lotte?goods_no=2744123247&rccode=mo_r_detail6&t=1742131989092" target="_blank" rel="noopener noreferrer">내셔널지오그래픽 N244WDV920 여성 헤론 ... - 상품상세 - 롯데홈쇼핑</a>
+                </div>
+                <div class="link-snippet">내셔널지오그래픽 N244WDV920 여성 헤론 U넥 경량 구스 다운 베스트 LIGHT JADE. 정가 104,300 원 할인율 25% 판매가 78,220원.</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">14</span>
+                    <span class="link-platform">news</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://m-shinsegaemall.ssg.com/search.ssg?query=%EC%97%AC%EC%84%B1%EA%B5%AC%EC%8A%A4%EB%8B%A4%EC%9A%B4%EB%B2%A0%EC%8A%A4%ED%8A%B8" target="_blank" rel="noopener noreferrer">여성구스다운베스트 - 추천•인기 상품, 신세계몰 - SSG</a>
+                </div>
+                <div class="link-snippet">_폴햄_ 여성 리얼 라이트 구스 브이넥 경량 베스트_PHC5VP2011 판매가격 13,410원 5% 카드할인
+
+무료배송
+
+Image 32: 내셔널지오그래픽 N244WDV020 여성 헤론 U넥 경량 구스 다운 베스트
+
+신세계백화점 _내셔널지오그래픽_ N244WDV020 </div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">15</span>
+                    <span class="link-platform">news</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://fashionbiz.co.kr/article/221172" target="_blank" rel="noopener noreferrer">내셔널지오그래픽, 이른 한파에 '에이라 패딩' 매출 200% 급등 - 패션비즈</a>
+                </div>
+                <div class="link-snippet">밑단의 경우 조임 장식을 적용해 소비자들 개인 체형에 맞게 조절할 수 있도록 한 점도 포인트다. 색상은 라이트 그레이, 라이트 블루, 블랙, 브라운, 화이트, 핑크 6가지로 구성해 소비자 선택 폭을 늘렸다.
+
+내셔널지오그래픽어패럴 관계자는 “에이라는 기능성과 디자인을 </div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">16</span>
+                    <span class="link-platform">news</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://tnnews.co.kr/archives/255753" target="_blank" rel="noopener noreferrer">내셔널지오그래픽, 나나 패딩 '에이라'...판매량 급증 - TENANT news</a>
+                </div>
+                <div class="link-snippet">한편,패션 플랫폼 무신사에 따르면 올 10월 넷째 주(10월 20~26일)주요 겨울 아우터 검색량은 전년 동기 대비 일제히 증가한 것으로 조사됐다.항목별로는‘경량 패딩’검색량이 650%증가한 데 이어,‘패딩(41%)’,‘후리스(55%)’,‘항공점퍼(35%)’등에 대한 </div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">17</span>
+                    <span class="link-platform">news</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.lotteon.com/search/search/search.ecn?render=search&platform=m&q=%EC%97%AC%EC%84%B1%EA%B5%AC%EC%8A%A4%EB%B2%A0%EC%8A%A4%ED%8A%B8&typo=N&mallId=1&brand=p326" target="_blank" rel="noopener noreferrer">여성구스베스트 : 롯데ON</a>
+                </div>
+                <div class="link-snippet">내셔널지오그래픽 매장정품 내셔널지오그래픽 NATIONAL GEOGRAPHIC N244MDV240 토르니에 하이넥 속사시 경량 구스 다운 베스트 KHAKI N244MDV24.</div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">18</span>
+                    <span class="link-platform">news</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.enuri.com/knowcom/detail.jsp?kbno=4119350&bbsname=news&cateno=4&srsltid=AfmBOopDku--PS2pTKrcL6DevnedX3Jm7gW8LIVNYztE1iGsDxltm-Jc" target="_blank" rel="noopener noreferrer">“첫눈도 오기 전인데” 내셔널지오그래픽 '에이라 패딩' 판매 200% 급증</a>
+                </div>
+                <div class="link-snippet">패션 플랫폼 무신사에 따르면 10월 넷째 주(10월 20~26일) 주요 겨울 아우터 검색량은 전년 동기 대비 크게 증가했다. 특히 ‘경량 패딩’ 검색량은 650% 급증했으며, ‘패딩(41%)’, ‘후리스(55%)’, ‘항공점퍼(35%)’ 등도 일제히 상승세를 보였다. </div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">19</span>
+                    <span class="link-platform">news</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.enuri.com/knowcom/detail.jsp?kbno=4119350&bbsname=news&cateno=4&srsltid=AfmBOoqXLZbPHEKSzcsUB8og6BtOIOTSqoVtFID4KDs-KF9lM4J0RzXI" target="_blank" rel="noopener noreferrer">“첫눈도 오기 전인데” 내셔널지오그래픽 '에이라 패딩' 판매 200% 급증</a>
+                </div>
+                <div class="link-snippet">패션 플랫폼 무신사에 따르면 10월 넷째 주(10월 20~26일) 주요 겨울 아우터 검색량은 전년 동기 대비 크게 증가했다. 특히 ‘경량 패딩’ 검색량은 650% 급증했으며, ‘패딩(41%)’, ‘후리스(55%)’, ‘항공점퍼(35%)’ 등도 일제히 상승세를 보였다. </div>
+            </div>
+            
+            <div class="competitor-link-item">
+                <div class="link-header">
+                    <span class="link-number">20</span>
+                    <span class="link-platform">news</span>
+                </div>
+                <div class="link-title">
+                    <a href="https://www.instagram.com/p/DQAxEQ3gXg7/" target="_blank" rel="noopener noreferrer">압도적 가벼움 'EIRA' 더 가볍고 따뜻한, 에이라 구스다운 패딩 내셔널 ...</a>
+                </div>
+                <div class="link-snippet">내셔널지오그래픽에서 새롭게 선보이는. LIGHT & WARM ❄️에이라 패딩 시리즈❄️ ✓보온 · 경량 · 방풍의 밸런스로 완성한 에이라의 장점 압도적 가벼움</div>
+            </div>
+            
+            </div>
+            <style>
+                .competitor-links-container {
+                    display: grid;
+                    gap: 15px;
+                }
+                .competitor-link-item {
+                    background: #f8f9fa;
+                    padding: 20px;
+                    border-radius: 10px;
+                    border-left: 4px solid #667eea;
+                    transition: all 0.3s ease;
+                }
+                .competitor-link-item:hover {
+                    transform: translateX(5px);
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                }
+                .link-header {
+                    display: flex;
+                    gap: 10px;
+                    margin-bottom: 10px;
+                    align-items: center;
+                }
+                .link-number {
+                    background: #667eea;
+                    color: white;
+                    width: 30px;
+                    height: 30px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 50%;
+                    font-weight: bold;
+                    font-size: 0.9em;
+                }
+                .link-platform {
+                    background: #e9ecef;
+                    padding: 5px 15px;
+                    border-radius: 20px;
+                    font-size: 0.9em;
+                    font-weight: 600;
+                    color: #495057;
+                }
+                .link-title {
+                    margin-bottom: 10px;
+                }
+                .link-title a {
+                    color: #333;
+                    text-decoration: none;
+                    font-size: 1.1em;
+                    font-weight: 600;
+                }
+                .link-title a:hover {
+                    color: #667eea;
+                    text-decoration: underline;
+                }
+                .link-snippet {
+                    color: #6c757d;
+                    font-size: 0.95em;
+                    line-height: 1.5;
+                }
+            </style>
+        </div>
+        
+
+            
+        </div>
+    </div>
+</body>
+</html>

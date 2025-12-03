@@ -48,20 +48,22 @@ const MarketingChatbot = () => {
     }
   }, []);
 
-  const loadSessionContext = async (sessionId) => {
+  const loadSessionContext = async (sessionId, isInitialLoad = true) => {
     try {
       const response = await fetch(`${BACKEND_URL}/api/unified/session/${sessionId}`);
       if (response.ok) {
         const data = await response.json();
         setSessionContext(data);
 
-        // 환영 메시지 업데이트
-        setMessages([{
-          role: 'assistant',
-          content: `"${data.product_info?.product_name}" 프로젝트 컨텍스트를 불러왔습니다.\n\nSWOT 분석: ${data.has_swot ? '완료' : '미완료'}\n상세페이지: ${data.has_detail ? '완료' : '미완료'}\n\n프로젝트 정보를 바탕으로 마케팅 전략을 제안해드리겠습니다. 무엇을 도와드릴까요?`,
-          timestamp: new Date().toISOString(),
-          showQuickActions: true
-        }]);
+        // 초기 로드일 때만 환영 메시지 설정 (대화 중에는 메시지 유지)
+        if (isInitialLoad) {
+          setMessages([{
+            role: 'assistant',
+            content: `"${data.product_info?.product_name}" 프로젝트 컨텍스트를 불러왔습니다.\n\nSWOT 분석: ${data.has_swot ? '완료' : '미완료'}\n상세페이지: ${data.has_detail ? '완료' : '미완료'}\n\n프로젝트 정보를 바탕으로 마케팅 전략을 제안해드리겠습니다. 무엇을 도와드릴까요?`,
+            timestamp: new Date().toISOString(),
+            showQuickActions: true
+          }]);
+        }
       }
     } catch (error) {
       console.log('세션 로드 실패 (무시):', error);
@@ -143,9 +145,9 @@ const MarketingChatbot = () => {
 
       setMessages((prev) => [...prev, newMessage]);
 
-      // 세션 컨텍스트 새로고침 (상세페이지가 업데이트된 경우)
+      // 세션 컨텍스트 새로고침 (상세페이지가 업데이트된 경우) - 메시지는 유지
       if (data.action_type === 'detail_page_updated' && sessionContext?.session_id) {
-        await loadSessionContext(sessionContext.session_id);
+        await loadSessionContext(sessionContext.session_id, false); // isInitialLoad = false
       }
     } catch (error) {
       console.error('챗봇 오류:', error);
@@ -338,8 +340,8 @@ const MarketingChatbot = () => {
                 )}
               </Box>
 
-              {/* 상세페이지 업데이트 시 HTML 링크 버튼 표시 (메시지 밖) */}
-              {msg.action_type === 'detail_page_updated' && msg.html_url && (
+              {/* HTML 링크가 있으면 버튼 표시 */}
+              {msg.role === 'assistant' && msg.html_url && (
                 <Box sx={{ display: 'flex', justifyContent: 'flex-start', mt: 1, ml: 6 }}>
                   <Button
                     variant="contained"
@@ -348,7 +350,7 @@ const MarketingChatbot = () => {
                     startIcon={<Visibility />}
                     onClick={() => window.open(`${BACKEND_URL}${msg.html_url}`, '_blank')}
                   >
-                    수정된 상세페이지 보기
+                    📄 생성된 HTML 보기
                   </Button>
                 </Box>
               )}
