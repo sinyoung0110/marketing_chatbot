@@ -78,3 +78,9 @@ projects/*/
 # Backend cache
 backend/__pycache__/
 backend/**/__pycache__/
+
+# Backend sessions and generated files
+backend/sessions/*.json
+backend/projects/*/
+backend/data/chroma_store/*
+!backend/data/chroma_store/.gitkeep

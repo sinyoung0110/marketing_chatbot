@@ -902,7 +902,7 @@ p{{font-size:16px}}
 <!-- 2. 제품 소개 -->
 <section class="section">
   <h2>제품 소개</h2>
-  <div class="highlight">
+  <div style="padding:24px;background:#fff;border:1px solid #e5e7eb;border-radius:12px;margin:24px 0">
     {detailed_desc}
   </div>
 </section>
