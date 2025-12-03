@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SWOT + 3C 분석 - 내셔널지오그래픽 여성 라이트 구스 다운 베스트</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border: 1px solid #e0e0e0;
+        }
+
+        .header {
+            background: #000;
+            color: white;
+            padding: 30px 40px;
+            border-bottom: 1px solid #333;
+        }
+
+        .header h1 {
+            font-size: 1.8em;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .header .subtitle {
+            font-size: 1em;
+            opacity: 0.8;
+        }
+
+        .header .date {
+            font-size: 0.85em;
+            opacity: 0.6;
+            margin-top: 8px;
+        }
+
+        .insights {
+            background: #fafafa;
+            padding: 25px 40px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .insights h2 {
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            color: #000;
+            font-weight: 600;
+        }
+
+        .insight-item {
+            background: white;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border: 1px solid #e0e0e0;
+            border-left: 3px solid #000;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        .content {
+            padding: 30px 40px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            font-weight: 600;
+            color: #000;
+            border-bottom: 2px solid #000;
+            padding-bottom: 10px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .card-title {
+            font-size: 1.2em;
+            margin-bottom: 12px;
+            color: #000;
+            font-weight: 600;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .card-content ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .card-content li {
+            padding: 8px 0;
+            border-bottom: 1px solid #f5f5f5;
+            color: #333;
+            line-height: 1.5;
+            font-size: 0.95em;
+        }
+
+        .card-content li:last-child {
+            border-bottom: none;
+        }
+
+        .card-content li:before {
+            content: "• ";
+            color: #000;
+            font-weight: bold;
+            margin-right: 6px;
+        }
+
+        .price-section {
+            background: #fafafa;
+            color: #000;
+            padding: 25px;
+            border: 1px solid #e0e0e0;
+            margin-bottom: 25px;
+        }
+
+        .price-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .price-card {
+            background: white;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+        }
+
+        .price-label {
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .price-value {
+            font-size: 1.5em;
+            font-weight: 600;
+            color: #000;
+        }
+
+        .product-table {
+            width: 100%;
+            margin-top: 15px;
+            border-collapse: collapse;
+            background: white;
+            border: 1px solid #e0e0e0;
+        }
+
+        .product-table th {
+            background: #000;
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .product-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+            color: #333;
+            font-size: 0.9em;
+        }
+
+        .product-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .product-link {
+            color: #000;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .product-link:hover {
+            text-decoration: underline;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background: #000;
+            color: white;
+            font-size: 0.8em;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .grid, .price-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 SWOT + 3C 분석 보고서</h1>
+            <div class="subtitle">내셔널지오그래픽 여성 라이트 구스 다운 베스트</div>
+            <div class="date">생성일: 2025년 12월 03일 14:49</div>
+        </div>
+
+        
+        <div class="insights">
+            <h2>🎯 핵심 인사이트</h2>
+            <div class="insight-item">💪 핵심 강점: 고급 구스 다운 사용으로 뛰어난 보온성 제공</div>
+<div class="insight-item">🎯 시장 기회: 온라인 쇼핑 트렌드 증가로 인해 디지털 마케팅 강화 가능</div>
+<div class="insight-item">💰 경쟁 가격대: 6,950원 ~ 169,000원 (평균 113,539.0원)</div>
+<div class="insight-item">🏷️ 최저가: 내셔널지오그래픽 경량 패딩 다운 점퍼 헤론 남녀공용 남자 ... - 6,950원</div>
+<div class="insight-item">👥 고객 니즈: customer 분석 항목 보완 필요</div>
+        </div>
+        
+
+        <div class="content">
+            
+        <div class="section">
+            <h2 class="section-title">📈 SWOT 분석</h2>
+            <div class="grid">
+                <div class="card">
+                    <div class="card-title">💪 Strengths (강점)</div>
+                    <div class="card-content">
+                        <ul><li>고급 구스 다운 사용으로 뛰어난 보온성 제공</li>
+<li>여성 맞춤형 디자인으로 스타일과 실용성 모두 확보</li>
+<li>경량패딩으로 활동성과 편안함 강조, 데일리룩에 적합</li>
+<li>가을 및 겨울 시즌에 적합한 다양한 스타일로 레이어드 가능</li>
+<li>브랜드 신뢰도 높은 내셔널지오그래픽 제품으로 인지도와 충성도 확보</li></ul>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">⚠️ Weaknesses (약점)</div>
+                    <div class="card-content">
+                        <ul><li>경쟁사 제품들에 비해 가격대가 상대적으로 높음</li>
+<li>마케팅 채널 다양성이 부족하여 소비자에게 도달하는 경로가 제한적</li>
+<li>고객 리뷰 수가 적어 소비자 신뢰 구축이 미흡함</li>
+<li>시즌 한정 제품으로 연중 판매 지속성이 떨어질 수 있음</li>
+<li>유사한 기능을 가진 경쟁 제품들과의 차별성이 부족할 수 있음</li></ul>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">🎯 Opportunities (기회)</div>
+                    <div class="card-content">
+                        <ul><li>온라인 쇼핑 트렌드 증가로 인해 디지털 마케팅 강화 가능</li>
+<li>20~40대 여성 소비자층의 구매력 상승 및 패션에 대한 관심 증가</li>
+<li>친환경 및 지속 가능성에 대한 소비자 관심 증대로 고급 소재 사용 강조</li>
+<li>여행 및 레저 활동 증가로 인해 다용도로 활용 가능한 패딩 수요 확대</li>
+<li>SNS 및 인플루언서를 통한 브랜드 홍보 및 인지도 확대 기회</li></ul>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">🚨 Threats (위협)</div>
+                    <div class="card-content">
+                        <ul><li>유사 제품의 가격 경쟁 심화로 인해 가격 인하 압박 증가</li>
+<li>대형 브랜드의 시장 지배력으로 인한 경쟁 심화</li>
+<li>소비자 선호도 변화로 인해 경량 및 스타일에 대한 요구가 변화할 가능성</li>
+<li>불안정한 글로벌 경제 상황으로 인한 소비자 지출 감소</li>
+<li>계절적 요인으로 인한 판매 시즌의 제한성</li></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+
+            
+        <div class="section">
+            <h2 class="section-title">🔍 3C 분석</h2>
+            <div class="grid">
+                <div class="card">
+                    <div class="card-title">🏢 Company (자사)</div>
+                    <div class="card-content">
+                        <ul><li>company 분석 항목 보완 필요</li></ul>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">👥 Customer (고객)</div>
+                    <div class="card-content">
+                        <ul><li>customer 분석 항목 보완 필요</li></ul>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">⚔️ Competitor (경쟁사)</div>
+                <div class="card-content">
+                    <ul><li>competitor 분석 항목 보완 필요</li></ul>
+                </div>
+            </div>
+        </div>
+        
+
+            
+        <div class="section">
+            <h2 class="section-title">💰 가격 분석</h2>
+            <div class="price-section">
+                <div class="price-grid">
+                    <div class="price-card">
+                        <div class="price-label">최저가</div>
+                        <div class="price-value">6,950원</div>
+                    </div>
+                    <div class="price-card">
+                        <div class="price-label">평균가</div>
+                        <div class="price-value">113,539.0원</div>
+                    </div>
+                    <div class="price-card">
+                        <div class="price-label">최고가</div>
+                        <div class="price-value">169,000원</div>
+                    </div>
+                </div>
+            </div>
+            
+            <table class="product-table">
+                <thead>
+                    <tr>
+                        <th width="50">순위</th>
+                        <th>상품명</th>
+                        <th width="100">플랫폼</th>
+                        <th width="150">가격</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                <tr>
+                    <td>1</td>
+                    <td><a href="https://www.coupang.com/vp/products/8403675650" target="_blank" class="product-link">내셔널지오그래픽 경량 패딩 다운 점퍼 헤론 남녀공용 남자 ...</a></td>
+                    <td>coupang</td>
+                    <td><strong>6,950원</strong> <span class="badge">최저가</span></td>
+                </tr>
+                
+                <tr>
+                    <td>2</td>
+                    <td><a href="https://www.coupang.com/vp/products/9148171084" target="_blank" class="product-link">백화점정품 내셔널지오그래픽 여성 구스 다운 패딩 조끼 등산 일상 ...</a></td>
+                    <td>coupang</td>
+                    <td><strong>74,820원</strong> </td>
+                </tr>
+                
+                <tr>
+                    <td>3</td>
+                    <td><a href="https://www.coupang.com/vp/products/9148171084" target="_blank" class="product-link">백화점정품 내셔널지오그래픽 여성 구스 다운 패딩 조끼 등산 일상 ...</a></td>
+                    <td>coupang</td>
+                    <td><strong>129,000원</strong> </td>
+                </tr>
+                
+                <tr>
+                    <td>4</td>
+                    <td><a href="https://www.coupang.com/vp/products/9170104004" target="_blank" class="product-link">내셔널지오그래픽 N244WDW920 여성 헤론 U넥 경량 다운 ...</a></td>
+                    <td>coupang</td>
+                    <td><strong>138,000원</strong> </td>
+                </tr>
+                
+                <tr>
+                    <td>5</td>
+                    <td><a href="https://www.coupang.com/vp/products/9177137528" target="_blank" class="product-link">내셔널지오그래픽 여성 프로 롱기장 구스 다운 점퍼 ...</a></td>
+                    <td>coupang</td>
+                    <td><strong>138,000원</strong> </td>
+                </tr>
+                
+                </tbody>
+            </table>
+            
+        </div>
+        
+
+            
+
+            
+        </div>
+    </div>
+</body>
+</html>
