@@ -61,3 +61,20 @@ frontend/yarn-error.log*
 # Database
 *.db
 *.sqlite
+
+# ChromaDB
+chromadb/
+
+# Generated files
+projects/*/
+!projects/.gitkeep
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~
+
+# Backend cache
+backend/__pycache__/
+backend/**/__pycache__/

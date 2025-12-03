@@ -1,388 +1,240 @@
-# 🎯 마케팅 AI 어시스턴트 v2.0
+# SellFlow AI - 마케팅 자동화 챗봇 시스템
 
-> AI 기반 상세페이지 생성 & SWOT+3C 분석 플랫폼
+AI 기반 e-커머스 마케팅 자동화 플랫폼으로, SWOT 분석부터 상세페이지 생성, 챗봇 상담까지 통합된 워크플로우를 제공합니다.
 
-쿠팡·네이버 스토어 전용 상세페이지를 AI로 자동 생성하고, 실시간 경쟁사 분석을 통해 마케팅 전략을 제공하는 올인원 플랫폼입니다.
+## 📋 프로젝트 개요
 
-![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)
-![Python](https://img.shields.io/badge/python-3.12-blue.svg)
-![React](https://img.shields.io/badge/react-18.0-blue.svg)
-![License](https://img.shields.io/badge/license-MIT-green.svg)
+### 주요 기능
+1. **통합 워크플로우**: 한 번 입력으로 SWOT 분석 → 상세페이지 생성 → 챗봇 상담까지 자동 연계
+2. **SWOT + 3C 분석**: 경쟁사 자동 분석 및 시각화된 HTML 보고서 생성
+3. **AI 상세페이지 생성**: 카테고리별 맞춤형 상세페이지 및 이미지 자동 생성
+4. **마케팅 챗봇**: 프로젝트 컨텍스트 기반 실시간 마케팅 전략 상담
 
----
+### 기술 스택
+- **Backend**: FastAPI, Python 3.12
+- **Frontend**: React, Material-UI
+- **AI/LLM**: LangChain, OpenAI GPT-4o-mini, DALL-E 3
+- **검색**: Tavily API, DuckDuckGo
+- **벡터 DB**: ChromaDB
 
-## ✨ 주요 기능
+## 🚀 프로젝트 실행 방법
 
-### 📝 페이지 1: 상세페이지 자동 생성
-- **AI 기반 콘텐츠 생성**: LangChain + LangGraph 멀티 에이전트 워크플로우
-- **실사 같은 이미지**: DALL-E 3로 덜 AI스러운, 자연스러운 제품 이미지 생성
-- **플랫폼 최적화**: 쿠팡/네이버 스토어 규격에 맞춘 템플릿
-- **다양한 출력 형식**: Markdown, HTML, 이미지 파일
+### 사전 요구사항
+- Python 3.12 이상
+- Node.js 18 이상
+- npm
 
-### 📊 페이지 2: SWOT + 3C 분석
-- **실시간 경쟁사 검색**: Tavily API로 최신 상품 정보 수집
-- **검색 결과 편집**: URL 체크박스 선택 후 제외하고 재검색 가능
-- **SWOT 분석**: 강점, 약점, 기회, 위협 자동 분석
-- **3C 분석**: 자사, 고객, 경쟁사 전략 분석
-- **가격 비교**: 최저가 상품 탐색 및 가격대 분석
-- **문서 요약**: 경쟁사 URL 내용 자동 요약
-- **시각화 보고서**: 아름다운 HTML 보고서 생성
+### 1. API 키 발급
 
-### 💬 페이지 3: 마케팅 전략 챗봇
-- **AI 마케팅 컨설턴트**: 실시간 전략 상담
-- **빠른 작업**:
-  - SEO 키워드 추천
-  - 타겟 고객 분석
-  - 가격 전략 제안
-- **페이지 연동**: 챗봇에서 바로 상세페이지 생성/SWOT 분석으로 이동
+#### OpenAI API 키 (필수)
+1. [OpenAI Platform](https://platform.openai.com/) 접속
+2. 회원가입 후 로그인
+3. 우측 상단 프로필 → "API keys" 클릭
+4. "Create new secret key" 버튼 클릭
+5. 생성된 키 복사 (한 번만 표시되므로 안전한 곳에 보관)
 
----
+#### Tavily API 키 (선택 - 고급 검색 기능용)
+1. [Tavily](https://tavily.com/) 접속
+2. 회원가입 후 로그인
+3. Dashboard에서 API 키 발급
+4. 무료 플랜: 월 1,000회 검색 가능
 
-## 🎨 스크린샷
+### 2. 환경 설정
 
-### 네비게이션
+#### Backend 설정
+```bash
+# 백엔드 디렉토리로 이동
+cd backend
+
+# 가상환경 생성 (선택사항이지만 권장)
+python3 -m venv venv
+source venv/bin/activate  # macOS/Linux
+# 또는
+venv\Scripts\activate  # Windows
+
+# 패키지 설치
+pip3 install -r requirements.txt
+
+# .env 파일 생성
+cp .env.example .env
+
+# .env 파일 편집 (발급받은 API 키 입력)
+# 텍스트 에디터로 .env 파일 열기:
+# nano .env
+# 또는
+# vi .env
+
+# 아래 내용 입력:
+# OPENAI_API_KEY=발급받은_OpenAI_키
+# TAVILY_API_KEY=발급받은_Tavily_키 (선택)
 ```
-┌─────────────────────────────────────────┐
-│  🎯 마케팅 AI 어시스턴트            v2.0 │
-│  [상세페이지 생성] [SWOT+3C 분석] [챗봇] │
-└─────────────────────────────────────────┘
+
+#### Frontend 설정
+```bash
+# 새 터미널을 열고 프론트엔드 디렉토리로 이동
+cd frontend
+
+# 패키지 설치
+npm install
 ```
 
-### SWOT 분석 페이지
-- 1️⃣ 경쟁사 검색 (Tavily)
-- 2️⃣ 검색 결과 편집 (체크박스로 URL 제외)
-- 3️⃣ 상품 정보 입력
-- 4️⃣ SWOT + 3C 분석 실행
-- ✅ 아름다운 HTML 보고서
+### 3. 실행
 
----
+#### Backend 실행 (첫 번째 터미널)
+```bash
+cd backend
+python3 main.py
+```
+서버가 `http://localhost:8000`에서 실행됩니다.
+"Application startup complete" 메시지가 표시되면 성공입니다.
+
+#### Frontend 실행 (두 번째 터미널)
+```bash
+cd frontend
+npm start
+```
+브라우저가 자동으로 `http://localhost:3000`에서 열립니다.
 
 ## 📁 프로젝트 구조
 
 ```
 marketing_chatbot/
-├── backend/                    # FastAPI 백엔드
-│   ├── main.py                # FastAPI 앱 진입점
-│   ├── agents/
-│   │   └── workflow.py        # LangGraph 워크플로우 (11개 노드)
-│   ├── api/
-│   │   ├── endpoints.py       # 상세페이지 생성 API
-│   │   ├── swot_endpoints.py  # SWOT+3C 분석 API (신규)
-│   │   └── chatbot_endpoints.py  # 마케팅 챗봇 API (신규)
-│   ├── tools/
-│   │   ├── web_search.py      # Tavily 웹 검색 (개선)
-│   │   ├── competitor_analysis.py
-│   │   ├── swot_3c_analysis.py    # SWOT+3C 분석기 (신규)
-│   │   ├── analysis_visualizer.py # HTML 시각화 (신규)
-│   │   ├── selling_point.py
-│   │   ├── image_gen.py       # 더 사실적인 이미지 프롬프트
-│   │   └── exporter.py
-│   ├── templates/
-│   │   └── platform_templates.py
-│   ├── models/
-│   │   └── schemas.py
-│   └── utils/
-│       └── rag_manager.py
-├── frontend/                   # React 프론트엔드
+├── backend/
+│   ├── api/                    # API 엔드포인트
+│   ├── agents/                 # AI 에이전트 워크플로우
+│   ├── tools/                  # 핵심 도구
+│   ├── templates/              # HTML 템플릿
+│   ├── utils/                  # 유틸리티
+│   ├── main.py                 # FastAPI 서버 엔트리포인트
+│   ├── requirements.txt
+│   └── .env.example
+├── frontend/
 │   ├── src/
-│   │   ├── App.js             # React Router 설정
-│   │   ├── components/
-│   │   │   ├── Navigation.js  # 네비게이션 바 (신규)
-│   │   │   ├── ProductInputForm.js
-│   │   │   ├── PreviewPanel.js
-│   │   │   └── ResultView.js  # SWOT 링크 추가
-│   │   └── pages/
-│   │       ├── DetailPageGenerator.js  # 페이지 1
-│   │       ├── SwotAnalyzer.js        # 페이지 2 (신규)
-│   │       └── MarketingChatbot.js    # 페이지 3 (신규)
-│   └── package.json
-├── projects/                   # 생성된 결과물
-├── .env                       # API 키 설정
-├── .gitignore
-├── requirements.txt
+│   │   ├── pages/             # React 페이지 컴포넌트
+│   │   └── App.js
+│   ├── package.json
+│   └── public/
+├── projects/                   # 생성된 프로젝트 저장소 (자동 생성)
 └── README.md
 ```
 
----
+## 🔑 API 키 보안
 
-## 🚀 설치 및 실행
+**⚠️ 중요**: `.env` 파일은 절대 GitHub에 업로드하지 마세요!
 
-### 1. 저장소 클론
+- `.env.example` 파일을 복사하여 `.env` 파일 생성
+- API 키는 `.env` 파일에만 저장
+- `.gitignore`에 `.env` 파일이 포함되어 있어 자동으로 Git에서 제외됨
 
+## 💡 사용 방법
+
+### 1. 통합 워크플로우
+1. `http://localhost:3000` 접속
+2. 상품 정보 입력 (상품명, 카테고리, 키워드 등)
+3. "워크플로우 시작" 클릭
+4. SWOT + 3C 분석 실행
+5. 분석 결과 확인 및 수정 (선택)
+6. 상세페이지 생성
+7. 챗봇에서 마케팅 전략 상담
+
+### 2. SWOT 분석
+- 자동으로 경쟁사 검색 및 리뷰 분석
+- 강점, 약점, 기회, 위협 자동 도출
+- HTML 보고서로 결과 확인
+
+### 3. 상세페이지 생성
+- 카테고리별 최적화된 템플릿 자동 선택 (뷰티, 식품, 패션, 전자제품 등)
+- 셀링 포인트 기반 맞춤형 이미지 자동 생성
+- 경쟁사 비교 테이블 포함
+
+### 4. 마케팅 챗봇
+- 프로젝트 컨텍스트 기반 실시간 상담
+- 상세페이지 수정 요청 가능
+- 예시: "상세페이지 제목을 ABC로 바꿔줘"
+
+## ⚠️ 주의사항
+
+### 파일 경로
+- 모든 파일 경로는 **상대경로** 사용
+- 프로젝트 루트 디렉토리를 기준으로 동작
+- **절대경로 사용 없음** - 별도 수정 불필요
+
+### 데이터 폴더
+- `projects/`: 생성된 HTML, 이미지 등이 자동으로 저장됨 (자동 생성)
+- `chromadb/`: 벡터 데이터베이스 (자동 생성)
+
+## 🐛 문제 해결
+
+### "OPENAI_API_KEY not found" 오류
 ```bash
-git clone https://github.com/sinyoung0110/marketing_chatbot.git
-cd marketing_chatbot
-```
+# .env 파일이 backend/ 디렉토리에 있는지 확인
+ls backend/.env
 
-### 2. 백엔드 설정
-
-```bash
-# Python 가상환경 생성 (권장)
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-
-# 패키지 설치
-pip install -r requirements.txt
-pip install -r requirements-backend.txt
-
-# 추가 패키지 (Tavily)
-pip install tavily-python
-```
-
-### 3. 프론트엔드 설정
-
-```bash
-cd frontend
-npm install
-cd ..
-```
-
-### 4. 환경 변수 설정
-
-`backend/.env` 파일 생성:
-
-```env
-OPENAI_API_KEY=your_openai_api_key_here
-TAVILY_API_KEY=your_tavily_api_key_here
-```
-
-### 5. 실행
-
-#### 백엔드 (터미널 1)
-
-```bash
+# 없으면 생성
 cd backend
-python3 main.py
+cp .env.example .env
+nano .env  # API 키 입력
 ```
 
-→ http://localhost:8000
-→ API 문서: http://localhost:8000/docs
-
-#### 프론트엔드 (터미널 2)
-
+### Frontend가 Backend에 연결되지 않음
 ```bash
-cd frontend
-npm start
+# Backend가 실행 중인지 확인
+# 터미널에 "Application startup complete" 메시지가 있어야 함
+
+# 포트 충돌 확인
+lsof -i :8000  # 8000번 포트 사용 확인
+lsof -i :3000  # 3000번 포트 사용 확인
 ```
 
-→ http://localhost:3000
-
----
-
-## 📖 사용 방법
-
-### 페이지 1: 상세페이지 생성
-
-1. 상품 정보 입력 (상품명, 카테고리, 키워드 등)
-2. 플랫폼 선택 (쿠팡/네이버)
-3. 이미지 옵션 선택
-4. "생성하기" 클릭
-5. Markdown/HTML 다운로드
-
-### 페이지 2: SWOT + 3C 분석
-
-1. **검색**: "에어프라이어 감자칩" 입력
-2. **플랫폼 선택**: 쿠팡, 네이버 체크
-3. **검색 실행** → 15개 결과 확인
-4. **URL 편집**: 불필요한 URL 체크박스 선택
-5. **재검색**: "제외하고 재검색" 클릭
-6. **상품 정보 입력**: 분석할 상품 정보 입력
-7. **분석 실행** → HTML 보고서 다운로드
-
-### 페이지 3: 마케팅 챗봇
-
-1. 상품 정보 설정 (우측 사이드바)
-2. 질문 입력: "감자칩 마케팅 전략 알려줘"
-3. AI 응답 확인
-4. 빠른 작업 버튼 클릭:
-   - [키워드 추천]
-   - [가격 전략]
-   - [타겟 분석]
-5. 다른 페이지로 바로 이동
-
----
-
-## 🔧 API 엔드포인트
-
-### 상세페이지 생성
-
+### 패키지 설치 오류
 ```bash
-POST /api/generate/detailpage
+# pip 업그레이드
+pip3 install --upgrade pip
+
+# 가상환경 재생성
+cd backend
+rm -rf venv
+python3 -m venv venv
+source venv/bin/activate
+pip3 install -r requirements.txt
 ```
 
-### SWOT + 3C 분석
-
+### ChromaDB 오류
 ```bash
-POST /api/swot/search          # 경쟁사 검색
-POST /api/swot/analyze         # SWOT+3C 분석
-POST /api/swot/refine-search   # 재검색
-POST /api/swot/summarize       # 문서 요약
+# ChromaDB 폴더 삭제 후 재시작
+rm -rf chromadb
+python3 main.py  # 자동으로 재생성됨
 ```
 
-### 마케팅 챗봇
+## 📦 생성되는 파일
 
-```bash
-POST /api/chatbot/chat         # 대화
-POST /api/chatbot/quick-action # 빠른 작업
-GET  /api/chatbot/suggestions  # 제안
-```
-
----
-
-## 🛠️ 기술 스택
-
-### Backend
-- **FastAPI**: 고성능 Python 웹 프레임워크
-- **LangChain**: LLM 애플리케이션 프레임워크
-- **LangGraph**: 멀티 에이전트 오케스트레이션
-- **Tavily**: 실시간 웹 검색 API
-- **OpenAI GPT-4o-mini**: 텍스트 생성
-- **DALL-E 3**: 이미지 생성
-
-### Frontend
-- **React 18**: UI 라이브러리
-- **React Router v6**: 페이지 라우팅
-- **Material-UI**: 컴포넌트 라이브러리
-
-### AI/ML
-- **GPT-4o-mini**: 마케팅 카피, SWOT 분석, 챗봇
-- **DALL-E 3**: 사실적인 제품 이미지 생성
-- **Tavily API**: 실시간 경쟁사 검색
-
----
-
-## 🎯 v2.0 업데이트 내용
-
-### ✅ 새로운 기능
-
-1. **3페이지 구조**
-   - 상세페이지 생성
-   - SWOT + 3C 분석
-   - 마케팅 챗봇
-
-2. **실시간 웹 검색**
-   - DuckDuckGo → Tavily API로 전환
-   - 더 정확한 검색 결과
-
-3. **SWOT + 3C 자동 분석**
-   - 강점/약점/기회/위협
-   - 자사/고객/경쟁사 분석
-   - 가격 비교 및 최저가 탐색
-
-4. **검색 결과 편집**
-   - URL 체크박스 선택
-   - 제외하고 재검색 기능
-
-5. **마케팅 챗봇**
-   - AI 전략 상담
-   - 키워드 추천
-   - 타겟 분석
-   - 가격 전략
-
-6. **이미지 개선**
-   - 더 사실적인 프롬프트
-   - Canon/Nikon 카메라 언급
-   - Documentary style
-   - 자연광 강조
-
-7. **시각화 보고서**
-   - 아름다운 HTML 디자인
-   - 그라데이션 스타일
-   - 핵심 인사이트 요약
-
----
-
-## 📊 워크플로우
-
-### 상세페이지 생성 (11개 노드)
-
-```
-InputCollector → RAG Loader → CompetitorSearch → CompetitorInsights
-→ SWOT+3C Analysis → Visualize → SellingPoints → ContentAssembly
-→ ImagePrompts → ImageGen → Export
-```
-
-### SWOT 분석 워크플로우
-
-```
-Search (Tavily) → Filter URLs → Refine Search → Analyze
-→ Generate SWOT/3C → Visualize HTML
-```
-
----
-
-## 🎨 샘플 출력
-
-### SWOT 분석 보고서 (HTML)
-
-```html
-📊 SWOT + 3C 분석 보고서
-생성일: 2025-11-26
-
-🎯 핵심 인사이트
-💪 핵심 강점: 100% 국산 신선한 감자 사용
-🎯 시장 기회: 건강 간식 시장의 성장세
-💰 경쟁 가격대: 3,000원 ~ 8,000원 (평균 5,500원)
-🏷️ 최저가: ABC 감자칩 - 3,000원
-
-📈 SWOT 분석
-[강점 카드] [약점 카드]
-[기회 카드] [위협 카드]
-
-🔍 3C 분석
-[자사 카드] [고객 카드] [경쟁사 카드]
-
-💰 가격 분석
-[최저가/평균가/최고가]
-[상위 5개 최저가 상품 테이블]
-```
-
----
-
-## 🔐 보안
-
-- OpenAI/Tavily API 키는 `.env` 파일로 관리
-- Git에 커밋 금지 (`.gitignore` 설정)
-- 민감한 데이터는 로컬 저장만
-
----
-
-## 🚧 향후 개선 계획
-
-- [ ] 포스터 스타일 템플릿 (대형 이미지 중심)
-- [ ] 분석 보고서 PDF 다운로드
-- [ ] 챗봇 대화 저장 기능
-- [ ] 플랫폼 자동 업로드 (API 연동)
-- [ ] A/B 테스트 복수 버전 생성
-- [ ] 다국어 지원
-
----
+프로젝트 실행 시 자동으로 생성되는 파일/폴더:
+- `projects/<session_id>/`: 각 프로젝트별 저장소
+  - `swot_analysis_<timestamp>.html`: SWOT 분석 결과
+  - `detail_page_<timestamp>.html`: 상세페이지
+  - `images/`: 생성된 이미지 파일
+- `chromadb/`: 벡터 데이터베이스
 
 ## 📄 라이선스
 
-MIT License - 개인 및 상업적 사용 가능
+이 프로젝트는 교육 목적으로 제작되었습니다.
 
 ---
 
-## 👥 기여
+## 📞 추가 정보
 
-기여를 환영합니다! Pull Request를 보내주세요.
+### 개발 환경
+- macOS Sonoma / Windows 10/11
+- Python 3.12.0
+- Node.js 18.17.0
+- npm 9.6.7
 
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+### 권장 브라우저
+- Chrome 최신 버전
+- Safari 최신 버전
+- Firefox 최신 버전
 
----
-
-## 📧 문의
-
-프로젝트 관련 문의: [GitHub Issues](https://github.com/sinyoung0110/marketing_chatbot/issues)
-
----
-
-## 🎉 감사합니다!
-
-이 프로젝트는 AI 기반 마케팅 자동화를 목표로 개발되었습니다.
-실무에서 바로 사용 가능한 수준의 품질을 제공합니다! 🚀
+### 성능
+- SWOT 분석: 평균 30-60초
+- 상세페이지 생성: 평균 60-90초 (이미지 생성 포함)
+- 챗봇 응답: 평균 2-5초
