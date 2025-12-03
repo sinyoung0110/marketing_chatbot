@@ -8,13 +8,15 @@ def _markdown_to_html(text: str) -> str:
     if not text:
         return ""
 
-    # 헤더 변환 (강조 스타일)
-    text = re.sub(r'^### (.+)$', r'<h3 style="font-size:20px;font-weight:600;margin:24px 0 12px;color:#333;border-left:4px solid var(--accent);padding-left:12px">✦ \1</h3>', text, flags=re.MULTILINE)
-    text = re.sub(r'^## (.+)$', r'<h2 style="font-size:24px;font-weight:700;margin:32px 0 16px;color:#222">📌 \1</h2>', text, flags=re.MULTILINE)
-    text = re.sub(r'^# (.+)$', r'<h1 style="font-size:28px;font-weight:700;margin:28px 0 20px;color:#111">🎯 \1</h1>', text, flags=re.MULTILINE)
+    # 헤더 변환 (##### 부터 # 까지 모두 처리, 아이콘 제거)
+    text = re.sub(r'^##### (.+)$', r'<h5 style="font-size:16px;font-weight:600;margin:16px 0 8px;color:#555;border-left:3px solid var(--accent);padding-left:10px">\1</h5>', text, flags=re.MULTILINE)
+    text = re.sub(r'^#### (.+)$', r'<h4 style="font-size:18px;font-weight:600;margin:20px 0 10px;color:#444;border-left:3px solid var(--accent);padding-left:10px">\1</h4>', text, flags=re.MULTILINE)
+    text = re.sub(r'^### (.+)$', r'<h3 style="font-size:20px;font-weight:600;margin:24px 0 12px;color:#333;border-left:4px solid var(--accent);padding-left:12px">\1</h3>', text, flags=re.MULTILINE)
+    text = re.sub(r'^## (.+)$', r'<h2 style="font-size:24px;font-weight:700;margin:32px 0 16px;color:#222">\1</h2>', text, flags=re.MULTILINE)
+    text = re.sub(r'^# (.+)$', r'<h1 style="font-size:28px;font-weight:700;margin:28px 0 20px;color:#111">\1</h1>', text, flags=re.MULTILINE)
 
-    # 볼드 변환 (강조 색상)
-    text = re.sub(r'\*\*(.+?)\*\*', r'<strong style="color:var(--accent);font-weight:700">\1</strong>', text)
+    # 볼드 변환 (색상 제거, 자연스럽게)
+    text = re.sub(r'\*\*(.+?)\*\*', r'<strong style="font-weight:700">\1</strong>', text)
 
     # 리스트 변환 (박스형 디자인)
     lines = text.split('\n')
