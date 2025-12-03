@@ -82,4 +82,4 @@ backend/**/__pycache__/
 # ChromaDB는 텍스트만 저장하므로 PNG/HTML 파일은 제외해도 성능 무관
 backend/data/chroma_store/*
 !backend/data/chroma_store/.gitkeep
-backend/projects/*/  # 생성된 PNG/HTML 제외
+backend/projects/proj_*/
