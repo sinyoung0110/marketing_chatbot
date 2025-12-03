@@ -4,19 +4,19 @@ ESM+ / 스마트스토어 / 쿠팡 호환 상세페이지 템플릿 생성기
 import re
 
 def _markdown_to_html(text: str) -> str:
-    """마크다운을 HTML로 변환 (가독성 개선)"""
+    """마크다운을 HTML로 변환 (가독성 최대화)"""
     if not text:
         return ""
 
-    # 헤더 변환
-    text = re.sub(r'^### (.+)$', r'<h3>\1</h3>', text, flags=re.MULTILINE)
-    text = re.sub(r'^## (.+)$', r'<h2>\1</h2>', text, flags=re.MULTILINE)
-    text = re.sub(r'^# (.+)$', r'<h1>\1</h1>', text, flags=re.MULTILINE)
+    # 헤더 변환 (강조 스타일)
+    text = re.sub(r'^### (.+)$', r'<h3 style="font-size:20px;font-weight:600;margin:24px 0 12px;color:#333;border-left:4px solid var(--accent);padding-left:12px">✦ \1</h3>', text, flags=re.MULTILINE)
+    text = re.sub(r'^## (.+)$', r'<h2 style="font-size:24px;font-weight:700;margin:32px 0 16px;color:#222">📌 \1</h2>', text, flags=re.MULTILINE)
+    text = re.sub(r'^# (.+)$', r'<h1 style="font-size:28px;font-weight:700;margin:28px 0 20px;color:#111">🎯 \1</h1>', text, flags=re.MULTILINE)
 
-    # 볼드 변환
-    text = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', text)
+    # 볼드 변환 (강조 색상)
+    text = re.sub(r'\*\*(.+?)\*\*', r'<strong style="color:var(--accent);font-weight:700">\1</strong>', text)
 
-    # 리스트 변환 (개선)
+    # 리스트 변환 (박스형 디자인)
     lines = text.split('\n')
     result_lines = []
     in_list = False
@@ -24,10 +24,10 @@ def _markdown_to_html(text: str) -> str:
     for line in lines:
         if line.strip().startswith('- '):
             if not in_list:
-                result_lines.append('<ul style="margin:15px 0;padding-left:25px;line-height:1.9">')
+                result_lines.append('<ul style="margin:20px 0;padding:0;list-style:none">')
                 in_list = True
             item = line.strip()[2:]  # "- " 제거
-            result_lines.append(f'  <li style="margin:8px 0">{item}</li>')
+            result_lines.append(f'  <li style="margin:12px 0;padding:14px 18px;background:#f9fafb;border-left:4px solid var(--accent);border-radius:8px;line-height:1.7;font-size:16px">✓ {item}</li>')
         else:
             if in_list:
                 result_lines.append('</ul>')
@@ -39,16 +39,16 @@ def _markdown_to_html(text: str) -> str:
 
     text = '\n'.join(result_lines)
 
-    # 단락 변환 (연속된 텍스트를 <p> 태그로, 가독성 개선)
+    # 단락 변환 (여백 증가, 가독성 강화)
     paragraphs = text.split('\n\n')
     html_paragraphs = []
     for para in paragraphs:
         para = para.strip()
         if para and not para.startswith('<'):
-            para = f'<p style="margin:18px 0;line-height:1.8">{para}</p>'
+            para = f'<p style="margin:20px 0;line-height:1.9;font-size:17px;color:#333">{para}</p>'
         elif para.startswith('<p>'):
             # 이미 <p> 태그가 있으면 스타일 추가
-            para = para.replace('<p>', '<p style="margin:18px 0;line-height:1.8">')
+            para = para.replace('<p>', '<p style="margin:20px 0;line-height:1.9;font-size:17px;color:#333">')
         html_paragraphs.append(para)
 
     return '\n'.join(html_paragraphs)
@@ -851,7 +851,7 @@ p{{font-size:18px;margin:15px 0}}
 .benefit{{padding:20px;background:var(--sub);border:2px solid var(--accent);border-radius:12px;text-align:center}}
 .benefit h3{{color:var(--accent);margin-bottom:12px}}
 
-.highlight{{padding:24px;background:{styles['highlight_bg']};border:2px solid var(--accent);border-radius:12px;margin:24px 0}}
+.highlight{{padding:28px 24px;background:{styles['highlight_bg']};border:2px solid var(--accent);border-radius:12px;margin:24px 0;box-shadow:0 2px 8px rgba(0,0,0,0.08)}}
 
 .detail-block{{display:flex;gap:20px;align-items:center;margin:32px 0}}
 .detail-block .img{{width:50%}}
@@ -900,7 +900,9 @@ p{{font-size:16px}}
 <!-- 2. 제품 소개 -->
 <section class="section">
   <h2>제품 소개</h2>
-  {detailed_desc}
+  <div class="highlight">
+    {detailed_desc}
+  </div>
 </section>
 """
 
