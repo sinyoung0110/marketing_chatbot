@@ -47,10 +47,10 @@ def _markdown_to_html(text: str) -> str:
     for para in paragraphs:
         para = para.strip()
         if para and not para.startswith('<'):
-            para = f'<p style="margin:20px 0;line-height:1.9;font-size:17px;color:#333">{para}</p>'
+            para = f'<p style="margin:18px 0;line-height:2.0;font-size:16px;color:#333;letter-spacing:0.5px">{para}</p>'
         elif para.startswith('<p>'):
             # 이미 <p> 태그가 있으면 스타일 추가
-            para = para.replace('<p>', '<p style="margin:20px 0;line-height:1.9;font-size:17px;color:#333">')
+            para = para.replace('<p>', '<p style="margin:18px 0;line-height:2.0;font-size:16px;color:#333;letter-spacing:0.5px">')
         html_paragraphs.append(para)
 
     return '\n'.join(html_paragraphs)
@@ -168,7 +168,9 @@ p{{font-size:16px}}
 <!-- 2. 제품 소개 -->
 <section class="section">
   <h2>제품 소개</h2>
-  <p>{detailed_desc}</p>
+  <div class="product-intro">
+{detailed_desc}
+  </div>
 </section>
 
 <!-- 3. 상품상세 (지그재그 5세트) -->
@@ -380,7 +382,9 @@ h2{{font-size:22px}}
 <!-- 2. 제품 소개 -->
 <section class="section">
   <h2>제품 소개</h2>
-  <p>{detailed_desc}</p>
+  <div class="product-intro">
+{detailed_desc}
+  </div>
 </section>
 
 <!-- 3. 원재료 정보 -->
@@ -681,7 +685,9 @@ p{{font-size:16px}}
 <!-- 2. 제품 소개 -->
 <section class="section">
   <h2>제품 소개</h2>
-  <p>{detailed_desc}</p>
+  <div class="product-intro">
+{detailed_desc}
+  </div>
 </section>
 
 <!-- 3. 핵심 성분 -->
