@@ -13,7 +13,7 @@ langgraph==0.2.68
 openai==1.59.7
 
 # 데이터베이스 및 벡터 저장소
-chromadb==0.6.3
+chromadb==0.5.23
 langchain-chroma==0.1.4
 
 # 웹 스크래핑 및 검색
