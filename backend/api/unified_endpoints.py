@@ -176,7 +176,12 @@ async def execute_swot_analysis(request: SwotExecuteRequest):
         )
 
         # SWOT 분석
-        llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.7, api_key=os.getenv("OPENAI_API_KEY"))
+        llm = ChatOpenAI(
+            model="gpt-4o-mini",
+            temperature=0.3,  # 비용 절감
+            max_tokens=2000,  # 비용 절감
+            api_key=os.getenv("OPENAI_API_KEY")
+        )
         analyzer = SWOT3CAnalysisTool(llm)
         analysis_result = analyzer.analyze(
             product_input=product_info,
@@ -684,6 +689,7 @@ async def parse_pdf_file(file: UploadFile = File(...)):
             llm = ChatOpenAI(
                 model="gpt-4o-mini",
                 temperature=0.3,
+                max_tokens=1000,  # 비용 절감
                 api_key=os.getenv("OPENAI_API_KEY")
             )
 

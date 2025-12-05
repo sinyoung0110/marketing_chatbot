@@ -71,7 +71,8 @@ async def chat_with_bot(request: ChatRequest):
 
         llm = ChatOpenAI(
             model="gpt-4o-mini",
-            temperature=0.7,
+            temperature=0.3,  # 비용 절감: 0.7 → 0.3
+            max_tokens=1500,  # 비용 절감: 챗봇 응답 길이 제한
             api_key=os.getenv("OPENAI_API_KEY")
         )
 
@@ -156,6 +157,7 @@ async def handle_detail_page_edit(request: ChatRequest):
         llm = ChatOpenAI(
             model="gpt-4o-mini",
             temperature=0.3,
+            max_tokens=1000,  # 비용 절감: JSON 응답만 받으므로 짧게
             api_key=os.getenv("OPENAI_API_KEY")
         )
 
@@ -254,7 +256,8 @@ async def execute_quick_action(request: QuickActionRequest):
     try:
         llm = ChatOpenAI(
             model="gpt-4o-mini",
-            temperature=0.7,
+            temperature=0.3,  # 비용 절감: 0.7 → 0.3
+            max_tokens=1000,  # 비용 절감
             api_key=os.getenv("OPENAI_API_KEY")
         )
 
@@ -325,7 +328,8 @@ async def get_suggestions(product_name: str, category: str):
     try:
         llm = ChatOpenAI(
             model="gpt-4o-mini",
-            temperature=0.7,
+            temperature=0.3,  # 비용 절감: 0.7 → 0.3
+            max_tokens=1000,  # 비용 절감
             api_key=os.getenv("OPENAI_API_KEY")
         )
 
@@ -333,7 +337,7 @@ async def get_suggestions(product_name: str, category: str):
 상품: {product_name}
 카테고리: {category}
 
-이 상품의 마케팅 전략을 간략히 제안하세요:
+마케팅 전략을 간략히 제안하세요:
 1. 핵심 셀링 포인트 3가지
 2. 주요 타겟 고객
 3. 추천 플랫폼 (쿠팡/네이버/11번가 등)

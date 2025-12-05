@@ -45,7 +45,8 @@ class DetailPageGenerator:
         self.project_id = project_id
         self.llm = ChatOpenAI(
             model="gpt-4o-mini",
-            temperature=0.7,
+            temperature=0.3,  # 비용 절감: 0.7 → 0.3
+            max_tokens=2000,  # 비용 절감: 응답 길이 제한
             api_key=os.getenv("OPENAI_API_KEY")
         )
 
@@ -306,16 +307,20 @@ class DetailPageGenerator:
         return prompt
 
     def generate_images(self, state: AgentState) -> AgentState:
-        """10. 이미지 생성"""
-        print(f"[Image Generation] 이미지 생성 중...")
+        """10. 이미지 생성 (비용 절감을 위해 임시 비활성화)"""
+        print(f"[Image Generation] 🔴 이미지 생성 SKIP (비용 절감 모드)")
+
+        # ===== 비용 절감: DALL-E 이미지 생성 비활성화 =====
+        # 활성화하려면 아래 주석을 해제하세요
         images = []
-        for prompt_data in state["image_prompts"]:
-            image_path = self.image_gen.generate(
-                prompt=prompt_data["prompt"],
-                project_id=state["project_id"],
-                image_type=prompt_data["type"]
-            )
-            images.append(image_path)
+        # for prompt_data in state["image_prompts"]:
+        #     image_path = self.image_gen.generate(
+        #         prompt=prompt_data["prompt"],
+        #         project_id=state["project_id"],
+        #         image_type=prompt_data["type"]
+        #     )
+        #     images.append(image_path)
+        # ===== 여기까지 =====
 
         state["images"] = images
         return state
