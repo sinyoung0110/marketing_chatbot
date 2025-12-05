@@ -196,15 +196,20 @@ JSON만 반환하세요 (설명 불필요):
 
         updates = json.loads(json_match.group(0))
 
-        # content_sections 업데이트
+        # content_sections 업데이트 (최상위 필드도 허용)
         updated_sections = session.content_sections.copy()
+
         for key, value in updates.items():
-            if '.' in key:  # nested field
+            if '.' in key:  # nested field (예: detailed_description.content)
                 parts = key.split('.')
-                if parts[0] in updated_sections:
+                if parts[0] in updated_sections and isinstance(updated_sections[parts[0]], dict):
                     updated_sections[parts[0]][parts[1]] = value
+                else:
+                    print(f"[Detail Edit] 중첩 필드 {key} 업데이트 실패")
             else:
+                # 최상위 필드 (headline, summary 등) 직접 업데이트
                 updated_sections[key] = value
+                print(f"[Detail Edit] {key} 업데이트: {value[:50]}..." if isinstance(value, str) and len(value) > 50 else f"[Detail Edit] {key} 업데이트: {value}")
 
         # HTML 재생성
         exporter = ContentExporter(request.session_id)
@@ -221,10 +226,14 @@ JSON만 반환하세요 (설명 불필요):
             session.detail_page_result['markdown_url'] = markdown_path
         session_manager.update_session(session)
 
+        # 캐시 방지를 위해 타임스탬프 추가
+        timestamp = datetime.now().timestamp()
+        html_url_with_cache = f"{html_path}?v={timestamp}"
+
         return {
             "response": f"✅ 상세페이지가 수정되었습니다!\n\n수정된 내용:\n{json.dumps(updates, ensure_ascii=False, indent=2)}",
             "timestamp": datetime.now().isoformat(),
-            "html_url": html_path,  # HTML URL 반환
+            "html_url": html_url_with_cache,  # 캐시 방지 URL
             "action_type": "detail_page_updated"
         }
 
