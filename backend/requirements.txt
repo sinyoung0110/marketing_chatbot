@@ -9,6 +9,7 @@ langchain==0.3.20
 langchain-openai==0.3.0
 langchain-core==0.3.41
 langchain-community==0.3.19
+langgraph==0.2.68
 openai==1.59.7
 
 # 데이터베이스 및 벡터 저장소
