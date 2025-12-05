@@ -168,7 +168,7 @@ p{{font-size:16px}}
 <!-- 2. 제품 소개 -->
 <section class="section">
   <h2>제품 소개</h2>
-  <div class="product-intro">
+  <div class="product-intro" style="white-space: pre-line; line-height: 2.2; font-size: 16px; color: #333; letter-spacing: 0.5px;">
 {detailed_desc}
   </div>
 </section>
@@ -382,7 +382,7 @@ h2{{font-size:22px}}
 <!-- 2. 제품 소개 -->
 <section class="section">
   <h2>제품 소개</h2>
-  <div class="product-intro">
+  <div class="product-intro" style="white-space: pre-line; line-height: 2.2; font-size: 16px; color: #333; letter-spacing: 0.5px;">
 {detailed_desc}
   </div>
 </section>
@@ -685,7 +685,7 @@ p{{font-size:16px}}
 <!-- 2. 제품 소개 -->
 <section class="section">
   <h2>제품 소개</h2>
-  <div class="product-intro">
+  <div class="product-intro" style="white-space: pre-line; line-height: 2.2; font-size: 16px; color: #333; letter-spacing: 0.5px;">
 {detailed_desc}
   </div>
 </section>
