@@ -7,7 +7,7 @@ python-dotenv==1.0.1
 # AI/LLM
 langchain==0.3.20
 langchain-openai==0.3.0
-langchain-core==0.3.31
+langchain-core==0.3.41
 langchain-community==0.3.19
 openai==1.59.7
 
