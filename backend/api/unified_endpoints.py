@@ -617,19 +617,17 @@ async def parse_pdf_file(file: UploadFile = File(...)):
             tmp_path = tmp_file.name
 
         try:
-            # PDF 텍스트 추출 (PyMuPDF 사용)
-            import fitz  # PyMuPDF
+            # PDF 텍스트 추출 (pdfplumber 사용)
+            import pdfplumber
             pdf_text = ""
-            pdf_doc = fitz.open(tmp_path)
 
-            print(f"[PDF Parse] PDF 페이지 수: {len(pdf_doc)}")
+            with pdfplumber.open(tmp_path) as pdf:
+                print(f"[PDF Parse] PDF 페이지 수: {len(pdf.pages)}")
 
-            for page_num, page in enumerate(pdf_doc):
-                page_text = page.get_text()
-                pdf_text += page_text + "\n"
-                print(f"[PDF Parse] 페이지 {page_num + 1}: {len(page_text)} 문자 추출 (일반 텍스트)")
-
-            pdf_doc.close()
+                for page_num, page in enumerate(pdf.pages):
+                    page_text = page.extract_text() or ""
+                    pdf_text += page_text + "\n"
+                    print(f"[PDF Parse] 페이지 {page_num + 1}: {len(page_text)} 문자 추출 (일반 텍스트)")
 
             print(f"[PDF Parse] 전체 추출된 텍스트 길이: {len(pdf_text.strip())} 문자")
 
