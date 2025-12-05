@@ -1,0 +1,17 @@
+services:
+  # FastAPI 백엔드 서비스
+  - type: web
+    name: marketing-chatbot-backend
+    env: python
+    region: oregon  # 또는 singapore (한국과 가까움)
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false  # Render 대시보드에서 직접 입력
+      - key: TAVILY_API_KEY
+        sync: false
+      - key: PYTHON_VERSION
+        value: 3.11.0
+    healthCheckPath: /health
+    autoDeploy: true  # GitHub push 시 자동 배포
