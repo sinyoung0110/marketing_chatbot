@@ -55,6 +55,71 @@ def _markdown_to_html(text: str) -> str:
 
     return '\n'.join(html_paragraphs)
 
+def _format_nutrition_table(nutrition_text: str) -> str:
+    """영양 정보 텍스트를 HTML 테이블로 변환"""
+    if not nutrition_text:
+        return ""
+
+    # 영양 성분 파싱 (| 구분자 또는 키워드 기반)
+    # 예: "칼로리 (kcal) | 400 kcal | | 단백질 (g) | 5 g"
+
+    # 표 형식 감지 (| 구분자가 있는 경우)
+    if '|' in nutrition_text:
+        # 표 데이터 추출
+        lines = nutrition_text.strip().split('\n')
+        table_html = """
+<table style="width:100%;border-collapse:collapse;margin:20px 0">
+  <thead>
+    <tr style="background:#f3f4f6;border-bottom:2px solid #ddd">
+      <th style="padding:12px;text-align:left;font-weight:600;font-size:15px">영양성분</th>
+      <th style="padding:12px;text-align:center;font-weight:600;font-size:15px">100g 기준</th>
+    </tr>
+  </thead>
+  <tbody>
+"""
+
+        # 각 줄 파싱
+        for line in lines:
+            parts = [p.strip() for p in line.split('|') if p.strip()]
+
+            # "칼로리 (kcal)", "400 kcal" 형태 파싱
+            if len(parts) >= 2:
+                nutrient_name = parts[0]
+                nutrient_value = parts[1] if len(parts) > 1 else ""
+
+                # 빈 값 건너뛰기
+                if nutrient_name and nutrient_name != '영양 성분':
+                    table_html += f"""
+    <tr style="border-bottom:1px solid #e5e7eb">
+      <td style="padding:10px;font-size:15px">{nutrient_name}</td>
+      <td style="padding:10px;text-align:center;font-size:15px;font-weight:500">{nutrient_value}</td>
+    </tr>
+"""
+
+        table_html += """
+  </tbody>
+</table>
+<p style="font-size:13px;color:#6b7280;margin-top:10px">* 1회 제공량 100g 기준</p>
+"""
+
+        # 건강에 미치는 영향 섹션
+        if '건강에 미치는' in nutrition_text or '긍정적인 영향' in nutrition_text:
+            impact_section = nutrition_text.split('\n\n')[-1] if '\n\n' in nutrition_text else ""
+            if impact_section and '건강' in impact_section:
+                table_html += f"""
+<div style="margin-top:24px;padding:16px;background:#f0f9ff;border-left:4px solid #3b82f6;border-radius:8px">
+  <h4 style="margin:0 0 12px 0;font-size:16px;font-weight:600;color:#1e40af">건강에 미치는 긍정적인 영향</h4>
+  <div style="font-size:15px;line-height:1.8;color:#1e3a8a;white-space:pre-line">
+{impact_section}
+  </div>
+</div>
+"""
+
+        return table_html
+
+    # 표 형식이 아닌 경우 기본 마크다운 변환
+    return _markdown_to_html(nutrition_text)
+
 def generate_esm_html(content_sections: dict, images: list, product_input: dict) -> str:
     """
     ESM+ 가이드라인 준수 HTML 템플릿 생성
@@ -1117,12 +1182,17 @@ def _generate_category_specific_sections(content_sections: dict, category_type: 
     elif category_type == 'food':
         nutrition = content_sections.get('nutrition_info', {})
         if nutrition.get('has_nutrition'):
+            nutrition_content = nutrition.get('content', '')
+
+            # 영양 성분표 파싱 및 HTML 테이블 생성
+            nutrition_html = _format_nutrition_table(nutrition_content)
+
             html += f"""
 <!-- 영양 정보 -->
 <section class="section">
   <div class="highlight">
     <h2 style="color:{styles['h2_color']};margin-top:0">영양 정보</h2>
-    {_markdown_to_html(nutrition.get('content', ''))}
+    {nutrition_html}
   </div>
 </section>
 """
