@@ -23,7 +23,8 @@ const DetailPageGenerator = () => {
   const handleGenerate = async (formData) => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:8000/api/generate/detailpage', {
+      const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
+      const response = await fetch(`${BACKEND_URL}/api/generate/detailpage`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

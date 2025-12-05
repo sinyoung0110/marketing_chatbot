@@ -33,7 +33,7 @@ import {
   Download
 } from '@mui/icons-material';
 
-const BACKEND_URL = 'http://localhost:8000';
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
 
 const UnifiedWorkflow = () => {
   const [activeStep, setActiveStep] = useState(0);

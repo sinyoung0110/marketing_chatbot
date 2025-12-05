@@ -13,7 +13,7 @@ import {
 import { Download, ContentCopy, RestartAlt, CheckCircle } from '@mui/icons-material';
 
 const ResultView = ({ result, onReset }) => {
-  const BACKEND_URL = 'http://localhost:8000';
+  const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
 
   const handleDownload = (url) => {
     const fullUrl = url.startsWith('http') ? url : `${BACKEND_URL}${url}`;
